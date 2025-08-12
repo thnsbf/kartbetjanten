@@ -1,0 +1,46 @@
+.info-box {
+    display: none;
+    z-index: 6;
+    position: absolute;
+    background-color: var(--c-background-modal);
+    color: var(--kommunfarg);
+    border: 1px solid #3E8DA8;
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+ 
+  .info-box p {
+    margin: 0;
+    font-size: min(3.5vw, 14px);
+  }
+ 
+  #infoBox1 {
+    width: 330px;
+    top: 20%;
+    right: 50%;
+  }
+
+  @media (max-width:920px) {
+/* Mini */
+  .info-box {
+    display: none;
+    z-index: 6;
+    position: absolute;
+    color: var(--kommunfarg);
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+ 
+  .info-box p {
+    margin: 0;
+    font-size: min(3.5vw, 14px);
+  }
+ 
+  #infoBox1 {
+    width: 230px;
+    top: 20%;
+    right: 5%;
+  }
+}

@@ -1,0 +1,99 @@
+
+.tooltip {
+  display: none;
+  visibility: hidden;
+  position: absolute;
+  bottom: -250px;
+  right: 0;
+  background-color: var(--kommunfarg);
+  color: var(--c-text-default);
+  padding: 24px;
+  border-radius: 7px;
+  z-index: 3;
+}
+
+.tooltip::before {
+  content: '';
+  display: block;
+  width: 12px;
+  height: 12px;
+  background-color: var(--kommunfarg);
+  position: absolute;
+  right: 9px;
+  top: -5px;
+  transform: rotate(45deg);
+  z-index: 2;
+}
+
+.tooltip__inner {
+  display: grid;
+  grid-template-columns: min-content 1fr;
+  row-gap: 0.75rem;
+  column-gap: 0.875rem;
+
+}
+.tooltip__inner-icon {
+  grid-column: 1 / 2;
+  grid-row: auto;
+  transform: rotate(-90deg) translateX(-6.5px);
+  width: 12px;
+  height: auto;
+  align-self: flex-start;
+  
+}
+.tooltip__inner-icon > img {
+  width: inherit;
+  height: inherit;
+}
+.tooltip__p {
+  font-size: 0.875rem;
+  font-weight: 300;
+  line-height: 1.5;
+  margin-top: unset !important;
+  grid-column: 2 / -1;
+  grid-row: auto;
+}
+
+.tooltip-btn {
+  border: none;
+  border-radius: 100vmax;
+  background-color: transparent;
+  cursor: pointer;
+  width:fit-content;
+  position: absolute;
+  top: 41px;
+  right: 6px;
+
+}
+
+.tool-tip-icon__img {
+  height: 20px;
+  width: 20px;
+}
+
+.tooltip--solar-study {
+  bottom: -263px;
+}
+
+@media (min-width: 870px) {
+  .tooltip {
+    bottom: -200px
+  }
+  .tooltip--solar-study, .tooltip--measure-tools, .tooltip--viewshed, .tooltip--section-tool, .tooltip--shader {
+    bottom: unset;
+    right: -108%;
+    left: 105%;
+    top: 30px;
+  }
+  .tooltip--solar-study::before, .tooltip--measure-tools::before, .tooltip--viewshed::before, .tooltip--section-tool::before, .tooltip--shader::before  {
+    right: unset;
+    left: -5px;
+    top: 15px;
+  }
+
+  .tooltip-btn:hover ~ .tooltip {
+    display: block !important;
+    visibility: visible !important;
+  }
+  
+}

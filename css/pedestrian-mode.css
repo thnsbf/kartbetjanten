@@ -1,0 +1,57 @@
+.pedestrian-mode-wrapper {
+  position: absolute;
+  top: 100px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-radius: 7px;
+  width: 400px;
+  z-index: 1000;
+  background-color: var(--c-background-modal);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  padding: var(--padding-xl);
+  font-size: 1rem;
+  display: block flex;
+  flex-direction:column;
+  align-items: center;
+  max-width: 100vw;
+  max-height: 100vh;
+  border: none;
+}
+
+.pedestrian-mode-wrapper--minimized {
+  top: unset;
+  bottom: 0;
+  left: 0%;
+  transform: none;
+  padding: var(--padding-s);
+  padding-block-start: 1.5rem;
+  justify-content: center;
+  max-height: 40px;
+  animation-name: minimize-transition;
+  animation-duration: 0.15s;
+  animation-direction: alternate;
+  animation-timing-function: ease-out;
+}
+
+@media (min-width: 870px) {
+  .pedestrian-mode-wrapper {
+    min-width: 400px;
+  }
+}
+
+@keyframes minimize-transition {
+  from { 
+    top: 100px;
+    left: 50%;
+    transform: translateX(-50%); 
+  }
+  to {
+    top: unset;
+    bottom: 0;
+    left: 0%;
+    transform: translateX(0%); ;
+  }
+}
+
+
+

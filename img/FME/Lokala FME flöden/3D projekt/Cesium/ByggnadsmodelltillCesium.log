@@ -1,0 +1,217 @@
+2024-10-28 07:57:38|   0.0|  0.0|INFORM|Current FME version: FME 2023.1.0.0 (20230825 - Build 23619 - WIN64)
+2024-10-28 07:57:38|   0.0|  0.0|INFORM|System Time: 20241028065739 UTC
+2024-10-28 07:57:38|   0.0|  0.0|INFORM|FME_HOME is 'C:\Program Files\FME_Form_Local_ver\'
+2024-10-28 07:57:38|   0.0|  0.0|INFORM|FME Form (floating)
+2024-10-28 07:57:38|   0.0|  0.0|INFORM|Temporary License: 175 days left.
+2024-10-28 07:57:38|   0.0|  0.0|INFORM|Machine host name is: CZC2139V2B
+2024-10-28 07:57:38|   0.0|  0.0|INFORM|OS Locale Name     : sv_SE
+2024-10-28 07:57:38|   0.0|  0.0|INFORM|OS Locale Encoding : windows-1252
+2024-10-28 07:57:38|   0.0|  0.0|INFORM|Process Encoding   : UTF-8
+2024-10-28 07:57:38|   0.0|  0.0|INFORM|FME API version: '4.0 20230426'
+2024-10-28 07:57:38|   0.0|  0.0|INFORM|FME Configuration: FME_BASE is 'no'
+2024-10-28 07:57:38|   0.0|  0.0|INFORM|FME Configuration: FME_MF_DIR is 'K:\FME\Lokala FME flöden\3D projekt\Cesium/'
+2024-10-28 07:57:38|   0.0|  0.0|INFORM|FME Configuration: FME_MF_NAME is 'ByggnadsmodelltillCesium.fmw'
+2024-10-28 07:57:38|   0.0|  0.0|INFORM|FME Configuration: FME_PRODUCT_NAME is 'FME(R) 2023.1.0.0'
+2024-10-28 07:57:38|   0.0|  0.0|INFORM|Operating System: Microsoft Windows 10 64-bit  (Build 19045)
+2024-10-28 07:57:38|   0.0|  0.0|INFORM|FME Platform: WIN64
+2024-10-28 07:57:38|   0.0|  0.0|INFORM|System Status: 738.83 GB of disk space available in the FME temporary folder (C:\Users\AMAJEP~1\AppData\Local\Temp\wbrun_1730096007800_26372\fmetmp_10)
+2024-10-28 07:57:38|   0.0|  0.0|INFORM|System Status: 15.73 GB of physical memory available
+2024-10-28 07:57:38|   0.0|  0.0|INFORM|System Status: 62.93 GB of virtual memory available
+2024-10-28 07:57:38|   0.0|  0.0|INFORM|START - ProcessID: 19748, peak process memory usage: 43400 kB, current process memory usage: 43400 kB
+2024-10-28 07:57:38|   0.0|  0.0|INFORM|FME Configuration: Command line arguments are `C:\Program Files\FME_Form_Local_ver\fme.exe' `K:\FME\Lokala FME flöden\3D projekt\Cesium\wb-xlate-1730098657308_26372' `LOG_STANDARDOUT' `YES' `LOG_TIMINGS' `YES' `LogCountServerName' `51883' `LOG_STANDARDOUT' `No' `WORKBENCH_LOG_SERVER' `51106'
+2024-10-28 07:57:38|   0.0|  0.0|INFORM|FME Configuration: Connection Storage: 'C:\Users\amajep001\AppData\Roaming\Safe Software\FME\'
+2024-10-28 07:57:39|   0.0|  0.0|INFORM|Shared folders for formats are : C:\Program Files\FME_Form_Local_ver\datasources;\\thn.local\adm\hem\amajep001\Dokument\FME\Formats
+2024-10-28 07:57:39|   0.0|  0.0|INFORM|Shared folders for transformers are : C:\Users\amajep001\AppData\Roaming\Safe Software\FME\Packages\23619-win64\transformers;C:\Program Files\FME_Form_Local_ver\transformers;C:\Users\amajep001\AppData\Roaming\Safe Software\FME\FME Store\Transformers
+2024-10-28 07:57:39|   0.0|  0.0|INFORM|Shared folders for coordinate systems are : \\thn.local\adm\hem\amajep001\Dokument\FME\CoordinateSystems
+2024-10-28 07:57:39|   0.0|  0.0|INFORM|Shared folders for coordinate system exceptions are : \\thn.local\adm\hem\amajep001\Dokument\FME\CoordinateSystemExceptions
+2024-10-28 07:57:39|   0.0|  0.0|INFORM|Shared folders for coordinate system grid overrides are : \\thn.local\adm\hem\amajep001\Dokument\FME\CoordinateSystemGridOverrides
+2024-10-28 07:57:39|   0.0|  0.0|INFORM|Shared folders for CS-MAP transformation exceptions are : \\thn.local\adm\hem\amajep001\Dokument\FME\CsmapTransformationExceptions
+2024-10-28 07:57:39|   0.0|  0.0|INFORM|Shared folders for transformer categories are : \\thn.local\adm\hem\amajep001\Dokument\FME\TransformerCategories
+2024-10-28 07:57:39|   0.0|  0.0|INFORM|FME Configuration: Reader Keyword is `MULTI_READER'
+2024-10-28 07:57:39|   0.0|  0.0|INFORM|FME Configuration: Writer Keyword is `PRIMARY_DEST'
+2024-10-28 07:57:39|   0.0|  0.0|INFORM|FME Configuration: Writer Group Definition Keyword is `PRIMARY_DEST_DEF'
+2024-10-28 07:57:39|   0.0|  0.0|INFORM|FME Configuration: Reader type is `MULTI_READER'
+2024-10-28 07:57:39|   0.0|  0.0|INFORM|FME Configuration: Writer type is `MULTI_WRITER'
+2024-10-28 07:57:39|   0.0|  0.0|INFORM|FME Configuration: No destination coordinate system set
+2024-10-28 07:57:39|   0.0|  0.0|INFORM|FME Configuration: Current working folder is `K:\FME\Lokala FME flöden\3D projekt\Cesium'
+2024-10-28 07:57:39|   0.0|  0.0|INFORM|FME Configuration: Temporary folder is `C:\Users\AMAJEP~1\AppData\Local\Temp\wbrun_1730096007800_26372\fmetmp_10', set from environment variable `FME_TEMP'
+2024-10-28 07:57:39|   0.0|  0.0|INFORM|FME Configuration: Cache folder is 'C:\Users\AMAJEP~1\AppData\Local\Temp'
+2024-10-28 07:57:39|   0.0|  0.0|INFORM|FME Configuration: FME_HOME is `C:\Program Files\FME_Form_Local_ver\'
+2024-10-28 07:57:39|   0.0|  0.0|INFORM|FME Configuration: Start freeing memory when the process exceeds 47.20 GB
+2024-10-28 07:57:39|   0.0|  0.0|INFORM|FME Configuration: Stop freeing memory when the process is below 35.40 GB
+2024-10-28 07:57:39|   0.0|  0.0|INFORM|Creating writer for format: 
+2024-10-28 07:57:39|   0.1|  0.1|INFORM|Creating reader for format: 
+2024-10-28 07:57:39|   0.1|  0.0|INFORM|MULTI_READER(MULTI_READER): Will fail with first member reader failure
+2024-10-28 07:57:39|   0.1|  0.0|INFORM|Using Multi Reader with keyword `MULTI_READER' to read multiple datasets
+2024-10-28 07:57:39|   0.1|  0.0|INFORM|Using MultiWriter with keyword `PRIMARY_DEST' to output data (ID_ATTRIBUTE is `multi_writer_id')
+2024-10-28 07:57:39|   0.1|  0.0|INFORM|Writer output will be ordered by value of multi_writer_id
+2024-10-28 07:57:39|   0.1|  0.0|INFORM|Loaded module 'LogCount_func' from file 'C:\Program Files\FME_Form_Local_ver\plugins/LogCount_func.dll'
+2024-10-28 07:57:39|   0.1|  0.0|INFORM|FME API version of module 'LogCount_func' matches current internal version (4.0 20230426)
+2024-10-28 07:57:39|   0.1|  0.0|INFORM|FME Configuration: Using FME Reprojection Engine
+2024-10-28 07:57:39|   0.2|  0.1|INFORM|Loaded module 'ClipperFactory' from file 'C:\Program Files\FME_Form_Local_ver\plugins/ClipperFactory.dll'
+2024-10-28 07:57:39|   0.2|  0.0|INFORM|FME API version of module 'ClipperFactory' matches current internal version (4.0 20230426)
+2024-10-28 07:57:39|   0.2|  0.0|INFORM|Loaded module 'CounterFactory' from file 'C:\Program Files\FME_Form_Local_ver\plugins/CounterFactory.dll'
+2024-10-28 07:57:39|   0.2|  0.0|INFORM|FME API version of module 'CounterFactory' matches current internal version (4.0 20230426)
+2024-10-28 07:57:39|   0.2|  0.0|INFORM|Loaded module 'SharedObjectFactory' from file 'C:\Program Files\FME_Form_Local_ver\plugins/SharedObjectFactory.dll'
+2024-10-28 07:57:39|   0.2|  0.0|INFORM|FME API version of module 'SharedObjectFactory' matches current internal version (4.0 20230426)
+2024-10-28 07:57:39|   0.2|  0.0|INFORM|Loaded module 'GQueryFactory' from file 'C:\Program Files\FME_Form_Local_ver\plugins/GQueryFactory.dll'
+2024-10-28 07:57:39|   0.2|  0.0|INFORM|FME API version of module 'GQueryFactory' matches current internal version (4.0 20230426)
+2024-10-28 07:57:39|   0.2|  0.0|INFORM|Loaded module 'InspectorFactory' from file 'C:\Program Files\FME_Form_Local_ver\plugins/InspectorFactory.dll'
+2024-10-28 07:57:39|   0.2|  0.0|INFORM|FME API version of module 'InspectorFactory' matches current internal version (4.0 20230426)
+2024-10-28 07:57:39|   0.2|  0.0|INFORM|Emptying factory pipeline
+2024-10-28 07:57:39|   0.2|  0.0|STATS |Router and Unexpected Input Remover (RoutingFactory): Tested 0 input feature(s), wrote 0 output feature(s): 0 matched merge filters, 0 were routed to output, 0 could not be routed.
+2024-10-28 07:57:39|   0.2|  0.0|STATS |Unwanted Router Input Nuker (TeeFactory): Cloned 0 input feature(s) into 0 output feature(s)
+2024-10-28 07:57:39|   0.2|  0.0|STATS |TROLLKART.AFI_FAST_YTA_GML_MSSQL_SPATIAL_3 Splitter (TeeFactory): Cloned 0 input feature(s) into 0 output feature(s)
+2024-10-28 07:57:39|   0.2|  0.0|STATS |Utstrackning_SHAPEFILE_3 Splitter (TeeFactory): Cloned 0 input feature(s) into 0 output feature(s)
+2024-10-28 07:57:39|   0.2|  0.0|STATS |Skogshöjden_SHAPEFILE_2 Splitter (TeeFactory): Cloned 0 input feature(s) into 0 output feature(s)
+2024-10-28 07:57:39|   0.2|  0.0|STATS |Restoring 1 feature(s) from FME feature store file `C:\Users\AMAJEP~1\AppData\Local\Temp\wb-cache-ByggnadsmodelltillCesium-mEoEPc\Main_CoordinateSystemSetter -1 35 fo 0 OUTPUT  0  2568f575db5246ea638034fdc8f6dd4caff50dfb.ffs'
+2024-10-28 07:57:39|   0.2|  0.0|INFORM|CS-MAP Reprojector: Transformation will be automatically selected for 'SWEREF-99-12-00' -> 'LL-WGS84', and is not guaranteed to remain the same in future releases of FME
+2024-10-28 07:57:39|   0.2|  0.0|INFORM|Reprojector: Using transformation `SWEREF99_to_WGS84,Forward(Geocentric,EPSG:1879)' when reprojecting from SWEREF-99-12-00 to LL-WGS84
+2024-10-28 07:57:39|   0.2|  0.0|INFORM|FFS writer: Writing 15680 feature(s) to file 'C:\Users\AMAJEP~1\AppData\Local\Temp\wb-cache-ByggnadsmodelltillCesium-mEoEPc\Main_Reprojector -1 46 fo 0 REPROJECTED  0  e76edcbc687d28374c05e2775a78546646cd6cce.fts'
+2024-10-28 07:57:39|   0.5|  0.3|INFORM|Spatial Index: Adding 15680 features
+2024-10-28 07:57:39|   0.7|  0.2|STATS |Restoring 1 feature(s) from FME feature store file `C:\Users\AMAJEP~1\AppData\Local\Temp\wb-cache-ByggnadsmodelltillCesium-mEoEPc\Main_AttributeRemover -1 39 fo 0 OUTPUT  0  8c46a7d5b7a07f9e8780b2e42a85fb022a80632d.ffs'
+2024-10-28 07:57:39|   0.7|  0.0|INFORM|Clipper (ClipperFactory): Splitting bulk features into individual features
+2024-10-28 07:57:39|   0.8|  0.1|STATS |Reprojector (TeeFactory): Cloned 15680 input feature(s) into 15680 output feature(s)
+2024-10-28 07:57:39|   0.9|  0.1|INFORM|Clipper (ClipperFactory): Clipping with an automatic tolerance of 1.1666106243577994e-13
+2024-10-28 07:57:40|   0.9|  0.0|INFORM|... Last line repeated 3 times ...
+2024-10-28 07:57:40|   0.9|  0.0|INFORM|Clipper (ClipperFactory): Clipping with an automatic tolerance of 1.16652393484976e-13
+2024-10-28 07:57:40|   1.0|  0.1|WARN  |Clipper (ClipperFactory): Clipping produced unexpected remnants. The unused data will by output via the remnants port
+2024-10-28 07:57:40|   1.7|  0.7|INFORM|Spatial Index: Adding 15898 features
+2024-10-28 07:57:40|   1.9|  0.2|INFORM|Spatial Index: Adding 15898 features
+2024-10-28 07:57:40|   1.9|  0.0|STATS |Restoring 1 feature(s) from FME feature store file `C:\Users\AMAJEP~1\AppData\Local\Temp\wb-cache-ByggnadsmodelltillCesium-mEoEPc\Main_Reprojector_3 -1 38 fo 0 REPROJECTED  0  ab94666d9bb55383674bc57e2661122d21fb9f70.ffs'
+2024-10-28 07:57:41|   1.9|  0.0|INFORM|Clipper_REMNANTS Feature Recorder -1 2147745833 (RecorderFactory): Splitting bulk features into individual features
+2024-10-28 07:57:41|   1.9|  0.0|INFORM|Clipper (ClipperFactory): Clipped 2470 additional times with automatic tolerances between 1.1663114944155503e-13 and 1.1666106243577994e-13
+2024-10-28 07:57:41|   1.9|  0.0|STATS |=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2024-10-28 07:57:41|   1.9|  0.0|STATS |                        `CountFactory' Domain Summary
+2024-10-28 07:57:41|   1.9|  0.0|STATS |=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2024-10-28 07:57:41|   1.9|  0.0|STATS |counter                                                                  15898
+2024-10-28 07:57:41|   1.9|  0.0|STATS |==============================================================================
+2024-10-28 07:57:41|   1.9|  0.0|STATS |Total features counted:                                                  15898
+2024-10-28 07:57:41|   1.9|  0.0|STATS |=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2024-10-28 07:57:41|   2.0|  0.1|INFORM|Clipper_5 (ClipperFactory): Clipping with an automatic tolerance of 1.1664375199831573e-13
+2024-10-28 07:57:41|   2.1|  0.1|INFORM|... Last line repeated 4 times ...
+2024-10-28 07:57:41|   2.1|  0.0|WARN  |Clipper_5 (ClipperFactory): Clipping produced unexpected remnants. The unused data will by output via the remnants port
+2024-10-28 07:57:41|   2.2|  0.1|INFORM|Clipper_5_REMNANTS Feature Recorder -1 2147745800 (RecorderFactory): Splitting bulk features into individual features
+2024-10-28 07:57:41|   2.4|  0.2|INFORM|Spatial Index: Adding 14506 features
+2024-10-28 07:57:41|   2.5|  0.1|INFORM|Clipper_5_INSIDE Feature Recorder -1 2147614728 (RecorderFactory): Splitting bulk features into individual features
+2024-10-28 07:57:41|   2.7|  0.2|INFORM|Clipper_5 (ClipperFactory): Clipped 2 additional times with an automatic tolerance of 1.1664375199831573e-13
+2024-10-28 07:57:41|   2.7|  0.0|STATS |Extruder_2 (TeeFactory): Cloned 1392 input feature(s) into 1392 output feature(s)
+2024-10-28 07:57:41|   2.7|  0.0|STATS |Extruder_2_Rejector (TestFactory): Tested 1392 input feature(s) -- 1392 feature(s) passed and 0 feature(s) failed
+2024-10-28 07:57:41|   2.8|  0.1|WARN  |AppearanceStyler: Unsupported geometry found. Removing all unsupported geometry from feature
+2024-10-28 07:57:42|   2.8|  0.0|STATS |Storing feature(s) to FME feature store file `C:\Users\AMAJEP~1\AppData\Local\Temp\wb-inspectors-oFxRPS\inspector.ffs'
+2024-10-28 07:57:42|   3.2|  0.4|INFORM|Creating writer for format: Cesium 3D Tiles
+2024-10-28 07:57:42|   3.2|  0.0|INFORM|Trying to find a DYNAMIC plugin for writer named `CESIUM3DTILES'
+2024-10-28 07:57:42|   3.2|  0.0|INFORM|Loaded module 'CESIUM3DTILES' from file 'C:\Program Files\FME_Form_Local_ver\plugins/CESIUM3DTILES.dll'
+2024-10-28 07:57:42|   3.2|  0.0|INFORM|FME API version of module 'CESIUM3DTILES' matches current internal version (4.0 20230426)
+2024-10-28 07:57:42|   3.2|  0.0|INFORM|FME Configuration: Destination coordinate system set to `EPSG:4326'
+2024-10-28 07:57:42|   3.2|  0.0|INFORM|Coordinate System `EPSG:4326' parameters: CS_NAME=`LL-WGS84' DESC_NM=`WGS84 Lat/Longs' DT_NAME=`WGS84' GROUP=`LL' MAP_SCL=`1' PROJ=`LL' QUAD=`1' SCL_RED=`1' UNIT=`DEGREE'
+2024-10-28 07:57:42|   3.2|  0.0|INFORM|Writer `CESIUM3DTILES_1' of type `CESIUM3DTILES' using group definition keyword `CESIUM3DTILES_1_DEF'
+2024-10-28 07:57:42|   3.2|  0.0|INFORM|CESIUM3DTILES Writer: Opening a Cesium 3D Tiles writer with dataset 'K:\FME\Lokala FME flöden\3D projekt\Cesium\ExportByggnadsmodell'
+2024-10-28 07:57:43|   4.1|  0.9|STATS |Aggregator (AggregateFactory): Combined 1392 input feature(s) into 36 output feature(s), including 0 singleton(s)
+2024-10-28 07:57:43|   4.1|  0.0|STATS |Aggregator AGGREGATE Splitter (TeeFactory): Cloned 36 input feature(s) into 72 output feature(s)
+2024-10-28 07:57:43|   4.1|  0.0|STATS |AppearanceStyler_GeometryFilter (TestFactory): Tested 36 input feature(s) -- 0 feature(s) passed and 36 feature(s) failed
+2024-10-28 07:57:43|   4.1|  0.0|STATS |AppearanceStyler (TeeFactory): Cloned 36 input feature(s) into 36 output feature(s)
+2024-10-28 07:57:43|   4.1|  0.0|STATS |AppearanceSetter_HOLDER (SortFactory): Output 0 feature(s) without doing any sorting
+2024-10-28 07:57:43|   4.1|  0.0|STATS |AppearanceSetter_ColorStyle_Creator (CreationFactory): Created 1 features
+2024-10-28 07:57:43|   4.1|  0.0|STATS |AppearanceSetter_Apply_ColorStyle (TeeFactory): Cloned 1 input feature(s) into 1 output feature(s)
+2024-10-28 07:57:43|   4.1|  0.0|STATS |AppearanceSetter_uOriginOffsetRejector (TestFactory): Tested 36 input feature(s) -- 36 feature(s) passed and 0 feature(s) failed
+2024-10-28 07:57:43|   4.1|  0.0|STATS |AppearanceSetter_vOriginOffsetRejector (TestFactory): Tested 36 input feature(s) -- 36 feature(s) passed and 0 feature(s) failed
+2024-10-28 07:57:43|   4.1|  0.0|STATS |AppearanceSetter__textureuRepeatFactorRejector__ (TestFactory): Tested 36 input feature(s) -- 36 feature(s) passed and 0 feature(s) failed
+2024-10-28 07:57:43|   4.1|  0.0|STATS |AppearanceSetter__texturevRepeatFactorRejector__ (TestFactory): Tested 36 input feature(s) -- 36 feature(s) passed and 0 feature(s) failed
+2024-10-28 07:57:43|   4.1|  0.0|STATS |AppearanceSetter OUTPUT Splitter (TeeFactory): Cloned 36 input feature(s) into 72 output feature(s)
+2024-10-28 07:57:43|   4.2|  0.1|STATS |Stored 36 feature(s) to FME feature store file `C:\Users\AMAJEP~1\AppData\Local\Temp\wb-inspectors-oFxRPS\inspector.ffs'
+2024-10-28 07:57:43|   4.2|  0.0|INFORM|Saving feature type index into file 'C:\Users\AMAJEP~1\AppData\Local\Temp\wb-inspectors-oFxRPS\inspector.fsi'
+2024-10-28 07:57:43|   4.2|  0.0|INFORM|Finished saving feature type index into file 'C:\Users\AMAJEP~1\AppData\Local\Temp\wb-inspectors-oFxRPS\inspector.fsi'
+2024-10-28 07:57:43|   4.2|  0.0|STATS |Destination Feature Type Routing Correlator (RoutingFactory): Tested 36 input feature(s), wrote 36 output feature(s): 0 matched merge filters, 36 were routed to output, 0 could not be routed.
+2024-10-28 07:57:43|   4.2|  0.0|STATS |Final Output Nuker (TeeFactory): Cloned 0 input feature(s) into 0 output feature(s)
+2024-10-28 07:57:43|   4.2|  0.0|STATS |VisualizerProcessor (CreationFactory): Created 1 features
+2024-10-28 07:57:43|   4.2|  0.0|STATS |VisualizerCleaner (TeeFactory): Cloned 1 input feature(s) into 0 output feature(s)
+2024-10-28 07:57:43|   4.2|  0.0|INFORM|CESIUM3DTILES Writer: Closing the Cesium 3D Tiles writer with dataset 'K:\FME\Lokala FME flöden\3D projekt\Cesium\ExportByggnadsmodell'
+2024-10-28 07:57:43|   4.2|  0.0|INFORM|CESIUM3DTILES Writer: Finishing writing 3D tileset for feature type 'Skogshojden'
+2024-10-28 07:57:43|   4.2|  0.0|INFORM|Tile hierarchy created for feature type 'Skogshojden' with 54 tiles
+2024-10-28 07:57:43|   4.2|  0.0|INFORM|Writing features to tile 'data/data0'
+2024-10-28 07:57:43|   4.2|  0.0|INFORM|Writing features to tile 'data/data1'
+2024-10-28 07:57:43|   4.2|  0.0|INFORM|Writing features to tile 'data/data2'
+2024-10-28 07:57:43|   4.2|  0.0|INFORM|Writing features to tile 'data/data3'
+2024-10-28 07:57:43|   4.4|  0.2|INFORM|Writing features to tile 'data/data4'
+2024-10-28 07:57:44|   4.4|  0.0|INFORM|Writing features to tile 'data/data5'
+2024-10-28 07:57:44|   4.4|  0.0|INFORM|Writing features to tile 'data/data6'
+2024-10-28 07:57:44|   4.4|  0.0|INFORM|Writing features to tile 'data/data7'
+2024-10-28 07:57:44|   4.4|  0.0|INFORM|Writing features to tile 'data/data8'
+2024-10-28 07:57:44|   4.4|  0.0|INFORM|Writing features to tile 'data/data9'
+2024-10-28 07:57:44|   4.4|  0.0|INFORM|Writing features to tile 'data/data10'
+2024-10-28 07:57:44|   4.4|  0.0|INFORM|Writing features to tile 'data/data11'
+2024-10-28 07:57:44|   4.4|  0.0|INFORM|Writing features to tile 'data/data12'
+2024-10-28 07:57:44|   4.4|  0.0|INFORM|Writing features to tile 'data/data13'
+2024-10-28 07:57:44|   4.4|  0.0|INFORM|Writing features to tile 'data/data14'
+2024-10-28 07:57:45|   4.4|  0.0|INFORM|Writing features to tile 'data/data15'
+2024-10-28 07:57:45|   4.5|  0.1|INFORM|Writing features to tile 'data/data16'
+2024-10-28 07:57:45|   4.5|  0.0|INFORM|Writing features to tile 'data/data17'
+2024-10-28 07:57:45|   4.5|  0.0|INFORM|Writing features to tile 'data/data18'
+2024-10-28 07:57:45|   4.5|  0.0|INFORM|Writing features to tile 'data/data19'
+2024-10-28 07:57:45|   4.5|  0.0|INFORM|Writing features to tile 'data/data20'
+2024-10-28 07:57:45|   4.5|  0.0|INFORM|Writing features to tile 'data/data21'
+2024-10-28 07:57:45|   4.5|  0.0|INFORM|Writing features to tile 'data/data22'
+2024-10-28 07:57:45|   4.5|  0.0|INFORM|Writing features to tile 'data/data23'
+2024-10-28 07:57:46|   4.5|  0.0|INFORM|Writing features to tile 'data/data24'
+2024-10-28 07:57:46|   4.5|  0.0|INFORM|Writing features to tile 'data/data25'
+2024-10-28 07:57:46|   4.5|  0.0|INFORM|Writing features to tile 'data/data26'
+2024-10-28 07:57:46|   4.5|  0.0|INFORM|Writing features to tile 'data/data27'
+2024-10-28 07:57:46|   4.5|  0.0|INFORM|Writing features to tile 'data/data28'
+2024-10-28 07:57:46|   4.6|  0.1|INFORM|Writing features to tile 'data/data29'
+2024-10-28 07:57:46|   4.7|  0.1|INFORM|Writing features to tile 'data/data30'
+2024-10-28 07:57:46|   4.7|  0.0|INFORM|Writing features to tile 'data/data31'
+2024-10-28 07:57:47|   4.7|  0.0|INFORM|Writing features to tile 'data/data32'
+2024-10-28 07:57:47|   4.7|  0.0|INFORM|Writing features to tile 'data/data33'
+2024-10-28 07:57:47|   4.7|  0.0|INFORM|Writing features to tile 'data/data34'
+2024-10-28 07:57:47|   4.7|  0.0|INFORM|Writing features to tile 'data/data35'
+2024-10-28 07:57:47|   4.7|  0.0|INFORM|Writing features to tile 'data/data36'
+2024-10-28 07:57:47|   4.7|  0.0|INFORM|Writing features to tile 'data/data37'
+2024-10-28 07:57:47|   4.7|  0.0|INFORM|Writing features to tile 'data/data38'
+2024-10-28 07:57:47|   4.8|  0.1|INFORM|Writing features to tile 'data/data39'
+2024-10-28 07:57:47|   4.8|  0.0|INFORM|Writing features to tile 'data/data40'
+2024-10-28 07:57:48|   4.8|  0.0|INFORM|Writing features to tile 'data/data41'
+2024-10-28 07:57:48|   4.8|  0.0|INFORM|Writing features to tile 'data/data42'
+2024-10-28 07:57:48|   4.8|  0.0|INFORM|Writing features to tile 'data/data43'
+2024-10-28 07:57:48|   4.8|  0.0|INFORM|Writing features to tile 'data/data44'
+2024-10-28 07:57:48|   4.8|  0.0|INFORM|Writing features to tile 'data/data45'
+2024-10-28 07:57:48|   4.8|  0.0|INFORM|Writing features to tile 'data/data46'
+2024-10-28 07:57:48|   4.9|  0.1|INFORM|Writing features to tile 'data/data47'
+2024-10-28 07:57:48|   4.9|  0.0|INFORM|Writing features to tile 'data/data48'
+2024-10-28 07:57:49|   4.9|  0.0|INFORM|Writing features to tile 'data/data49'
+2024-10-28 07:57:49|   4.9|  0.0|INFORM|Writing features to tile 'data/data50'
+2024-10-28 07:57:49|   4.9|  0.0|INFORM|Writing features to tile 'data/data51'
+2024-10-28 07:57:49|   5.0|  0.1|INFORM|Writing features to tile 'data/data52'
+2024-10-28 07:57:49|   5.0|  0.0|INFORM|Writing features to tile 'data/data53'
+2024-10-28 07:57:50|   5.1|  0.1|INFORM|=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2024-10-28 07:57:50|   5.1|  0.0|INFORM|Feature output statistics for `CESIUM3DTILES' writer using keyword `CESIUM3DTILES_1':
+2024-10-28 07:57:50|   5.1|  0.0|STATS |=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2024-10-28 07:57:50|   5.1|  0.0|STATS |                               Features Written
+2024-10-28 07:57:50|   5.1|  0.0|STATS |=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2024-10-28 07:57:50|   5.1|  0.0|STATS |Skogshojden                                                                 36
+2024-10-28 07:57:50|   5.1|  0.0|STATS |==============================================================================
+2024-10-28 07:57:50|   5.1|  0.0|STATS |Total Features Written                                                      36
+2024-10-28 07:57:50|   5.1|  0.0|STATS |=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2024-10-28 07:57:50|   5.1|  0.0|STATS |=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2024-10-28 07:57:50|   5.1|  0.0|STATS |                            Features Read Summary
+2024-10-28 07:57:50|   5.1|  0.0|STATS |=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2024-10-28 07:57:50|   5.1|  0.0|STATS |==============================================================================
+2024-10-28 07:57:50|   5.1|  0.0|STATS |Total Features Read                                                          0
+2024-10-28 07:57:50|   5.1|  0.0|STATS |=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2024-10-28 07:57:50|   5.1|  0.0|STATS |=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2024-10-28 07:57:50|   5.1|  0.0|STATS |                           Features Written Summary
+2024-10-28 07:57:50|   5.1|  0.0|STATS |=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2024-10-28 07:57:50|   5.1|  0.0|STATS |Skogshojden                                                                 36
+2024-10-28 07:57:50|   5.1|  0.0|STATS |==============================================================================
+2024-10-28 07:57:50|   5.1|  0.0|STATS |Total Features Written                                                      36
+2024-10-28 07:57:50|   5.1|  0.0|STATS |=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2024-10-28 07:57:50|   5.1|  0.0|WARN  |-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
+2024-10-28 07:57:50|   5.1|  0.0|WARN  |-~                                                                             ~-
+2024-10-28 07:57:50|   5.1|  0.0|WARN  |-~    Feature caches have been recorded at every stage of the translation.     ~-
+2024-10-28 07:57:50|   5.1|  0.0|WARN  |-~                      To inspect the recorded features,                      ~-
+2024-10-28 07:57:50|   5.1|  0.0|WARN  |-~              click the feature cache icons next to the ports.               ~-
+2024-10-28 07:57:50|   5.1|  0.0|WARN  |-~                                                                             ~-
+2024-10-28 07:57:50|   5.1|  0.0|WARN  |-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
+2024-10-28 07:57:50|   5.1|  0.0|INFORM|Translation was SUCCESSFUL with 10 warning(s) (36 feature(s) output)
+2024-10-28 07:57:50|   5.2|  0.1|INFORM|FME Session Duration: 11.4 seconds. (CPU: 4.0s user, 1.2s system)
+2024-10-28 07:57:50|   5.2|  0.0|INFORM|END - ProcessID: 19748, peak process memory usage: 359984 kB, current process memory usage: 123492 kB

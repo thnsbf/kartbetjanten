@@ -1,0 +1,298 @@
+.draggable {
+    height: fit-content;
+    background-color: var(--c-background-modal);
+    border: 1px solid var(--c-background-modal);
+    position: absolute;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    z-index: 1000;
+    padding-block-start: 40px;
+    display: none; /* Initially hidden */
+    border-radius: 7px;
+  }
+
+  .draggable__h3 {
+    font-size: 1rem !important;
+    color: var(--c-text-default) !important;
+    font-weight: 400;
+  }
+
+  .draggable__header {
+    border-radius: 7px 7px 0 0;
+    height: 32px;
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .draggable__inner {
+    padding-block-start: 8px;
+    height: 100%;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 16px;
+
+  }
+  .draggable__inner--3d-polygons {
+    display: grid;
+    grid-template-columns: 165px 209px;
+    grid-template-rows: 1fr;
+  }
+
+  .draggable__inner--solar {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .draggable__inner--measure-tools {
+    padding: 24px;
+    display: flex;
+    flex-basis: 100%;
+  }
+  .draggable__content {
+    display: flex;
+    justify-content: space-between;
+    gap: 4px;
+    align-items: center;
+    margin-inline: auto;
+  }
+  .draggable__content--section-tool {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    flex-basis: 100%;
+    gap: 8px;
+    margin-block-start: 8px;
+  }
+  .draggable__content--shader {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    flex-basis: 100%;
+    gap: 8px;
+    margin-block-start: 8px;
+  }
+
+  .form--shader {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-block-start: 8px;
+    margin-block-end: 12px;
+
+  }
+  .shader-label {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 0.875rem;
+  }
+
+  .shader-label > input {
+    max-width: 8ch;
+  }
+
+  .draggable__inner--measure-tools button {
+    flex-basis: 100%;
+  }
+
+  .draggable__buttons-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+  }
+  .buttons-container--3d-polygons {
+    flex-flow: row wrap;
+    margin-inline: auto;
+  }
+  .draggable__button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    white-space: nowrap;
+    font-family: var(--kommunfont);
+    font-size: 1rem;
+    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    text-align: center;
+    background: var(--kommunfarg-lighter);
+    border: 2px solid var(--kommunfarg);
+    border-radius: 100vmax;
+    cursor: pointer;
+    line-height: 1;
+    width: 100%;
+    min-width: 100px;
+    max-height: 43.5px;
+    color: var(--c-text-inverted);
+    align-self: center;
+  }
+  .draggable__button > i > img {
+    height: 16px;
+    width: 16px;
+    display: block;
+  }
+  .button--danger {
+    background: var(--c-danger);
+    color: var(--c-text-default);
+    border-color: var(--c-danger);
+  }
+  .button--measure {
+    min-width: 160px;
+  }
+  .draggable__button:hover {
+    opacity: 0.7;
+  }
+  .draggable__button:active {
+    opacity: 0.9;
+  }
+  .draggable__range {
+    cursor: pointer;
+  }
+  .range__height-value {
+    max-width: 10px;
+    min-width: fit-content;
+  }
+  
+
+  .draggable__content--solar {
+    flex-direction: column;
+    gap: 8px !important; 
+  }
+
+  .solar-slider {
+    max-width: 128px;
+  }
+
+  .draggable--measure-tools {
+    top: 300px;
+    left: 200px;
+  }
+
+  .draggable--3d-polygon {
+    top: var(--navbar-height);
+    left: 0px;
+  }
+
+  .draggable--solar {
+    top: 512px;
+    left: 100px;
+    min-width: 236px;
+  }
+
+  .draggable--measure-tools {
+    min-width: 270px;
+    top: 100px;
+    left: 100px;
+  }
+
+  .solar__label {
+    font-size: 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    width: 100%;
+    gap: 10px;
+  }
+  .solar__text-small {
+    font-size: 0.625rem;
+  }
+  .section-tool__label {
+    font-size: 1rem;
+    width: 100%;
+    gap: 10px;
+    color: var(--kommunfarg-darker);
+
+  }
+  /* The bar to drag the divs */
+  .drag-bar {
+    background-color: var(--kommunfarg);
+    color: white !important;
+    padding: 5px 10px;
+    cursor: grab;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    font-weight: bold;
+  }
+  .drag-bar:active {
+    cursor: grabbing;
+  }
+
+  .draw-polygon-icon--stop {
+    height: 14px !important;
+    width: 14px !important;
+  }
+  
+  /* Adjust positions for each div so they're not stacked */
+ 
+  
+  /* Close button styling */
+  .close-btn {
+    background-color: transparent;
+    color: white;
+    border: none;
+    cursor: pointer;
+    position: absolute;
+    top: 0;
+    right: 0;
+    border-radius: 100vmax;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .close-btn > i {
+    width: 12px;
+    height: 12px;
+  }
+  .close-btn > i > img {
+    width: 12px;
+    height: 12px;
+  }
+  .close-btn:hover {
+    opacity: 0.9;
+  }
+  .close-btn:active {
+    opacity: 1;
+  }
+  .draggable p {
+    margin-top: 40px;
+  }
+
+
+  @media (max-width: 870px) {
+    .draggable--measure-tools {
+      top: 300px;
+      left: 0;
+    }
+  
+    .draggable--3d-polygon {
+      max-width: 375px;
+      min-width: 286px;
+      top: 128px;
+      left: 0;
+    }
+  
+    .draggable--solar {
+      top: 512px;
+      left: 0;
+    }
+
+    .draggable__inner {
+      justify-content: center;
+    }
+
+    .draggable__inner--3d-polygons {
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 24px;
+      margin-inline: auto;
+    }
+    .buttons-container--3d-polygons {
+      max-width: 243px;
+    }
+  }

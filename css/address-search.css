@@ -1,0 +1,51 @@
+  
+ .address-dropdown {
+    position: absolute;
+    top: 105%;
+    left: 45%;
+    transform: translateX(-50%);
+    width: 300px;
+    outline: none;
+    padding: 10px 10px;
+    font-size: 1rem;
+    border: none;
+    background-color: var(--c-background-white);
+    border: 1px solid #444;
+    color: var(--c-text-inverted);
+    border-radius: 5px;
+    box-shadow: 0 4px 6px 0 rgba(0, 0, 0, 0.2);
+    max-height: 150px;
+    overflow-y: auto;
+    list-style: none;
+  }
+ .addressItem  {
+    padding: 5px 10px;
+    cursor: pointer;
+    
+  }
+  .addressItem:hover {
+    font-weight: 500;
+  }
+  .addressItem:active {
+    color: var(--c-text-highlight);
+  }
+  #addressDropdown::-webkit-scrollbar {
+    width: 5px;
+    height: 8px;
+    }
+    #addressDropdown::-webkit-scrollbar-track {
+    border-radius: 10px;
+    background-color: var(--c-scrollbar-track);
+    margin-block: 20px;
+    
+    }
+    #addressDropdown::-webkit-scrollbar-thumb {
+    background: var(--c-scrollbar-blue);
+    border-radius: 10px;
+    transition: 0.5s;
+    }
+    #addressDropdown::-webkit-scrollbar-thumb:hover {
+    background: var(--c-scrollbar-hover);
+    transition: 0.5s;
+    }
+  

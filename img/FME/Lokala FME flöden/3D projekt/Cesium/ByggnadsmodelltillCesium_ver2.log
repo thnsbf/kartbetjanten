@@ -1,0 +1,542 @@
+2024-10-01 06:51:17|   0.0|  0.0|INFORM|Current FME version: FME 2023.1.0.0 (20230825 - Build 23619 - WIN64)
+2024-10-01 06:51:17|   0.0|  0.0|INFORM|System Time: 20241001045118 UTC
+2024-10-01 06:51:17|   0.0|  0.0|INFORM|FME_HOME is 'C:\Program Files\FME_Form_Local_ver\'
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|FME Form (floating)
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|Temporary License: 202 days left.
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|Machine host name is: CZC2139V2B
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|OS Locale Name     : sv_SE
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|OS Locale Encoding : windows-1252
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|Process Encoding   : UTF-8
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|FME API version: '4.0 20230426'
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|FME Configuration: FME_BASE is 'no'
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|FME Configuration: FME_MF_DIR is 'K:\FME\Lokala FME flöden\3D projekt\Cesium/'
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|FME Configuration: FME_MF_NAME is 'ByggnadsmodelltillCesium_ver2.fmw'
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|FME Configuration: FME_PRODUCT_NAME is 'FME(R) 2023.1.0.0'
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|Operating System: Microsoft Windows 10 64-bit  (Build 19045)
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|FME Platform: WIN64
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|System Status: 648.36 GB of disk space available in the FME temporary folder (C:\Users\AMAJEP~1\AppData\Local\Temp\wbrun_1727758054669_15604\fmetmp_1)
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|System Status: 15.73 GB of physical memory available
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|System Status: 62.93 GB of virtual memory available
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|START - ProcessID: 24856, peak process memory usage: 42420 kB, current process memory usage: 42420 kB
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|FME Configuration: Command line arguments are `C:\Program Files\FME_Form_Local_ver\fme.exe' `K:\FME\Lokala FME flöden\3D projekt\Cesium\wb-xlate-1727758276314_15604' `LOG_STANDARDOUT' `YES' `LOG_TIMINGS' `YES' `LogCountServerName' `51225' `LOG_STANDARDOUT' `No' `WORKBENCH_LOG_SERVER' `51127'
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|FME Configuration: Connection Storage: 'C:\Users\amajep001\AppData\Roaming\Safe Software\FME\'
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|Shared folders for formats are : C:\Program Files\FME_Form_Local_ver\datasources;\\thn.local\adm\hem\amajep001\Dokument\FME\Formats
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|Shared folders for transformers are : C:\Users\amajep001\AppData\Roaming\Safe Software\FME\Packages\23619-win64\transformers;C:\Program Files\FME_Form_Local_ver\transformers;C:\Users\amajep001\AppData\Roaming\Safe Software\FME\FME Store\Transformers
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|Shared folders for coordinate systems are : \\thn.local\adm\hem\amajep001\Dokument\FME\CoordinateSystems
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|Shared folders for coordinate system exceptions are : \\thn.local\adm\hem\amajep001\Dokument\FME\CoordinateSystemExceptions
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|Shared folders for coordinate system grid overrides are : \\thn.local\adm\hem\amajep001\Dokument\FME\CoordinateSystemGridOverrides
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|Shared folders for CS-MAP transformation exceptions are : \\thn.local\adm\hem\amajep001\Dokument\FME\CsmapTransformationExceptions
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|Shared folders for transformer categories are : \\thn.local\adm\hem\amajep001\Dokument\FME\TransformerCategories
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|FME Configuration: Reader Keyword is `MULTI_READER'
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|FME Configuration: Writer Keyword is `PRIMARY_DEST'
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|FME Configuration: Writer Group Definition Keyword is `PRIMARY_DEST_DEF'
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|FME Configuration: Reader type is `MULTI_READER'
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|FME Configuration: Writer type is `MULTI_WRITER'
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|FME Configuration: No destination coordinate system set
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|FME Configuration: Current working folder is `K:\FME\Lokala FME flöden\3D projekt\Cesium'
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|FME Configuration: Temporary folder is `C:\Users\AMAJEP~1\AppData\Local\Temp\wbrun_1727758054669_15604\fmetmp_1', set from environment variable `FME_TEMP'
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|FME Configuration: Cache folder is 'C:\Users\AMAJEP~1\AppData\Local\Temp'
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|FME Configuration: FME_HOME is `C:\Program Files\FME_Form_Local_ver\'
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|FME Configuration: Start freeing memory when the process exceeds 47.20 GB
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|FME Configuration: Stop freeing memory when the process is below 35.40 GB
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|Creating writer for format: 
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|Creating reader for format: 
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|MULTI_READER(MULTI_READER): Will fail with first member reader failure
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|MULTI_READER(MULTI_READER): Adding MSSQL_SPATIAL Reader with keyword MSSQL_SPATIAL_3
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|MULTI_READER(MULTI_READER): Adding SHAPEFILE Reader with keyword SHAPEFILE_2
+2024-10-01 06:51:18|   0.0|  0.0|INFORM|Using Multi Reader with keyword `MULTI_READER' to read multiple datasets
+2024-10-01 06:51:18|   0.1|  0.1|INFORM|FME Configuration: Using connection values from 'CSM databas' for MSSQL_SPATIAL_3
+2024-10-01 06:51:18|   0.1|  0.0|INFORM|Creating reader for format: Microsoft SQL Server Spatial
+2024-10-01 06:51:18|   0.1|  0.0|INFORM|Trying to find a DYNAMIC plugin for reader named `MSSQL_SPATIAL'
+2024-10-01 06:51:18|   0.1|  0.0|INFORM|FME Configuration: Source coordinate system for reader MSSQL_SPATIAL_3[MSSQL_SPATIAL] set to `SWEREF-99-12-00'
+2024-10-01 06:51:18|   0.1|  0.0|INFORM|Coordinate System `SWEREF-99-12-00' parameters: CS_NAME=`SWEREF-99-12-00' DESC_NM=`SWEREF 99 12 00' DT_NAME=`SWEREF99' EPSG_QD=`-1' GROUP=`EUROPE' MAP_SCL=`1' MAX_LAT=`60.68333333333333' MAX_LNG=`13.4' MIN_LAT=`55.416666666666664' MIN_LNG=`10.25' PARM1=`12' PROJ=`TM' QUAD=`1' SCL_RED=`1' SOURCE=`National Land Survey of Sweden' UNIT=`METER' X_OFF=`150000'
+2024-10-01 06:51:18|   0.1|  0.0|INFORM|Loaded module 'MSSQL_SPATIAL' from file 'C:\Program Files\FME_Form_Local_ver\plugins/FME_ADO.dll'
+2024-10-01 06:51:18|   0.1|  0.0|INFORM|FME API version of module 'FME_ADO' matches current internal version (4.0 20230426)
+2024-10-01 06:51:18|   0.1|  0.0|INFORM|Microsoft SQL Server Spatial Reader: Read 1 DEF line(s).  Found 13 attribute(s)
+2024-10-01 06:51:18|   0.2|  0.1|INFORM|Microsoft SQL Server Spatial Reader: Opening `Kartdata' for read operation
+2024-10-01 06:51:18|   0.2|  0.0|INFORM|Microsoft SQL Server Spatial Reader: Trying to connect using Microsoft OLE DB Driver 19 for SQL Server...
+2024-10-01 06:51:18|   0.3|  0.1|INFORM|Microsoft SQL Server Spatial Reader: 'SqlServer.Types' library loaded matched expected version '11.0.0.0'
+2024-10-01 06:51:18|   0.3|  0.0|INFORM|MSSQL_SPATIAL reader: Creating bulk features from individual features
+2024-10-01 06:51:18|   0.3|  0.0|INFORM|Using MultiWriter with keyword `PRIMARY_DEST' to output data (ID_ATTRIBUTE is `multi_writer_id')
+2024-10-01 06:51:18|   0.3|  0.0|INFORM|Writer output will be ordered by value of multi_writer_id
+2024-10-01 06:51:18|   0.3|  0.0|INFORM|Loaded module 'LogCount_func' from file 'C:\Program Files\FME_Form_Local_ver\plugins/LogCount_func.dll'
+2024-10-01 06:51:18|   0.3|  0.0|INFORM|FME API version of module 'LogCount_func' matches current internal version (4.0 20230426)
+2024-10-01 06:51:18|   0.3|  0.0|INFORM|Loaded module 'CounterFactory' from file 'C:\Program Files\FME_Form_Local_ver\plugins/CounterFactory.dll'
+2024-10-01 06:51:18|   0.3|  0.0|INFORM|FME API version of module 'CounterFactory' matches current internal version (4.0 20230426)
+2024-10-01 06:51:18|   0.3|  0.0|INFORM|Loaded module 'InspectorFactory' from file 'C:\Program Files\FME_Form_Local_ver\plugins/InspectorFactory.dll'
+2024-10-01 06:51:18|   0.3|  0.0|INFORM|FME API version of module 'InspectorFactory' matches current internal version (4.0 20230426)
+2024-10-01 06:51:18|   0.3|  0.0|INFORM|Microsoft SQL Server Spatial Reader: Spatial column not specified for Feature Type `TROLLKART.AFI_FAST_YTA_GML'. Using Column `GEOM' with type `geometry'
+2024-10-01 06:51:18|   0.3|  0.0|INFORM|Microsoft SQL Server Spatial Reader: Now reading features from table TROLLKART.AFI_FAST_YTA_GML, 10 record(s) at a time
+2024-10-01 06:51:19|   0.6|  0.3|INFORM|The EPSG number of the FME coordinate system 'SWEREF-99-12-00' is '3007'
+2024-10-01 06:51:19|   1.4|  0.8|INFORM|15603: Database read complete.  Retrieved <default parameter> feature(s)
+2024-10-01 06:51:19|   1.4|  0.0|INFORM|FFS writer: Writing 15603 feature(s) to file 'C:\Users\AMAJEP~1\AppData\Local\Temp\wb-cache-ByggnadsmodelltillCesium_ver2-KpAGeh\Main_TROLLKART.AFI_FAST_YTA_GML -1 44 -1  0  795d186be5310aba40515d2ed0f1d8d7a1d2be11.fts'
+2024-10-01 06:51:19|   1.4|  0.0|INFORM|Spatial Index: Adding 15603 features
+2024-10-01 06:51:19|   1.5|  0.1|INFORM|FFS writer: Writing 15603 feature(s) to file 'C:\Users\AMAJEP~1\AppData\Local\Temp\wb-cache-ByggnadsmodelltillCesium_ver2-KpAGeh\Main_AttributeRemover -1 39 fo 0 OUTPUT  0  b2a42576330f4cbe35b07a389e785081b0304b89.fts'
+2024-10-01 06:51:20|   1.5|  0.0|INFORM|Spatial Index: Adding 15603 features
+2024-10-01 06:51:20|   1.7|  0.2|INFORM|FFS writer: Writing 15603 feature(s) to file 'C:\Users\AMAJEP~1\AppData\Local\Temp\wb-cache-ByggnadsmodelltillCesium_ver2-KpAGeh\Main_Counter -1 23 fo 0 OUTPUT  0  66d25a3942020b8767585209670799349d3b5f04.fts'
+2024-10-01 06:51:20|   1.7|  0.0|INFORM|Spatial Index: Adding 15603 features
+2024-10-01 06:51:20|   1.8|  0.1|INFORM|AreaOnAreaOverlayer (OverlayFactory): Splitting bulk features into individual features
+2024-10-01 06:51:20|   1.9|  0.1|INFORM|Microsoft SQL Server Spatial Reader: Closing `Kartdata' . Read operation complete
+2024-10-01 06:51:20|   1.9|  0.0|INFORM|FME Configuration: Reading 33 dataset(s) with SHAPEFILE reader identified by SHAPEFILE_2
+2024-10-01 06:51:20|   1.9|  0.0|INFORM|Creating reader for format: Esri Shapefile
+2024-10-01 06:51:20|   1.9|  0.0|INFORM|FME Configuration: Source coordinate system for reader SHAPEFILE_2[MULTI_READER] set to `SWEREF-99-12-00'
+2024-10-01 06:51:20|   1.9|  0.0|INFORM|Coordinate System `SWEREF-99-12-00' parameters: CS_NAME=`SWEREF-99-12-00' DESC_NM=`SWEREF 99 12 00' DT_NAME=`SWEREF99' EPSG_QD=`-1' GROUP=`EUROPE' MAP_SCL=`1' MAX_LAT=`60.68333333333333' MAX_LNG=`13.4' MIN_LAT=`55.416666666666664' MIN_LNG=`10.25' PARM1=`12' PROJ=`TM' QUAD=`1' SCL_RED=`1' SOURCE=`National Land Survey of Sweden' UNIT=`METER' X_OFF=`150000'
+2024-10-01 06:51:20|   1.9|  0.0|INFORM|MULTI_READER(SHAPEFILE_2): Will continue past member reader failures
+2024-10-01 06:51:20|   1.9|  0.0|INFORM|MULTI_READER(SHAPEFILE_2): Adding SHAPEFILE Reader with keyword SHAPEFILE_2
+2024-10-01 06:51:20|   1.9|  0.0|INFORM|Using Multi Reader with keyword `SHAPEFILE_2' to read multiple datasets
+2024-10-01 06:51:20|   2.0|  0.1|INFORM|Creating reader for format: Esri Shapefile
+2024-10-01 06:51:20|   2.0|  0.0|INFORM|Trying to find a DYNAMIC plugin for reader named `SHAPEFILE'
+2024-10-01 06:51:20|   2.0|  0.0|INFORM|FME Configuration: Source coordinate system for reader SHAPEFILE_2[SHAPEFILE] set to `SWEREF-99-12-00'
+2024-10-01 06:51:20|   2.0|  0.0|INFORM|Coordinate System `SWEREF-99-12-00' parameters: CS_NAME=`SWEREF-99-12-00' DESC_NM=`SWEREF 99 12 00' DT_NAME=`SWEREF99' EPSG_QD=`-1' GROUP=`EUROPE' MAP_SCL=`1' MAX_LAT=`60.68333333333333' MAX_LNG=`13.4' MIN_LAT=`55.416666666666664' MIN_LNG=`10.25' PARM1=`12' PROJ=`TM' QUAD=`1' SCL_RED=`1' SOURCE=`National Land Survey of Sweden' UNIT=`METER' X_OFF=`150000'
+2024-10-01 06:51:20|   2.0|  0.0|INFORM|Loaded module 'SHAPEFILE' from file 'C:\Program Files\FME_Form_Local_ver\plugins/shapefile_dbase.dll'
+2024-10-01 06:51:20|   2.0|  0.0|INFORM|FME API version of module 'shapefile_dbase' matches current internal version (4.0 20230426)
+2024-10-01 06:51:20|   2.0|  0.0|INFORM|SHAPEFILE reader: Opening dataset 'T:\AppServer\SBF-EFD\SBF-EFD3\byggnadsmodell\Alingsåker.shp'
+2024-10-01 06:51:20|   2.0|  0.0|INFORM|The OGC definition of the FME coordinate system 'SWEREF-99-12-00' is 'PROJCS["SWEREF99_12_00",GEOGCS["GCS_SWEREF99",DATUM["D_SWEREF99",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Transverse_Mercator"],PARAMETER["False_Easting",150000.0],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",12.0],PARAMETER["Scale_Factor",1.0],PARAMETER["Latitude_Of_Origin",0.0],UNIT["Meter",1.0],AUTHORITY["EPSG",3007]]'
+2024-10-01 06:51:20|   2.0|  0.0|INFORM|Shapefile reader: Reading dataset with encoding 'UTF-8' as determined by 'Codepage File'
+2024-10-01 06:51:20|   2.0|  0.0|INFORM|Alingsåker Feature Recorder -1 2147549231 (RecorderFactory): Splitting bulk features into individual features
+2024-10-01 06:51:21|   2.4|  0.4|INFORM|Creating reader for format: Esri Shapefile
+2024-10-01 06:51:21|   2.4|  0.0|INFORM|Trying to find a DYNAMIC plugin for reader named `SHAPEFILE'
+2024-10-01 06:51:21|   2.4|  0.0|INFORM|FME Configuration: Source coordinate system for reader SHAPEFILE_2[SHAPEFILE] set to `SWEREF-99-12-00'
+2024-10-01 06:51:21|   2.4|  0.0|INFORM|Coordinate System `SWEREF-99-12-00' parameters: CS_NAME=`SWEREF-99-12-00' DESC_NM=`SWEREF 99 12 00' DT_NAME=`SWEREF99' EPSG_QD=`-1' GROUP=`EUROPE' MAP_SCL=`1' MAX_LAT=`60.68333333333333' MAX_LNG=`13.4' MIN_LAT=`55.416666666666664' MIN_LNG=`10.25' PARM1=`12' PROJ=`TM' QUAD=`1' SCL_RED=`1' SOURCE=`National Land Survey of Sweden' UNIT=`METER' X_OFF=`150000'
+2024-10-01 06:51:22|   2.4|  0.0|INFORM|SHAPEFILE reader: Opening dataset 'T:\AppServer\SBF-EFD\SBF-EFD3\byggnadsmodell\Björndalen.shp'
+2024-10-01 06:51:22|   2.4|  0.0|INFORM|Shapefile reader: Reading dataset with encoding 'UTF-8' as determined by 'Codepage File'
+2024-10-01 06:51:22|   2.4|  0.0|INFORM|FFS writer: Writing 13893 feature(s) to file 'C:\Users\AMAJEP~1\AppData\Local\Temp\wb-cache-ByggnadsmodelltillCesium_ver2-KpAGeh\Main__All_ -1 47 -1  0  364ad6260b1ad1fa5116c75803c0e02d20deefd7.fts'
+2024-10-01 06:51:23|   3.1|  0.7|INFORM|Spatial Index: Adding 13893 features
+2024-10-01 06:51:23|   3.7|  0.6|INFORM|AreaOnAreaOverlayer (OverlayFactory): Splitting bulk features into individual features
+2024-10-01 06:51:24|   4.8|  1.1|INFORM|Creating reader for format: Esri Shapefile
+2024-10-01 06:51:24|   4.8|  0.0|INFORM|Trying to find a DYNAMIC plugin for reader named `SHAPEFILE'
+2024-10-01 06:51:24|   4.8|  0.0|INFORM|FME Configuration: Source coordinate system for reader SHAPEFILE_2[SHAPEFILE] set to `SWEREF-99-12-00'
+2024-10-01 06:51:24|   4.8|  0.0|INFORM|Coordinate System `SWEREF-99-12-00' parameters: CS_NAME=`SWEREF-99-12-00' DESC_NM=`SWEREF 99 12 00' DT_NAME=`SWEREF99' EPSG_QD=`-1' GROUP=`EUROPE' MAP_SCL=`1' MAX_LAT=`60.68333333333333' MAX_LNG=`13.4' MIN_LAT=`55.416666666666664' MIN_LNG=`10.25' PARM1=`12' PROJ=`TM' QUAD=`1' SCL_RED=`1' SOURCE=`National Land Survey of Sweden' UNIT=`METER' X_OFF=`150000'
+2024-10-01 06:51:25|   4.8|  0.0|INFORM|SHAPEFILE reader: Opening dataset 'T:\AppServer\SBF-EFD\SBF-EFD3\byggnadsmodell\Centrala staden.shp'
+2024-10-01 06:51:26|   4.8|  0.0|INFORM|Shapefile reader: Reading dataset with encoding 'UTF-8' as determined by 'Codepage File'
+2024-10-01 06:51:37|   4.8|  0.0|INFORM|FFS writer: Writing 113632 feature(s) to file 'C:\Users\AMAJEP~1\AppData\Local\Temp\wb-cache-ByggnadsmodelltillCesium_ver2-KpAGeh\Main__All_ -1 47 -1  0  364ad6260b1ad1fa5116c75803c0e02d20deefd7_1.fts'
+2024-10-01 06:51:43|   7.7|  2.9|INFORM|FFS writer: 60000 of 113632 features written
+2024-10-01 06:51:49|   9.8|  2.1|INFORM|FFS writer: 100000 of 113632 features written
+2024-10-01 06:51:51|  10.5|  0.7|INFORM|FFS writer: 113632 of 113632 features written
+2024-10-01 06:51:51|  10.5|  0.0|INFORM|Spatial Index: Adding 113632 features
+2024-10-01 06:51:56|  15.1|  4.6|INFORM|AreaOnAreaOverlayer (OverlayFactory): Splitting bulk features into individual features
+2024-10-01 06:52:01|  20.0|  4.9|INFORM|AreaOnAreaOverlayer (OverlayFactory): Processed 96254 of 113632 features
+2024-10-01 06:52:01|  20.7|  0.7|INFORM|AreaOnAreaOverlayer (OverlayFactory): Processed 113632 of 113632 features
+2024-10-01 06:52:02|  20.8|  0.1|INFORM|Creating reader for format: Esri Shapefile
+2024-10-01 06:52:02|  20.8|  0.0|INFORM|Trying to find a DYNAMIC plugin for reader named `SHAPEFILE'
+2024-10-01 06:52:02|  20.8|  0.0|INFORM|FME Configuration: Source coordinate system for reader SHAPEFILE_2[SHAPEFILE] set to `SWEREF-99-12-00'
+2024-10-01 06:52:02|  20.8|  0.0|INFORM|Coordinate System `SWEREF-99-12-00' parameters: CS_NAME=`SWEREF-99-12-00' DESC_NM=`SWEREF 99 12 00' DT_NAME=`SWEREF99' EPSG_QD=`-1' GROUP=`EUROPE' MAP_SCL=`1' MAX_LAT=`60.68333333333333' MAX_LNG=`13.4' MIN_LAT=`55.416666666666664' MIN_LNG=`10.25' PARM1=`12' PROJ=`TM' QUAD=`1' SCL_RED=`1' SOURCE=`National Land Survey of Sweden' UNIT=`METER' X_OFF=`150000'
+2024-10-01 06:52:02|  20.8|  0.0|INFORM|SHAPEFILE reader: Opening dataset 'T:\AppServer\SBF-EFD\SBF-EFD3\byggnadsmodell\Dannebacken.shp'
+2024-10-01 06:52:02|  20.8|  0.0|INFORM|Shapefile reader: Reading dataset with encoding 'UTF-8' as determined by 'Codepage File'
+2024-10-01 06:52:02|  20.8|  0.0|INFORM|FFS writer: Writing 10893 feature(s) to file 'C:\Users\AMAJEP~1\AppData\Local\Temp\wb-cache-ByggnadsmodelltillCesium_ver2-KpAGeh\Main__All_ -1 47 -1  0  364ad6260b1ad1fa5116c75803c0e02d20deefd7_2.fts'
+2024-10-01 06:52:05|  21.3|  0.5|INFORM|Spatial Index: Adding 10893 features
+2024-10-01 06:52:05|  21.7|  0.4|INFORM|AreaOnAreaOverlayer (OverlayFactory): Splitting bulk features into individual features
+2024-10-01 06:52:06|  22.3|  0.6|INFORM|Creating reader for format: Esri Shapefile
+2024-10-01 06:52:06|  22.3|  0.0|INFORM|Trying to find a DYNAMIC plugin for reader named `SHAPEFILE'
+2024-10-01 06:52:06|  22.3|  0.0|INFORM|FME Configuration: Source coordinate system for reader SHAPEFILE_2[SHAPEFILE] set to `SWEREF-99-12-00'
+2024-10-01 06:52:06|  22.3|  0.0|INFORM|Coordinate System `SWEREF-99-12-00' parameters: CS_NAME=`SWEREF-99-12-00' DESC_NM=`SWEREF 99 12 00' DT_NAME=`SWEREF99' EPSG_QD=`-1' GROUP=`EUROPE' MAP_SCL=`1' MAX_LAT=`60.68333333333333' MAX_LNG=`13.4' MIN_LAT=`55.416666666666664' MIN_LNG=`10.25' PARM1=`12' PROJ=`TM' QUAD=`1' SCL_RED=`1' SOURCE=`National Land Survey of Sweden' UNIT=`METER' X_OFF=`150000'
+2024-10-01 06:52:06|  22.3|  0.0|INFORM|SHAPEFILE reader: Opening dataset 'T:\AppServer\SBF-EFD\SBF-EFD3\byggnadsmodell\Halltorp.shp'
+2024-10-01 06:52:06|  22.3|  0.0|INFORM|Shapefile reader: Reading dataset with encoding 'UTF-8' as determined by 'Codepage File'
+2024-10-01 06:52:06|  22.3|  0.0|INFORM|Alingsåker Feature Recorder -1 2147549231 (RecorderFactory): Splitting bulk features into individual features
+2024-10-01 06:52:06|  22.3|  0.0|INFORM|Creating reader for format: Esri Shapefile
+2024-10-01 06:52:06|  22.3|  0.0|INFORM|Trying to find a DYNAMIC plugin for reader named `SHAPEFILE'
+2024-10-01 06:52:06|  22.3|  0.0|INFORM|FME Configuration: Source coordinate system for reader SHAPEFILE_2[SHAPEFILE] set to `SWEREF-99-12-00'
+2024-10-01 06:52:06|  22.3|  0.0|INFORM|Coordinate System `SWEREF-99-12-00' parameters: CS_NAME=`SWEREF-99-12-00' DESC_NM=`SWEREF 99 12 00' DT_NAME=`SWEREF99' EPSG_QD=`-1' GROUP=`EUROPE' MAP_SCL=`1' MAX_LAT=`60.68333333333333' MAX_LNG=`13.4' MIN_LAT=`55.416666666666664' MIN_LNG=`10.25' PARM1=`12' PROJ=`TM' QUAD=`1' SCL_RED=`1' SOURCE=`National Land Survey of Sweden' UNIT=`METER' X_OFF=`150000'
+2024-10-01 06:52:06|  22.3|  0.0|INFORM|SHAPEFILE reader: Opening dataset 'T:\AppServer\SBF-EFD\SBF-EFD3\byggnadsmodell\Halvorstorp.shp'
+2024-10-01 06:52:06|  22.3|  0.0|INFORM|Shapefile reader: Reading dataset with encoding 'UTF-8' as determined by 'Codepage File'
+2024-10-01 06:52:06|  22.3|  0.0|INFORM|FFS writer: Writing 18169 feature(s) to file 'C:\Users\AMAJEP~1\AppData\Local\Temp\wb-cache-ByggnadsmodelltillCesium_ver2-KpAGeh\Main__All_ -1 47 -1  0  364ad6260b1ad1fa5116c75803c0e02d20deefd7_3.fts'
+2024-10-01 06:52:07|  23.2|  0.9|INFORM|Spatial Index: Adding 18169 features
+2024-10-01 06:52:07|  23.8|  0.6|INFORM|AreaOnAreaOverlayer (OverlayFactory): Splitting bulk features into individual features
+2024-10-01 06:52:09|  24.8|  1.0|INFORM|Creating reader for format: Esri Shapefile
+2024-10-01 06:52:09|  24.8|  0.0|INFORM|Trying to find a DYNAMIC plugin for reader named `SHAPEFILE'
+2024-10-01 06:52:09|  24.8|  0.0|INFORM|FME Configuration: Source coordinate system for reader SHAPEFILE_2[SHAPEFILE] set to `SWEREF-99-12-00'
+2024-10-01 06:52:09|  24.8|  0.0|INFORM|Coordinate System `SWEREF-99-12-00' parameters: CS_NAME=`SWEREF-99-12-00' DESC_NM=`SWEREF 99 12 00' DT_NAME=`SWEREF99' EPSG_QD=`-1' GROUP=`EUROPE' MAP_SCL=`1' MAX_LAT=`60.68333333333333' MAX_LNG=`13.4' MIN_LAT=`55.416666666666664' MIN_LNG=`10.25' PARM1=`12' PROJ=`TM' QUAD=`1' SCL_RED=`1' SOURCE=`National Land Survey of Sweden' UNIT=`METER' X_OFF=`150000'
+2024-10-01 06:52:09|  24.8|  0.0|INFORM|SHAPEFILE reader: Opening dataset 'T:\AppServer\SBF-EFD\SBF-EFD3\byggnadsmodell\Hjortmossen.shp'
+2024-10-01 06:52:09|  24.8|  0.0|INFORM|Shapefile reader: Reading dataset with encoding 'UTF-8' as determined by 'Codepage File'
+2024-10-01 06:52:09|  24.9|  0.1|INFORM|FFS writer: Writing 9826 feature(s) to file 'C:\Users\AMAJEP~1\AppData\Local\Temp\wb-cache-ByggnadsmodelltillCesium_ver2-KpAGeh\Main__All_ -1 47 -1  0  364ad6260b1ad1fa5116c75803c0e02d20deefd7_4.fts'
+2024-10-01 06:52:12|  25.5|  0.6|INFORM|Spatial Index: Adding 9826 features
+2024-10-01 06:52:13|  25.9|  0.4|INFORM|AreaOnAreaOverlayer (OverlayFactory): Splitting bulk features into individual features
+2024-10-01 06:52:13|  26.5|  0.6|INFORM|Creating reader for format: Esri Shapefile
+2024-10-01 06:52:13|  26.5|  0.0|INFORM|Trying to find a DYNAMIC plugin for reader named `SHAPEFILE'
+2024-10-01 06:52:13|  26.5|  0.0|INFORM|FME Configuration: Source coordinate system for reader SHAPEFILE_2[SHAPEFILE] set to `SWEREF-99-12-00'
+2024-10-01 06:52:13|  26.5|  0.0|INFORM|Coordinate System `SWEREF-99-12-00' parameters: CS_NAME=`SWEREF-99-12-00' DESC_NM=`SWEREF 99 12 00' DT_NAME=`SWEREF99' EPSG_QD=`-1' GROUP=`EUROPE' MAP_SCL=`1' MAX_LAT=`60.68333333333333' MAX_LNG=`13.4' MIN_LAT=`55.416666666666664' MIN_LNG=`10.25' PARM1=`12' PROJ=`TM' QUAD=`1' SCL_RED=`1' SOURCE=`National Land Survey of Sweden' UNIT=`METER' X_OFF=`150000'
+2024-10-01 06:52:13|  26.5|  0.0|INFORM|SHAPEFILE reader: Opening dataset 'T:\AppServer\SBF-EFD\SBF-EFD3\byggnadsmodell\Hjulkvarn.shp'
+2024-10-01 06:52:14|  26.5|  0.0|INFORM|Shapefile reader: Reading dataset with encoding 'UTF-8' as determined by 'Codepage File'
+2024-10-01 06:52:14|  26.5|  0.0|INFORM|FFS writer: Writing 15736 feature(s) to file 'C:\Users\AMAJEP~1\AppData\Local\Temp\wb-cache-ByggnadsmodelltillCesium_ver2-KpAGeh\Main__All_ -1 47 -1  0  364ad6260b1ad1fa5116c75803c0e02d20deefd7_5.fts'
+2024-10-01 06:52:19|  27.4|  0.9|INFORM|Spatial Index: Adding 15736 features
+2024-10-01 06:52:19|  28.0|  0.6|INFORM|AreaOnAreaOverlayer (OverlayFactory): Splitting bulk features into individual features
+2024-10-01 06:52:20|  28.7|  0.7|INFORM|Creating reader for format: Esri Shapefile
+2024-10-01 06:52:20|  28.7|  0.0|INFORM|Trying to find a DYNAMIC plugin for reader named `SHAPEFILE'
+2024-10-01 06:52:20|  28.7|  0.0|INFORM|FME Configuration: Source coordinate system for reader SHAPEFILE_2[SHAPEFILE] set to `SWEREF-99-12-00'
+2024-10-01 06:52:20|  28.7|  0.0|INFORM|Coordinate System `SWEREF-99-12-00' parameters: CS_NAME=`SWEREF-99-12-00' DESC_NM=`SWEREF 99 12 00' DT_NAME=`SWEREF99' EPSG_QD=`-1' GROUP=`EUROPE' MAP_SCL=`1' MAX_LAT=`60.68333333333333' MAX_LNG=`13.4' MIN_LAT=`55.416666666666664' MIN_LNG=`10.25' PARM1=`12' PROJ=`TM' QUAD=`1' SCL_RED=`1' SOURCE=`National Land Survey of Sweden' UNIT=`METER' X_OFF=`150000'
+2024-10-01 06:52:20|  28.7|  0.0|INFORM|SHAPEFILE reader: Opening dataset 'T:\AppServer\SBF-EFD\SBF-EFD3\byggnadsmodell\Hojum.shp'
+2024-10-01 06:52:20|  28.7|  0.0|INFORM|Shapefile reader: Reading dataset with encoding 'UTF-8' as determined by 'Codepage File'
+2024-10-01 06:52:20|  28.7|  0.0|INFORM|FFS writer: Writing 3641 feature(s) to file 'C:\Users\AMAJEP~1\AppData\Local\Temp\wb-cache-ByggnadsmodelltillCesium_ver2-KpAGeh\Main__All_ -1 47 -1  0  364ad6260b1ad1fa5116c75803c0e02d20deefd7_6.fts'
+2024-10-01 06:52:20|  28.9|  0.2|INFORM|Spatial Index: Adding 3641 features
+2024-10-01 06:52:20|  29.1|  0.2|INFORM|AreaOnAreaOverlayer (OverlayFactory): Splitting bulk features into individual features
+2024-10-01 06:52:21|  29.2|  0.1|INFORM|Creating reader for format: Esri Shapefile
+2024-10-01 06:52:21|  29.2|  0.0|INFORM|Trying to find a DYNAMIC plugin for reader named `SHAPEFILE'
+2024-10-01 06:52:21|  29.2|  0.0|INFORM|FME Configuration: Source coordinate system for reader SHAPEFILE_2[SHAPEFILE] set to `SWEREF-99-12-00'
+2024-10-01 06:52:21|  29.2|  0.0|INFORM|Coordinate System `SWEREF-99-12-00' parameters: CS_NAME=`SWEREF-99-12-00' DESC_NM=`SWEREF 99 12 00' DT_NAME=`SWEREF99' EPSG_QD=`-1' GROUP=`EUROPE' MAP_SCL=`1' MAX_LAT=`60.68333333333333' MAX_LNG=`13.4' MIN_LAT=`55.416666666666664' MIN_LNG=`10.25' PARM1=`12' PROJ=`TM' QUAD=`1' SCL_RED=`1' SOURCE=`National Land Survey of Sweden' UNIT=`METER' X_OFF=`150000'
+2024-10-01 06:52:21|  29.2|  0.0|INFORM|SHAPEFILE reader: Opening dataset 'T:\AppServer\SBF-EFD\SBF-EFD3\byggnadsmodell\Karlstorp.shp'
+2024-10-01 06:52:21|  29.2|  0.0|INFORM|Shapefile reader: Reading dataset with encoding 'UTF-8' as determined by 'Codepage File'
+2024-10-01 06:52:21|  29.2|  0.0|INFORM|FFS writer: Writing 15405 feature(s) to file 'C:\Users\AMAJEP~1\AppData\Local\Temp\wb-cache-ByggnadsmodelltillCesium_ver2-KpAGeh\Main__All_ -1 47 -1  0  364ad6260b1ad1fa5116c75803c0e02d20deefd7_7.fts'
+2024-10-01 06:52:21|  29.9|  0.7|INFORM|Spatial Index: Adding 15405 features
+2024-10-01 06:52:22|  30.5|  0.6|INFORM|AreaOnAreaOverlayer (OverlayFactory): Splitting bulk features into individual features
+2024-10-01 06:52:23|  31.4|  0.9|INFORM|Creating reader for format: Esri Shapefile
+2024-10-01 06:52:23|  31.4|  0.0|INFORM|Trying to find a DYNAMIC plugin for reader named `SHAPEFILE'
+2024-10-01 06:52:23|  31.4|  0.0|INFORM|FME Configuration: Source coordinate system for reader SHAPEFILE_2[SHAPEFILE] set to `SWEREF-99-12-00'
+2024-10-01 06:52:23|  31.4|  0.0|INFORM|Coordinate System `SWEREF-99-12-00' parameters: CS_NAME=`SWEREF-99-12-00' DESC_NM=`SWEREF 99 12 00' DT_NAME=`SWEREF99' EPSG_QD=`-1' GROUP=`EUROPE' MAP_SCL=`1' MAX_LAT=`60.68333333333333' MAX_LNG=`13.4' MIN_LAT=`55.416666666666664' MIN_LNG=`10.25' PARM1=`12' PROJ=`TM' QUAD=`1' SCL_RED=`1' SOURCE=`National Land Survey of Sweden' UNIT=`METER' X_OFF=`150000'
+2024-10-01 06:52:23|  31.4|  0.0|INFORM|SHAPEFILE reader: Opening dataset 'T:\AppServer\SBF-EFD\SBF-EFD3\byggnadsmodell\Kronogården.shp'
+2024-10-01 06:52:23|  31.4|  0.0|INFORM|Shapefile reader: Reading dataset with encoding 'UTF-8' as determined by 'Codepage File'
+2024-10-01 06:52:23|  31.4|  0.0|INFORM|FFS writer: Writing 8104 feature(s) to file 'C:\Users\AMAJEP~1\AppData\Local\Temp\wb-cache-ByggnadsmodelltillCesium_ver2-KpAGeh\Main__All_ -1 47 -1  0  364ad6260b1ad1fa5116c75803c0e02d20deefd7_8.fts'
+2024-10-01 06:52:23|  31.7|  0.3|INFORM|Spatial Index: Adding 8104 features
+2024-10-01 06:52:24|  32.0|  0.3|INFORM|AreaOnAreaOverlayer (OverlayFactory): Splitting bulk features into individual features
+2024-10-01 06:52:24|  32.5|  0.5|INFORM|Creating reader for format: Esri Shapefile
+2024-10-01 06:52:24|  32.5|  0.0|INFORM|Trying to find a DYNAMIC plugin for reader named `SHAPEFILE'
+2024-10-01 06:52:24|  32.5|  0.0|INFORM|FME Configuration: Source coordinate system for reader SHAPEFILE_2[SHAPEFILE] set to `SWEREF-99-12-00'
+2024-10-01 06:52:24|  32.5|  0.0|INFORM|Coordinate System `SWEREF-99-12-00' parameters: CS_NAME=`SWEREF-99-12-00' DESC_NM=`SWEREF 99 12 00' DT_NAME=`SWEREF99' EPSG_QD=`-1' GROUP=`EUROPE' MAP_SCL=`1' MAX_LAT=`60.68333333333333' MAX_LNG=`13.4' MIN_LAT=`55.416666666666664' MIN_LNG=`10.25' PARM1=`12' PROJ=`TM' QUAD=`1' SCL_RED=`1' SOURCE=`National Land Survey of Sweden' UNIT=`METER' X_OFF=`150000'
+2024-10-01 06:52:24|  32.5|  0.0|INFORM|SHAPEFILE reader: Opening dataset 'T:\AppServer\SBF-EFD\SBF-EFD3\byggnadsmodell\Källstorp.shp'
+2024-10-01 06:52:24|  32.5|  0.0|INFORM|Shapefile reader: Reading dataset with encoding 'UTF-8' as determined by 'Codepage File'
+2024-10-01 06:52:24|  32.5|  0.0|INFORM|FFS writer: Writing 5287 feature(s) to file 'C:\Users\AMAJEP~1\AppData\Local\Temp\wb-cache-ByggnadsmodelltillCesium_ver2-KpAGeh\Main__All_ -1 47 -1  0  364ad6260b1ad1fa5116c75803c0e02d20deefd7_9.fts'
+2024-10-01 06:52:26|  32.8|  0.3|INFORM|Spatial Index: Adding 5287 features
+2024-10-01 06:52:27|  33.0|  0.2|INFORM|AreaOnAreaOverlayer (OverlayFactory): Splitting bulk features into individual features
+2024-10-01 06:52:27|  33.3|  0.3|INFORM|Creating reader for format: Esri Shapefile
+2024-10-01 06:52:27|  33.3|  0.0|INFORM|Trying to find a DYNAMIC plugin for reader named `SHAPEFILE'
+2024-10-01 06:52:27|  33.3|  0.0|INFORM|FME Configuration: Source coordinate system for reader SHAPEFILE_2[SHAPEFILE] set to `SWEREF-99-12-00'
+2024-10-01 06:52:27|  33.3|  0.0|INFORM|Coordinate System `SWEREF-99-12-00' parameters: CS_NAME=`SWEREF-99-12-00' DESC_NM=`SWEREF 99 12 00' DT_NAME=`SWEREF99' EPSG_QD=`-1' GROUP=`EUROPE' MAP_SCL=`1' MAX_LAT=`60.68333333333333' MAX_LNG=`13.4' MIN_LAT=`55.416666666666664' MIN_LNG=`10.25' PARM1=`12' PROJ=`TM' QUAD=`1' SCL_RED=`1' SOURCE=`National Land Survey of Sweden' UNIT=`METER' X_OFF=`150000'
+2024-10-01 06:52:27|  33.3|  0.0|INFORM|SHAPEFILE reader: Opening dataset 'T:\AppServer\SBF-EFD\SBF-EFD3\byggnadsmodell\Lextorp.shp'
+2024-10-01 06:52:27|  33.3|  0.0|INFORM|Shapefile reader: Reading dataset with encoding 'UTF-8' as determined by 'Codepage File'
+2024-10-01 06:52:27|  33.3|  0.0|INFORM|FFS writer: Writing 19809 feature(s) to file 'C:\Users\AMAJEP~1\AppData\Local\Temp\wb-cache-ByggnadsmodelltillCesium_ver2-KpAGeh\Main__All_ -1 47 -1  0  364ad6260b1ad1fa5116c75803c0e02d20deefd7_10.fts'
+2024-10-01 06:52:32|  34.4|  1.1|INFORM|Spatial Index: Adding 19809 features
+2024-10-01 06:52:33|  35.1|  0.7|INFORM|AreaOnAreaOverlayer (OverlayFactory): Splitting bulk features into individual features
+2024-10-01 06:52:34|  36.1|  1.0|INFORM|Creating reader for format: Esri Shapefile
+2024-10-01 06:52:34|  36.1|  0.0|INFORM|Trying to find a DYNAMIC plugin for reader named `SHAPEFILE'
+2024-10-01 06:52:34|  36.1|  0.0|INFORM|FME Configuration: Source coordinate system for reader SHAPEFILE_2[SHAPEFILE] set to `SWEREF-99-12-00'
+2024-10-01 06:52:34|  36.1|  0.0|INFORM|Coordinate System `SWEREF-99-12-00' parameters: CS_NAME=`SWEREF-99-12-00' DESC_NM=`SWEREF 99 12 00' DT_NAME=`SWEREF99' EPSG_QD=`-1' GROUP=`EUROPE' MAP_SCL=`1' MAX_LAT=`60.68333333333333' MAX_LNG=`13.4' MIN_LAT=`55.416666666666664' MIN_LNG=`10.25' PARM1=`12' PROJ=`TM' QUAD=`1' SCL_RED=`1' SOURCE=`National Land Survey of Sweden' UNIT=`METER' X_OFF=`150000'
+2024-10-01 06:52:34|  36.1|  0.0|INFORM|SHAPEFILE reader: Opening dataset 'T:\AppServer\SBF-EFD\SBF-EFD3\byggnadsmodell\Lärketorpet.shp'
+2024-10-01 06:52:34|  36.1|  0.0|INFORM|Shapefile reader: Reading dataset with encoding 'UTF-8' as determined by 'Codepage File'
+2024-10-01 06:52:34|  36.1|  0.0|INFORM|Alingsåker Feature Recorder -1 2147549231 (RecorderFactory): Splitting bulk features into individual features
+2024-10-01 06:52:35|  36.4|  0.3|INFORM|Creating reader for format: Esri Shapefile
+2024-10-01 06:52:35|  36.4|  0.0|INFORM|Trying to find a DYNAMIC plugin for reader named `SHAPEFILE'
+2024-10-01 06:52:35|  36.4|  0.0|INFORM|FME Configuration: Source coordinate system for reader SHAPEFILE_2[SHAPEFILE] set to `SWEREF-99-12-00'
+2024-10-01 06:52:35|  36.4|  0.0|INFORM|Coordinate System `SWEREF-99-12-00' parameters: CS_NAME=`SWEREF-99-12-00' DESC_NM=`SWEREF 99 12 00' DT_NAME=`SWEREF99' EPSG_QD=`-1' GROUP=`EUROPE' MAP_SCL=`1' MAX_LAT=`60.68333333333333' MAX_LNG=`13.4' MIN_LAT=`55.416666666666664' MIN_LNG=`10.25' PARM1=`12' PROJ=`TM' QUAD=`1' SCL_RED=`1' SOURCE=`National Land Survey of Sweden' UNIT=`METER' X_OFF=`150000'
+2024-10-01 06:52:35|  36.4|  0.0|INFORM|SHAPEFILE reader: Opening dataset 'T:\AppServer\SBF-EFD\SBF-EFD3\byggnadsmodell\Norra Björke.shp'
+2024-10-01 06:52:35|  36.4|  0.0|INFORM|Shapefile reader: Reading dataset with encoding 'UTF-8' as determined by 'Codepage File'
+2024-10-01 06:52:35|  36.4|  0.0|INFORM|FFS writer: Writing 3000 feature(s) to file 'C:\Users\AMAJEP~1\AppData\Local\Temp\wb-cache-ByggnadsmodelltillCesium_ver2-KpAGeh\Main__All_ -1 47 -1  0  364ad6260b1ad1fa5116c75803c0e02d20deefd7_11.fts'
+2024-10-01 06:52:36|  36.6|  0.2|INFORM|Spatial Index: Adding 3000 features
+2024-10-01 06:52:36|  36.7|  0.1|INFORM|AreaOnAreaOverlayer (OverlayFactory): Splitting bulk features into individual features
+2024-10-01 06:52:36|  36.9|  0.2|INFORM|Creating reader for format: Esri Shapefile
+2024-10-01 06:52:36|  36.9|  0.0|INFORM|Trying to find a DYNAMIC plugin for reader named `SHAPEFILE'
+2024-10-01 06:52:36|  36.9|  0.0|INFORM|FME Configuration: Source coordinate system for reader SHAPEFILE_2[SHAPEFILE] set to `SWEREF-99-12-00'
+2024-10-01 06:52:36|  36.9|  0.0|INFORM|Coordinate System `SWEREF-99-12-00' parameters: CS_NAME=`SWEREF-99-12-00' DESC_NM=`SWEREF 99 12 00' DT_NAME=`SWEREF99' EPSG_QD=`-1' GROUP=`EUROPE' MAP_SCL=`1' MAX_LAT=`60.68333333333333' MAX_LNG=`13.4' MIN_LAT=`55.416666666666664' MIN_LNG=`10.25' PARM1=`12' PROJ=`TM' QUAD=`1' SCL_RED=`1' SOURCE=`National Land Survey of Sweden' UNIT=`METER' X_OFF=`150000'
+2024-10-01 06:52:36|  36.9|  0.0|INFORM|SHAPEFILE reader: Opening dataset 'T:\AppServer\SBF-EFD\SBF-EFD3\byggnadsmodell\Sandhem.shp'
+2024-10-01 06:52:36|  36.9|  0.0|INFORM|Shapefile reader: Reading dataset with encoding 'UTF-8' as determined by 'Codepage File'
+2024-10-01 06:52:36|  36.9|  0.0|INFORM|FFS writer: Writing 20492 feature(s) to file 'C:\Users\AMAJEP~1\AppData\Local\Temp\wb-cache-ByggnadsmodelltillCesium_ver2-KpAGeh\Main__All_ -1 47 -1  0  364ad6260b1ad1fa5116c75803c0e02d20deefd7_12.fts'
+2024-10-01 06:52:44|  38.0|  1.1|INFORM|ResourceManager: Optimizing Memory Usage.  Please wait...
+2024-10-01 06:52:44|  38.3|  0.3|INFORM|FFS writer: 20000 of 20492 features written
+2024-10-01 06:52:44|  38.4|  0.1|INFORM|FFS writer: 20492 of 20492 features written
+2024-10-01 06:52:45|  38.4|  0.0|INFORM|Spatial Index: Adding 20492 features
+2024-10-01 06:52:45|  39.1|  0.7|INFORM|AreaOnAreaOverlayer (OverlayFactory): Splitting bulk features into individual features
+2024-10-01 06:52:46|  39.7|  0.6|INFORM|ResourceManager: Optimizing Memory Usage.  Please wait...
+2024-10-01 06:52:47|  40.6|  0.9|INFORM|Creating reader for format: Esri Shapefile
+2024-10-01 06:52:47|  40.6|  0.0|INFORM|Trying to find a DYNAMIC plugin for reader named `SHAPEFILE'
+2024-10-01 06:52:47|  40.6|  0.0|INFORM|FME Configuration: Source coordinate system for reader SHAPEFILE_2[SHAPEFILE] set to `SWEREF-99-12-00'
+2024-10-01 06:52:47|  40.6|  0.0|INFORM|Coordinate System `SWEREF-99-12-00' parameters: CS_NAME=`SWEREF-99-12-00' DESC_NM=`SWEREF 99 12 00' DT_NAME=`SWEREF99' EPSG_QD=`-1' GROUP=`EUROPE' MAP_SCL=`1' MAX_LAT=`60.68333333333333' MAX_LNG=`13.4' MIN_LAT=`55.416666666666664' MIN_LNG=`10.25' PARM1=`12' PROJ=`TM' QUAD=`1' SCL_RED=`1' SOURCE=`National Land Survey of Sweden' UNIT=`METER' X_OFF=`150000'
+2024-10-01 06:52:47|  40.6|  0.0|INFORM|SHAPEFILE reader: Opening dataset 'T:\AppServer\SBF-EFD\SBF-EFD3\byggnadsmodell\Sjuntorp.shp'
+2024-10-01 06:52:47|  40.7|  0.1|INFORM|Shapefile reader: Reading dataset with encoding 'UTF-8' as determined by 'Codepage File'
+2024-10-01 06:52:47|  40.7|  0.0|INFORM|FFS writer: Writing 24835 feature(s) to file 'C:\Users\AMAJEP~1\AppData\Local\Temp\wb-cache-ByggnadsmodelltillCesium_ver2-KpAGeh\Main__All_ -1 47 -1  0  364ad6260b1ad1fa5116c75803c0e02d20deefd7_13.fts'
+2024-10-01 06:52:50|  41.3|  0.6|INFORM|ResourceManager: Optimizing Memory Usage.  Please wait...
+2024-10-01 06:52:53|  42.3|  1.0|INFORM|FFS writer: 20000 of 24835 features written
+2024-10-01 06:52:55|  42.6|  0.3|INFORM|FFS writer: 24835 of 24835 features written
+2024-10-01 06:52:55|  42.6|  0.0|INFORM|Spatial Index: Adding 24835 features
+2024-10-01 06:52:56|  43.5|  0.9|INFORM|AreaOnAreaOverlayer (OverlayFactory): Splitting bulk features into individual features
+2024-10-01 06:52:57|  44.9|  1.4|INFORM|Creating reader for format: Esri Shapefile
+2024-10-01 06:52:57|  44.9|  0.0|INFORM|Trying to find a DYNAMIC plugin for reader named `SHAPEFILE'
+2024-10-01 06:52:57|  44.9|  0.0|INFORM|FME Configuration: Source coordinate system for reader SHAPEFILE_2[SHAPEFILE] set to `SWEREF-99-12-00'
+2024-10-01 06:52:57|  44.9|  0.0|INFORM|Coordinate System `SWEREF-99-12-00' parameters: CS_NAME=`SWEREF-99-12-00' DESC_NM=`SWEREF 99 12 00' DT_NAME=`SWEREF99' EPSG_QD=`-1' GROUP=`EUROPE' MAP_SCL=`1' MAX_LAT=`60.68333333333333' MAX_LNG=`13.4' MIN_LAT=`55.416666666666664' MIN_LNG=`10.25' PARM1=`12' PROJ=`TM' QUAD=`1' SCL_RED=`1' SOURCE=`National Land Survey of Sweden' UNIT=`METER' X_OFF=`150000'
+2024-10-01 06:52:57|  44.9|  0.0|INFORM|SHAPEFILE reader: Opening dataset 'T:\AppServer\SBF-EFD\SBF-EFD3\byggnadsmodell\Skoftebyn.shp'
+2024-10-01 06:52:58|  44.9|  0.0|INFORM|Shapefile reader: Reading dataset with encoding 'UTF-8' as determined by 'Codepage File'
+2024-10-01 06:52:58|  44.9|  0.0|INFORM|FFS writer: Writing 46297 feature(s) to file 'C:\Users\AMAJEP~1\AppData\Local\Temp\wb-cache-ByggnadsmodelltillCesium_ver2-KpAGeh\Main__All_ -1 47 -1  0  364ad6260b1ad1fa5116c75803c0e02d20deefd7_14.fts'
+2024-10-01 06:53:00|  46.9|  2.0|INFORM|Spatial Index: Adding 46297 features
+2024-10-01 06:53:01|  48.6|  1.7|INFORM|AreaOnAreaOverlayer (OverlayFactory): Splitting bulk features into individual features
+2024-10-01 06:53:04|  51.3|  2.7|INFORM|Creating reader for format: Esri Shapefile
+2024-10-01 06:53:04|  51.3|  0.0|INFORM|Trying to find a DYNAMIC plugin for reader named `SHAPEFILE'
+2024-10-01 06:53:04|  51.3|  0.0|INFORM|FME Configuration: Source coordinate system for reader SHAPEFILE_2[SHAPEFILE] set to `SWEREF-99-12-00'
+2024-10-01 06:53:04|  51.3|  0.0|INFORM|Coordinate System `SWEREF-99-12-00' parameters: CS_NAME=`SWEREF-99-12-00' DESC_NM=`SWEREF 99 12 00' DT_NAME=`SWEREF99' EPSG_QD=`-1' GROUP=`EUROPE' MAP_SCL=`1' MAX_LAT=`60.68333333333333' MAX_LNG=`13.4' MIN_LAT=`55.416666666666664' MIN_LNG=`10.25' PARM1=`12' PROJ=`TM' QUAD=`1' SCL_RED=`1' SOURCE=`National Land Survey of Sweden' UNIT=`METER' X_OFF=`150000'
+2024-10-01 06:53:04|  51.3|  0.0|INFORM|SHAPEFILE reader: Opening dataset 'T:\AppServer\SBF-EFD\SBF-EFD3\byggnadsmodell\Skogshöjden.shp'
+2024-10-01 06:53:04|  51.3|  0.0|INFORM|Shapefile reader: Reading dataset with encoding 'UTF-8' as determined by 'Codepage File'
+2024-10-01 06:53:04|  51.3|  0.0|INFORM|FFS writer: Writing 15680 feature(s) to file 'C:\Users\AMAJEP~1\AppData\Local\Temp\wb-cache-ByggnadsmodelltillCesium_ver2-KpAGeh\Main__All_ -1 47 -1  0  364ad6260b1ad1fa5116c75803c0e02d20deefd7_15.fts'
+2024-10-01 06:53:09|  52.3|  1.0|INFORM|Spatial Index: Adding 15680 features
+2024-10-01 06:53:10|  52.8|  0.5|INFORM|AreaOnAreaOverlayer (OverlayFactory): Splitting bulk features into individual features
+2024-10-01 06:53:11|  53.6|  0.8|INFORM|Creating reader for format: Esri Shapefile
+2024-10-01 06:53:11|  53.6|  0.0|INFORM|Trying to find a DYNAMIC plugin for reader named `SHAPEFILE'
+2024-10-01 06:53:11|  53.6|  0.0|INFORM|FME Configuration: Source coordinate system for reader SHAPEFILE_2[SHAPEFILE] set to `SWEREF-99-12-00'
+2024-10-01 06:53:11|  53.6|  0.0|INFORM|Coordinate System `SWEREF-99-12-00' parameters: CS_NAME=`SWEREF-99-12-00' DESC_NM=`SWEREF 99 12 00' DT_NAME=`SWEREF99' EPSG_QD=`-1' GROUP=`EUROPE' MAP_SCL=`1' MAX_LAT=`60.68333333333333' MAX_LNG=`13.4' MIN_LAT=`55.416666666666664' MIN_LNG=`10.25' PARM1=`12' PROJ=`TM' QUAD=`1' SCL_RED=`1' SOURCE=`National Land Survey of Sweden' UNIT=`METER' X_OFF=`150000'
+2024-10-01 06:53:11|  53.6|  0.0|INFORM|SHAPEFILE reader: Opening dataset 'T:\AppServer\SBF-EFD\SBF-EFD3\byggnadsmodell\Skogstorpa.shp'
+2024-10-01 06:53:11|  53.6|  0.0|INFORM|Shapefile reader: Reading dataset with encoding 'UTF-8' as determined by 'Codepage File'
+2024-10-01 06:53:11|  53.6|  0.0|INFORM|FFS writer: Writing 3727 feature(s) to file 'C:\Users\AMAJEP~1\AppData\Local\Temp\wb-cache-ByggnadsmodelltillCesium_ver2-KpAGeh\Main__All_ -1 47 -1  0  364ad6260b1ad1fa5116c75803c0e02d20deefd7_16.fts'
+2024-10-01 06:53:12|  53.9|  0.3|INFORM|Spatial Index: Adding 3727 features
+2024-10-01 06:53:12|  54.0|  0.1|INFORM|AreaOnAreaOverlayer (OverlayFactory): Splitting bulk features into individual features
+2024-10-01 06:53:13|  54.2|  0.2|INFORM|Creating reader for format: Esri Shapefile
+2024-10-01 06:53:13|  54.2|  0.0|INFORM|Trying to find a DYNAMIC plugin for reader named `SHAPEFILE'
+2024-10-01 06:53:13|  54.2|  0.0|INFORM|FME Configuration: Source coordinate system for reader SHAPEFILE_2[SHAPEFILE] set to `SWEREF-99-12-00'
+2024-10-01 06:53:13|  54.2|  0.0|INFORM|Coordinate System `SWEREF-99-12-00' parameters: CS_NAME=`SWEREF-99-12-00' DESC_NM=`SWEREF 99 12 00' DT_NAME=`SWEREF99' EPSG_QD=`-1' GROUP=`EUROPE' MAP_SCL=`1' MAX_LAT=`60.68333333333333' MAX_LNG=`13.4' MIN_LAT=`55.416666666666664' MIN_LNG=`10.25' PARM1=`12' PROJ=`TM' QUAD=`1' SCL_RED=`1' SOURCE=`National Land Survey of Sweden' UNIT=`METER' X_OFF=`150000'
+2024-10-01 06:53:13|  54.2|  0.0|INFORM|SHAPEFILE reader: Opening dataset 'T:\AppServer\SBF-EFD\SBF-EFD3\byggnadsmodell\Stallbacka.shp'
+2024-10-01 06:53:13|  54.2|  0.0|INFORM|Shapefile reader: Reading dataset with encoding 'UTF-8' as determined by 'Codepage File'
+2024-10-01 06:53:13|  54.3|  0.1|INFORM|FFS writer: Writing 21465 feature(s) to file 'C:\Users\AMAJEP~1\AppData\Local\Temp\wb-cache-ByggnadsmodelltillCesium_ver2-KpAGeh\Main__All_ -1 47 -1  0  364ad6260b1ad1fa5116c75803c0e02d20deefd7_17.fts'
+2024-10-01 06:53:21|  55.3|  1.0|INFORM|FFS writer: 20000 of 21465 features written
+2024-10-01 06:53:22|  55.4|  0.1|INFORM|FFS writer: 21465 of 21465 features written
+2024-10-01 06:53:22|  55.4|  0.0|INFORM|Spatial Index: Adding 21465 features
+2024-10-01 06:53:23|  56.3|  0.9|INFORM|AreaOnAreaOverlayer (OverlayFactory): Splitting bulk features into individual features
+2024-10-01 06:53:24|  57.5|  1.2|INFORM|Creating reader for format: Esri Shapefile
+2024-10-01 06:53:24|  57.5|  0.0|INFORM|Trying to find a DYNAMIC plugin for reader named `SHAPEFILE'
+2024-10-01 06:53:24|  57.5|  0.0|INFORM|FME Configuration: Source coordinate system for reader SHAPEFILE_2[SHAPEFILE] set to `SWEREF-99-12-00'
+2024-10-01 06:53:24|  57.5|  0.0|INFORM|Coordinate System `SWEREF-99-12-00' parameters: CS_NAME=`SWEREF-99-12-00' DESC_NM=`SWEREF 99 12 00' DT_NAME=`SWEREF99' EPSG_QD=`-1' GROUP=`EUROPE' MAP_SCL=`1' MAX_LAT=`60.68333333333333' MAX_LNG=`13.4' MIN_LAT=`55.416666666666664' MIN_LNG=`10.25' PARM1=`12' PROJ=`TM' QUAD=`1' SCL_RED=`1' SOURCE=`National Land Survey of Sweden' UNIT=`METER' X_OFF=`150000'
+2024-10-01 06:53:24|  57.5|  0.0|INFORM|SHAPEFILE reader: Opening dataset 'T:\AppServer\SBF-EFD\SBF-EFD3\byggnadsmodell\Stavre.shp'
+2024-10-01 06:53:25|  57.5|  0.0|INFORM|Shapefile reader: Reading dataset with encoding 'UTF-8' as determined by 'Codepage File'
+2024-10-01 06:53:25|  57.5|  0.0|INFORM|FFS writer: Writing 12546 feature(s) to file 'C:\Users\AMAJEP~1\AppData\Local\Temp\wb-cache-ByggnadsmodelltillCesium_ver2-KpAGeh\Main__All_ -1 47 -1  0  364ad6260b1ad1fa5116c75803c0e02d20deefd7_18.fts'
+2024-10-01 06:53:31|  58.1|  0.6|INFORM|FFS writer: 10000 of 12546 features written
+2024-10-01 06:53:32|  58.2|  0.1|INFORM|FFS writer: 12546 of 12546 features written
+2024-10-01 06:53:32|  58.3|  0.1|INFORM|Spatial Index: Adding 12546 features
+2024-10-01 06:53:32|  58.7|  0.4|INFORM|AreaOnAreaOverlayer (OverlayFactory): Splitting bulk features into individual features
+2024-10-01 06:53:33|  59.5|  0.8|INFORM|Creating reader for format: Esri Shapefile
+2024-10-01 06:53:33|  59.5|  0.0|INFORM|Trying to find a DYNAMIC plugin for reader named `SHAPEFILE'
+2024-10-01 06:53:33|  59.5|  0.0|INFORM|FME Configuration: Source coordinate system for reader SHAPEFILE_2[SHAPEFILE] set to `SWEREF-99-12-00'
+2024-10-01 06:53:33|  59.5|  0.0|INFORM|Coordinate System `SWEREF-99-12-00' parameters: CS_NAME=`SWEREF-99-12-00' DESC_NM=`SWEREF 99 12 00' DT_NAME=`SWEREF99' EPSG_QD=`-1' GROUP=`EUROPE' MAP_SCL=`1' MAX_LAT=`60.68333333333333' MAX_LNG=`13.4' MIN_LAT=`55.416666666666664' MIN_LNG=`10.25' PARM1=`12' PROJ=`TM' QUAD=`1' SCL_RED=`1' SOURCE=`National Land Survey of Sweden' UNIT=`METER' X_OFF=`150000'
+2024-10-01 06:53:33|  59.5|  0.0|INFORM|SHAPEFILE reader: Opening dataset 'T:\AppServer\SBF-EFD\SBF-EFD3\byggnadsmodell\Strömslund.shp'
+2024-10-01 06:53:33|  59.5|  0.0|INFORM|Shapefile reader: Reading dataset with encoding 'UTF-8' as determined by 'Codepage File'
+2024-10-01 06:53:34|  59.5|  0.0|INFORM|FFS writer: Writing 29817 feature(s) to file 'C:\Users\AMAJEP~1\AppData\Local\Temp\wb-cache-ByggnadsmodelltillCesium_ver2-KpAGeh\Main__All_ -1 47 -1  0  364ad6260b1ad1fa5116c75803c0e02d20deefd7_19.fts'
+2024-10-01 06:53:43|  60.8|  1.3|INFORM|FFS writer: 20000 of 29817 features written
+2024-10-01 06:53:46|  61.5|  0.7|INFORM|FFS writer: 29817 of 29817 features written
+2024-10-01 06:53:46|  61.5|  0.0|INFORM|Spatial Index: Adding 29817 features
+2024-10-01 06:53:47|  62.7|  1.2|INFORM|AreaOnAreaOverlayer (OverlayFactory): Splitting bulk features into individual features
+2024-10-01 06:53:49|  64.3|  1.6|INFORM|Creating reader for format: Esri Shapefile
+2024-10-01 06:53:49|  64.3|  0.0|INFORM|Trying to find a DYNAMIC plugin for reader named `SHAPEFILE'
+2024-10-01 06:53:49|  64.3|  0.0|INFORM|FME Configuration: Source coordinate system for reader SHAPEFILE_2[SHAPEFILE] set to `SWEREF-99-12-00'
+2024-10-01 06:53:49|  64.3|  0.0|INFORM|Coordinate System `SWEREF-99-12-00' parameters: CS_NAME=`SWEREF-99-12-00' DESC_NM=`SWEREF 99 12 00' DT_NAME=`SWEREF99' EPSG_QD=`-1' GROUP=`EUROPE' MAP_SCL=`1' MAX_LAT=`60.68333333333333' MAX_LNG=`13.4' MIN_LAT=`55.416666666666664' MIN_LNG=`10.25' PARM1=`12' PROJ=`TM' QUAD=`1' SCL_RED=`1' SOURCE=`National Land Survey of Sweden' UNIT=`METER' X_OFF=`150000'
+2024-10-01 06:53:49|  64.3|  0.0|INFORM|SHAPEFILE reader: Opening dataset 'T:\AppServer\SBF-EFD\SBF-EFD3\byggnadsmodell\Sylte.shp'
+2024-10-01 06:53:49|  64.3|  0.0|INFORM|Shapefile reader: Reading dataset with encoding 'UTF-8' as determined by 'Codepage File'
+2024-10-01 06:53:49|  64.3|  0.0|INFORM|FFS writer: Writing 7692 feature(s) to file 'C:\Users\AMAJEP~1\AppData\Local\Temp\wb-cache-ByggnadsmodelltillCesium_ver2-KpAGeh\Main__All_ -1 47 -1  0  364ad6260b1ad1fa5116c75803c0e02d20deefd7_20.fts'
+2024-10-01 06:53:51|  64.8|  0.5|INFORM|Spatial Index: Adding 7692 features
+2024-10-01 06:53:51|  65.1|  0.3|INFORM|AreaOnAreaOverlayer (OverlayFactory): Splitting bulk features into individual features
+2024-10-01 06:53:52|  65.6|  0.5|INFORM|Creating reader for format: Esri Shapefile
+2024-10-01 06:53:52|  65.6|  0.0|INFORM|Trying to find a DYNAMIC plugin for reader named `SHAPEFILE'
+2024-10-01 06:53:52|  65.6|  0.0|INFORM|FME Configuration: Source coordinate system for reader SHAPEFILE_2[SHAPEFILE] set to `SWEREF-99-12-00'
+2024-10-01 06:53:52|  65.6|  0.0|INFORM|Coordinate System `SWEREF-99-12-00' parameters: CS_NAME=`SWEREF-99-12-00' DESC_NM=`SWEREF 99 12 00' DT_NAME=`SWEREF99' EPSG_QD=`-1' GROUP=`EUROPE' MAP_SCL=`1' MAX_LAT=`60.68333333333333' MAX_LNG=`13.4' MIN_LAT=`55.416666666666664' MIN_LNG=`10.25' PARM1=`12' PROJ=`TM' QUAD=`1' SCL_RED=`1' SOURCE=`National Land Survey of Sweden' UNIT=`METER' X_OFF=`150000'
+2024-10-01 06:53:52|  65.6|  0.0|INFORM|SHAPEFILE reader: Opening dataset 'T:\AppServer\SBF-EFD\SBF-EFD3\byggnadsmodell\Tingvalla.shp'
+2024-10-01 06:53:52|  65.6|  0.0|INFORM|Shapefile reader: Reading dataset with encoding 'UTF-8' as determined by 'Codepage File'
+2024-10-01 06:53:52|  65.6|  0.0|INFORM|FFS writer: Writing 9087 feature(s) to file 'C:\Users\AMAJEP~1\AppData\Local\Temp\wb-cache-ByggnadsmodelltillCesium_ver2-KpAGeh\Main__All_ -1 47 -1  0  364ad6260b1ad1fa5116c75803c0e02d20deefd7_21.fts'
+2024-10-01 06:53:55|  66.2|  0.6|INFORM|Spatial Index: Adding 9087 features
+2024-10-01 06:53:55|  66.5|  0.3|INFORM|AreaOnAreaOverlayer (OverlayFactory): Splitting bulk features into individual features
+2024-10-01 06:53:56|  67.1|  0.6|INFORM|Creating reader for format: Esri Shapefile
+2024-10-01 06:53:56|  67.1|  0.0|INFORM|Trying to find a DYNAMIC plugin for reader named `SHAPEFILE'
+2024-10-01 06:53:56|  67.1|  0.0|INFORM|FME Configuration: Source coordinate system for reader SHAPEFILE_2[SHAPEFILE] set to `SWEREF-99-12-00'
+2024-10-01 06:53:56|  67.1|  0.0|INFORM|Coordinate System `SWEREF-99-12-00' parameters: CS_NAME=`SWEREF-99-12-00' DESC_NM=`SWEREF 99 12 00' DT_NAME=`SWEREF99' EPSG_QD=`-1' GROUP=`EUROPE' MAP_SCL=`1' MAX_LAT=`60.68333333333333' MAX_LNG=`13.4' MIN_LAT=`55.416666666666664' MIN_LNG=`10.25' PARM1=`12' PROJ=`TM' QUAD=`1' SCL_RED=`1' SOURCE=`National Land Survey of Sweden' UNIT=`METER' X_OFF=`150000'
+2024-10-01 06:53:56|  67.1|  0.0|INFORM|SHAPEFILE reader: Opening dataset 'T:\AppServer\SBF-EFD\SBF-EFD3\byggnadsmodell\Torsred.shp'
+2024-10-01 06:53:56|  67.1|  0.0|INFORM|Shapefile reader: Reading dataset with encoding 'UTF-8' as determined by 'Codepage File'
+2024-10-01 06:53:56|  67.1|  0.0|INFORM|FFS writer: Writing 12766 feature(s) to file 'C:\Users\AMAJEP~1\AppData\Local\Temp\wb-cache-ByggnadsmodelltillCesium_ver2-KpAGeh\Main__All_ -1 47 -1  0  364ad6260b1ad1fa5116c75803c0e02d20deefd7_22.fts'
+2024-10-01 06:54:00|  68.1|  1.0|INFORM|Spatial Index: Adding 12766 features
+2024-10-01 06:54:00|  68.6|  0.5|INFORM|AreaOnAreaOverlayer (OverlayFactory): Splitting bulk features into individual features
+2024-10-01 06:54:01|  69.3|  0.7|INFORM|Creating reader for format: Esri Shapefile
+2024-10-01 06:54:01|  69.3|  0.0|INFORM|Trying to find a DYNAMIC plugin for reader named `SHAPEFILE'
+2024-10-01 06:54:01|  69.3|  0.0|INFORM|FME Configuration: Source coordinate system for reader SHAPEFILE_2[SHAPEFILE] set to `SWEREF-99-12-00'
+2024-10-01 06:54:01|  69.3|  0.0|INFORM|Coordinate System `SWEREF-99-12-00' parameters: CS_NAME=`SWEREF-99-12-00' DESC_NM=`SWEREF 99 12 00' DT_NAME=`SWEREF99' EPSG_QD=`-1' GROUP=`EUROPE' MAP_SCL=`1' MAX_LAT=`60.68333333333333' MAX_LNG=`13.4' MIN_LAT=`55.416666666666664' MIN_LNG=`10.25' PARM1=`12' PROJ=`TM' QUAD=`1' SCL_RED=`1' SOURCE=`National Land Survey of Sweden' UNIT=`METER' X_OFF=`150000'
+2024-10-01 06:54:01|  69.3|  0.0|INFORM|SHAPEFILE reader: Opening dataset 'T:\AppServer\SBF-EFD\SBF-EFD3\byggnadsmodell\Upphärad.shp'
+2024-10-01 06:54:01|  69.3|  0.0|INFORM|Shapefile reader: Reading dataset with encoding 'UTF-8' as determined by 'Codepage File'
+2024-10-01 06:54:01|  69.3|  0.0|INFORM|FFS writer: Writing 7095 feature(s) to file 'C:\Users\AMAJEP~1\AppData\Local\Temp\wb-cache-ByggnadsmodelltillCesium_ver2-KpAGeh\Main__All_ -1 47 -1  0  364ad6260b1ad1fa5116c75803c0e02d20deefd7_23.fts'
+2024-10-01 06:54:04|  69.8|  0.5|INFORM|Spatial Index: Adding 7095 features
+2024-10-01 06:54:04|  70.2|  0.4|INFORM|ResourceManager: Optimizing Memory Usage.  Please wait...
+2024-10-01 06:54:05|  70.5|  0.3|INFORM|AreaOnAreaOverlayer (OverlayFactory): Splitting bulk features into individual features
+2024-10-01 06:54:06|  71.0|  0.5|INFORM|Creating reader for format: Esri Shapefile
+2024-10-01 06:54:06|  71.0|  0.0|INFORM|Trying to find a DYNAMIC plugin for reader named `SHAPEFILE'
+2024-10-01 06:54:06|  71.0|  0.0|INFORM|FME Configuration: Source coordinate system for reader SHAPEFILE_2[SHAPEFILE] set to `SWEREF-99-12-00'
+2024-10-01 06:54:06|  71.0|  0.0|INFORM|Coordinate System `SWEREF-99-12-00' parameters: CS_NAME=`SWEREF-99-12-00' DESC_NM=`SWEREF 99 12 00' DT_NAME=`SWEREF99' EPSG_QD=`-1' GROUP=`EUROPE' MAP_SCL=`1' MAX_LAT=`60.68333333333333' MAX_LNG=`13.4' MIN_LAT=`55.416666666666664' MIN_LNG=`10.25' PARM1=`12' PROJ=`TM' QUAD=`1' SCL_RED=`1' SOURCE=`National Land Survey of Sweden' UNIT=`METER' X_OFF=`150000'
+2024-10-01 06:54:06|  71.0|  0.0|INFORM|SHAPEFILE reader: Opening dataset 'T:\AppServer\SBF-EFD\SBF-EFD3\byggnadsmodell\utanför tätorterna.shp'
+2024-10-01 06:54:06|  71.0|  0.0|INFORM|Shapefile reader: Reading dataset with encoding 'UTF-8' as determined by 'Codepage File'
+2024-10-01 06:54:09|  71.1|  0.1|INFORM|ResourceManager: Optimizing Memory Usage.  Please wait...
+2024-10-01 06:54:10|  71.6|  0.5|INFORM|FFS writer: Writing 141508 feature(s) to file 'C:\Users\AMAJEP~1\AppData\Local\Temp\wb-cache-ByggnadsmodelltillCesium_ver2-KpAGeh\Main__All_ -1 47 -1  0  364ad6260b1ad1fa5116c75803c0e02d20deefd7_24.fts'
+2024-10-01 06:54:16|  72.3|  0.7|INFORM|ResourceManager: Optimizing Memory Usage.  Please wait...
+2024-10-01 06:54:18|  73.6|  1.3|INFORM|ResourceManager: Optimizing Memory Usage.  Please wait...
+2024-10-01 06:54:18|  73.6|  0.0|INFORM|FFS writer: 10000 of 141508 features written
+2024-10-01 06:54:25|  74.3|  0.7|INFORM|ResourceManager: Optimizing Memory Usage.  Please wait...
+2024-10-01 06:54:26|  75.0|  0.7|INFORM|FFS writer: 20000 of 141508 features written
+2024-10-01 06:54:31|  75.6|  0.6|INFORM|FFS writer: 30000 of 141508 features written
+2024-10-01 06:54:36|  77.3|  1.7|INFORM|FFS writer: 50000 of 141508 features written
+2024-10-01 06:54:43|  79.7|  2.4|INFORM|FFS writer: 80000 of 141508 features written
+2024-10-01 06:54:49|  81.4|  1.7|INFORM|FFS writer: 100000 of 141508 features written
+2024-10-01 06:54:53|  82.3|  0.9|INFORM|ResourceManager: Optimizing Memory Usage.  Please wait...
+2024-10-01 06:55:00|  83.8|  1.5|INFORM|FFS writer: 120000 of 141508 features written
+2024-10-01 06:55:07|  85.5|  1.7|INFORM|FFS writer: 140000 of 141508 features written
+2024-10-01 06:55:07|  85.6|  0.1|INFORM|FFS writer: 141508 of 141508 features written
+2024-10-01 06:55:07|  85.7|  0.1|INFORM|Spatial Index: Adding 141508 features
+2024-10-01 06:55:13|  90.3|  4.6|INFORM|Spatial Index: Added 110000 of 141508 features
+2024-10-01 06:55:14|  91.7|  1.4|INFORM|Spatial Index: Added 141508 of 141508 features
+2024-10-01 06:55:14|  91.7|  0.0|INFORM|AreaOnAreaOverlayer (OverlayFactory): Splitting bulk features into individual features
+2024-10-01 06:55:19|  97.0|  5.3|INFORM|AreaOnAreaOverlayer (OverlayFactory): Processed 98120 of 141508 features
+2024-10-01 06:55:21|  99.5|  2.5|INFORM|AreaOnAreaOverlayer (OverlayFactory): Processed 141508 of 141508 features
+2024-10-01 06:55:21|  99.7|  0.2|INFORM|Creating reader for format: Esri Shapefile
+2024-10-01 06:55:21|  99.7|  0.0|INFORM|Trying to find a DYNAMIC plugin for reader named `SHAPEFILE'
+2024-10-01 06:55:21|  99.7|  0.0|INFORM|FME Configuration: Source coordinate system for reader SHAPEFILE_2[SHAPEFILE] set to `SWEREF-99-12-00'
+2024-10-01 06:55:21|  99.7|  0.0|INFORM|Coordinate System `SWEREF-99-12-00' parameters: CS_NAME=`SWEREF-99-12-00' DESC_NM=`SWEREF 99 12 00' DT_NAME=`SWEREF99' EPSG_QD=`-1' GROUP=`EUROPE' MAP_SCL=`1' MAX_LAT=`60.68333333333333' MAX_LNG=`13.4' MIN_LAT=`55.416666666666664' MIN_LNG=`10.25' PARM1=`12' PROJ=`TM' QUAD=`1' SCL_RED=`1' SOURCE=`National Land Survey of Sweden' UNIT=`METER' X_OFF=`150000'
+2024-10-01 06:55:21|  99.7|  0.0|INFORM|SHAPEFILE reader: Opening dataset 'T:\AppServer\SBF-EFD\SBF-EFD3\byggnadsmodell\Velanda.shp'
+2024-10-01 06:55:22|  99.7|  0.0|INFORM|Shapefile reader: Reading dataset with encoding 'UTF-8' as determined by 'Codepage File'
+2024-10-01 06:55:22|  99.7|  0.0|INFORM|FFS writer: Writing 7538 feature(s) to file 'C:\Users\AMAJEP~1\AppData\Local\Temp\wb-cache-ByggnadsmodelltillCesium_ver2-KpAGeh\Main__All_ -1 47 -1  0  364ad6260b1ad1fa5116c75803c0e02d20deefd7_25.fts'
+2024-10-01 06:55:24| 100.2|  0.5|INFORM|Spatial Index: Adding 7538 features
+2024-10-01 06:55:25| 100.6|  0.4|INFORM|AreaOnAreaOverlayer (OverlayFactory): Splitting bulk features into individual features
+2024-10-01 06:55:25| 101.1|  0.5|INFORM|Creating reader for format: Esri Shapefile
+2024-10-01 06:55:25| 101.1|  0.0|INFORM|Trying to find a DYNAMIC plugin for reader named `SHAPEFILE'
+2024-10-01 06:55:25| 101.1|  0.0|INFORM|FME Configuration: Source coordinate system for reader SHAPEFILE_2[SHAPEFILE] set to `SWEREF-99-12-00'
+2024-10-01 06:55:25| 101.1|  0.0|INFORM|Coordinate System `SWEREF-99-12-00' parameters: CS_NAME=`SWEREF-99-12-00' DESC_NM=`SWEREF 99 12 00' DT_NAME=`SWEREF99' EPSG_QD=`-1' GROUP=`EUROPE' MAP_SCL=`1' MAX_LAT=`60.68333333333333' MAX_LNG=`13.4' MIN_LAT=`55.416666666666664' MIN_LNG=`10.25' PARM1=`12' PROJ=`TM' QUAD=`1' SCL_RED=`1' SOURCE=`National Land Survey of Sweden' UNIT=`METER' X_OFF=`150000'
+2024-10-01 06:55:25| 101.1|  0.0|INFORM|SHAPEFILE reader: Opening dataset 'T:\AppServer\SBF-EFD\SBF-EFD3\byggnadsmodell\Vårvik.shp'
+2024-10-01 06:55:26| 101.1|  0.0|INFORM|Shapefile reader: Reading dataset with encoding 'UTF-8' as determined by 'Codepage File'
+2024-10-01 06:55:26| 101.1|  0.0|INFORM|Alingsåker Feature Recorder -1 2147549231 (RecorderFactory): Splitting bulk features into individual features
+2024-10-01 06:55:26| 101.3|  0.2|INFORM|Creating reader for format: Esri Shapefile
+2024-10-01 06:55:26| 101.3|  0.0|INFORM|Trying to find a DYNAMIC plugin for reader named `SHAPEFILE'
+2024-10-01 06:55:26| 101.3|  0.0|INFORM|FME Configuration: Source coordinate system for reader SHAPEFILE_2[SHAPEFILE] set to `SWEREF-99-12-00'
+2024-10-01 06:55:26| 101.3|  0.0|INFORM|Coordinate System `SWEREF-99-12-00' parameters: CS_NAME=`SWEREF-99-12-00' DESC_NM=`SWEREF 99 12 00' DT_NAME=`SWEREF99' EPSG_QD=`-1' GROUP=`EUROPE' MAP_SCL=`1' MAX_LAT=`60.68333333333333' MAX_LNG=`13.4' MIN_LAT=`55.416666666666664' MIN_LNG=`10.25' PARM1=`12' PROJ=`TM' QUAD=`1' SCL_RED=`1' SOURCE=`National Land Survey of Sweden' UNIT=`METER' X_OFF=`150000'
+2024-10-01 06:55:26| 101.3|  0.0|INFORM|SHAPEFILE reader: Opening dataset 'T:\AppServer\SBF-EFD\SBF-EFD3\byggnadsmodell\Väne-Åsaka.shp'
+2024-10-01 06:55:26| 101.3|  0.0|INFORM|Shapefile reader: Reading dataset with encoding 'UTF-8' as determined by 'Codepage File'
+2024-10-01 06:55:26| 101.3|  0.0|INFORM|FFS writer: Writing 4929 feature(s) to file 'C:\Users\AMAJEP~1\AppData\Local\Temp\wb-cache-ByggnadsmodelltillCesium_ver2-KpAGeh\Main__All_ -1 47 -1  0  364ad6260b1ad1fa5116c75803c0e02d20deefd7_26.fts'
+2024-10-01 06:55:28| 101.5|  0.2|INFORM|Spatial Index: Adding 4929 features
+2024-10-01 06:55:28| 101.6|  0.1|INFORM|AreaOnAreaOverlayer (OverlayFactory): Splitting bulk features into individual features
+2024-10-01 06:55:28| 101.9|  0.3|INFORM|Creating reader for format: Esri Shapefile
+2024-10-01 06:55:28| 101.9|  0.0|INFORM|Trying to find a DYNAMIC plugin for reader named `SHAPEFILE'
+2024-10-01 06:55:28| 101.9|  0.0|INFORM|FME Configuration: Source coordinate system for reader SHAPEFILE_2[SHAPEFILE] set to `SWEREF-99-12-00'
+2024-10-01 06:55:28| 101.9|  0.0|INFORM|Coordinate System `SWEREF-99-12-00' parameters: CS_NAME=`SWEREF-99-12-00' DESC_NM=`SWEREF 99 12 00' DT_NAME=`SWEREF99' EPSG_QD=`-1' GROUP=`EUROPE' MAP_SCL=`1' MAX_LAT=`60.68333333333333' MAX_LNG=`13.4' MIN_LAT=`55.416666666666664' MIN_LNG=`10.25' PARM1=`12' PROJ=`TM' QUAD=`1' SCL_RED=`1' SOURCE=`National Land Survey of Sweden' UNIT=`METER' X_OFF=`150000'
+2024-10-01 06:55:28| 101.9|  0.0|INFORM|SHAPEFILE reader: Opening dataset 'T:\AppServer\SBF-EFD\SBF-EFD3\byggnadsmodell\Åker.shp'
+2024-10-01 06:55:28| 101.9|  0.0|INFORM|Shapefile reader: Reading dataset with encoding 'UTF-8' as determined by 'Codepage File'
+2024-10-01 06:55:28| 101.9|  0.0|INFORM|FFS writer: Writing 4145 feature(s) to file 'C:\Users\AMAJEP~1\AppData\Local\Temp\wb-cache-ByggnadsmodelltillCesium_ver2-KpAGeh\Main__All_ -1 47 -1  0  364ad6260b1ad1fa5116c75803c0e02d20deefd7_27.fts'
+2024-10-01 06:55:30| 102.3|  0.4|INFORM|Spatial Index: Adding 4145 features
+2024-10-01 06:55:30| 102.4|  0.1|INFORM|AreaOnAreaOverlayer (OverlayFactory): Splitting bulk features into individual features
+2024-10-01 06:55:30| 102.8|  0.4|INFORM|Creating reader for format: Esri Shapefile
+2024-10-01 06:55:30| 102.8|  0.0|INFORM|Trying to find a DYNAMIC plugin for reader named `SHAPEFILE'
+2024-10-01 06:55:30| 102.8|  0.0|INFORM|FME Configuration: Source coordinate system for reader SHAPEFILE_2[SHAPEFILE] set to `SWEREF-99-12-00'
+2024-10-01 06:55:30| 102.8|  0.0|INFORM|Coordinate System `SWEREF-99-12-00' parameters: CS_NAME=`SWEREF-99-12-00' DESC_NM=`SWEREF 99 12 00' DT_NAME=`SWEREF99' EPSG_QD=`-1' GROUP=`EUROPE' MAP_SCL=`1' MAX_LAT=`60.68333333333333' MAX_LNG=`13.4' MIN_LAT=`55.416666666666664' MIN_LNG=`10.25' PARM1=`12' PROJ=`TM' QUAD=`1' SCL_RED=`1' SOURCE=`National Land Survey of Sweden' UNIT=`METER' X_OFF=`150000'
+2024-10-01 06:55:30| 102.8|  0.0|INFORM|SHAPEFILE reader: Opening dataset 'T:\AppServer\SBF-EFD\SBF-EFD3\byggnadsmodell\Överby.shp'
+2024-10-01 06:55:30| 102.8|  0.0|INFORM|Shapefile reader: Reading dataset with encoding 'UTF-8' as determined by 'Codepage File'
+2024-10-01 06:55:31| 102.8|  0.0|INFORM|FFS writer: Writing 14801 feature(s) to file 'C:\Users\AMAJEP~1\AppData\Local\Temp\wb-cache-ByggnadsmodelltillCesium_ver2-KpAGeh\Main__All_ -1 47 -1  0  364ad6260b1ad1fa5116c75803c0e02d20deefd7_28.fts'
+2024-10-01 06:55:35| 103.8|  1.0|INFORM|Spatial Index: Adding 14801 features
+2024-10-01 06:55:36| 104.4|  0.6|INFORM|AreaOnAreaOverlayer (OverlayFactory): Splitting bulk features into individual features
+2024-10-01 06:55:38| 106.5|  2.1|INFORM|MULTI_READER(SHAPEFILE_2): Done reading 626265 features from 33 readers
+2024-10-01 06:55:38| 106.5|  0.0|INFORM|MULTI_READER(MULTI_READER): Done reading 641868 features from 2 readers
+2024-10-01 06:55:38| 106.5|  0.0|INFORM|Emptying factory pipeline
+2024-10-01 06:55:38| 106.5|  0.0|STATS |Router and Unexpected Input Remover (RoutingFactory): Tested 641868 input feature(s), wrote 641868 output feature(s): 641868 matched merge filters, 641868 were routed to output, 0 could not be routed.
+2024-10-01 06:55:38| 106.5|  0.0|STATS |Unwanted Router Input Nuker (TeeFactory): Cloned 0 input feature(s) into 0 output feature(s)
+2024-10-01 06:55:38| 106.5|  0.0|STATS |Alingsåker_SHAPEFILE_2 Splitter (TeeFactory): Cloned 626265 input feature(s) into 626265 output feature(s)
+2024-10-01 06:55:38| 106.5|  0.0|STATS |TROLLKART.AFI_FAST_YTA_GML_MSSQL_SPATIAL_3 Splitter (TeeFactory): Cloned 15603 input feature(s) into 15603 output feature(s)
+2024-10-01 06:55:38| 106.5|  0.0|STATS |AttributeRemover (TeeFactory): Cloned 15603 input feature(s) into 15603 output feature(s)
+2024-10-01 06:55:38| 106.5|  0.0|STATS |=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2024-10-01 06:55:38| 106.5|  0.0|STATS |                        `CountFactory' Domain Summary
+2024-10-01 06:55:38| 106.5|  0.0|STATS |=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2024-10-01 06:55:38| 106.5|  0.0|STATS |counter                                                                  15603
+2024-10-01 06:55:38| 106.5|  0.0|STATS |==============================================================================
+2024-10-01 06:55:38| 106.5|  0.0|STATS |Total features counted:                                                  15603
+2024-10-01 06:55:38| 106.5|  0.0|STATS |=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2024-10-01 06:55:48| 113.4|  6.9|INFORM|AreaOnAreaOverlayer (OverlayFactory): Overlaying with an automatic tolerance of 1.2938764466066787e-8
+2024-10-01 06:55:49| 113.8|  0.4|INFORM|ResourceManager: Optimizing Memory Usage.  Please wait...
+2024-10-01 06:55:57| 121.9|  8.1|INFORM|... Last line repeated 2 times ...
+2024-10-01 06:55:57| 121.9|  0.0|INFORM|AreaOnAreaOverlayer (OverlayFactory): Performing low-level intersection at phase #1... 2.11% done
+2024-10-01 06:56:02| 127.2|  5.3|INFORM|AreaOnAreaOverlayer (OverlayFactory): Performing low-level intersection at phase #1... 11.63% done
+2024-10-01 06:56:07| 132.6|  5.4|INFORM|AreaOnAreaOverlayer (OverlayFactory): Performing low-level intersection at phase #1... 20.37% done
+2024-10-01 06:56:12| 138.0|  5.4|INFORM|AreaOnAreaOverlayer (OverlayFactory): Performing low-level intersection at phase #1... 50.82% done
+2024-10-01 06:56:17| 143.3|  5.3|INFORM|AreaOnAreaOverlayer (OverlayFactory): Performing low-level intersection at phase #1... 76.79% done
+2024-10-01 06:56:20| 146.7|  3.4|INFORM|AreaOnAreaOverlayer (OverlayFactory): Performing low-level intersection at phase #1... 100% done
+2024-10-01 06:56:26| 153.4|  6.7|INFORM|AreaOnAreaOverlayer (OverlayFactory): Performing low-level intersection at phase #2... 11.7% done
+2024-10-01 06:56:31| 158.8|  5.4|INFORM|AreaOnAreaOverlayer (OverlayFactory): Performing low-level intersection at phase #2... 40.28% done
+2024-10-01 06:56:36| 164.1|  5.3|INFORM|AreaOnAreaOverlayer (OverlayFactory): Performing low-level intersection at phase #2... 87.99% done
+2024-10-01 06:56:37| 165.0|  0.9|INFORM|AreaOnAreaOverlayer (OverlayFactory): Performing low-level intersection at phase #2... 100% done
+2024-10-01 06:56:39| 167.6|  2.6|INFORM|ResourceManager: Optimizing Memory Usage.  Please wait...
+2024-10-01 06:56:50| 178.1| 10.5|INFORM|... Last line repeated 3 times ...
+2024-10-01 06:56:50| 178.1|  0.0|INFORM|AreaOnAreaOverlayer (OverlayFactory): Breaking curves at topologically significant nodes... 14.1% done
+2024-10-01 06:56:51| 179.0|  0.9|INFORM|ResourceManager: Optimizing Memory Usage.  Please wait...
+2024-10-01 06:56:55| 183.5|  4.5|INFORM|ResourceManager: Optimizing Memory Usage.  Please wait...
+2024-10-01 06:56:55| 183.5|  0.0|INFORM|AreaOnAreaOverlayer (OverlayFactory): Breaking curves at topologically significant nodes... 31.11% done
+2024-10-01 06:56:59| 186.5|  3.0|INFORM|ResourceManager: Optimizing Memory Usage.  Please wait...
+2024-10-01 06:57:07| 194.1|  7.6|INFORM|... Last line repeated 2 times ...
+2024-10-01 06:57:07| 194.1|  0.0|INFORM|AreaOnAreaOverlayer (OverlayFactory): Breaking curves at topologically significant nodes... 44.03% done
+2024-10-01 06:57:08| 194.9|  0.8|INFORM|ResourceManager: Optimizing Memory Usage.  Please wait...
+2024-10-01 06:57:14| 200.5|  5.6|INFORM|... Last line repeated 2 times ...
+2024-10-01 06:57:14| 200.5|  0.0|INFORM|AreaOnAreaOverlayer (OverlayFactory): Breaking curves at topologically significant nodes... 67% done
+2024-10-01 06:57:14| 200.5|  0.0|INFORM|ResourceManager: Optimizing Memory Usage.  Please wait...
+2024-10-01 06:57:22| 208.6|  8.1|INFORM|... Last line repeated 2 times ...
+2024-10-01 06:57:22| 208.6|  0.0|INFORM|AreaOnAreaOverlayer (OverlayFactory): Breaking curves at topologically significant nodes... 72.69% done
+2024-10-01 06:57:25| 210.6|  2.0|INFORM|ResourceManager: Optimizing Memory Usage.  Please wait...
+2024-10-01 06:57:30| 215.7|  5.1|INFORM|AreaOnAreaOverlayer (OverlayFactory): Breaking curves at topologically significant nodes... 82.1% done
+2024-10-01 06:57:33| 218.2|  2.5|INFORM|ResourceManager: Optimizing Memory Usage.  Please wait...
+2024-10-01 06:57:38| 222.8|  4.6|INFORM|AreaOnAreaOverlayer (OverlayFactory): Breaking curves at topologically significant nodes... 95.22% done
+2024-10-01 06:57:39| 223.8|  1.0|INFORM|AreaOnAreaOverlayer (OverlayFactory): Breaking curves at topologically significant nodes... 100% done
+2024-10-01 06:59:22| 321.6| 97.8|WARN  |AreaOnAreaOverlayer (OverlayFactory): Overlay produced unexpected remnants. The unused data will by output via the remnants port
+2024-10-01 06:59:55| 348.1| 26.5|STATS |AreaOnAreaOverlayer (OverlayFactory): Input Summary:  641694 area(s), 0 point(s), and 0 line(s)
+2024-10-01 06:59:55| 348.1|  0.0|STATS |AreaOnAreaOverlayer (OverlayFactory): Output Summary: 275789 area(s), 0 point(s), and 0 line(s)
+2024-10-01 06:59:55| 348.1|  0.0|STATS |CoordinateExtractor_TESTZDEFAULT (TestFactory): Tested 275789 input feature(s) -- 275789 feature(s) passed and 0 feature(s) failed
+2024-10-01 06:59:55| 348.1|  0.0|STATS |CoordinateExtractor_TESTMODE (TestFactory): Tested 275789 input feature(s) -- 0 feature(s) passed and 275789 feature(s) failed
+2024-10-01 06:59:55| 348.1|  0.0|STATS |CoordinateExtractor_LIST (TestFactory): Tested 0 input feature(s) -- 0 feature(s) passed and 0 feature(s) failed
+2024-10-01 06:59:55| 348.1|  0.0|STATS |CoordinateExtractor_SPECIFIC (TestFactory): Tested 275789 input feature(s) -- 275789 feature(s) passed and 0 feature(s) failed
+2024-10-01 06:59:55| 348.1|  0.0|STATS |CoordinateExtractor_SPECIFIC_X (ExecuteFunctionFactory): Executed FME Functions on 275789 input feature(s) -- 275789 feature(s) completed and 0 feature(s) rejected
+2024-10-01 06:59:55| 348.1|  0.0|STATS |CoordinateExtractor_SPECIFIC_Y (ExecuteFunctionFactory): Executed FME Functions on 275789 input feature(s) -- 275789 feature(s) completed and 0 feature(s) rejected
+2024-10-01 06:59:55| 348.1|  0.0|STATS |CoordinateExtractor_SPECIFIC_Z_ROUTER (TestFactory): Tested 275789 input feature(s) -- 273170 feature(s) passed and 2619 feature(s) failed
+2024-10-01 06:59:55| 348.1|  0.0|STATS |CoordinateExtractor_SPECIFIC_Z (ExecuteFunctionFactory): Executed FME Functions on 273170 input feature(s) -- 273170 feature(s) completed and 0 feature(s) rejected
+2024-10-01 06:59:55| 348.1|  0.0|STATS |Tester (TestFactory): Tested 275789 input feature(s) -- 0 feature(s) passed and 275789 feature(s) failed
+2024-10-01 06:59:55| 348.1|  0.0|STATS |Tester PASSED Splitter (TeeFactory): Cloned 0 input feature(s) into 0 output feature(s)
+2024-10-01 06:59:58| 349.9|  1.8|STATS |Extruder_2 (Disabled) Nuker (TeeFactory): Cloned 0 input feature(s) into 0 output feature(s)
+2024-10-01 06:59:58| 349.9|  0.0|STATS |Aggregator (Disabled) Nuker (TeeFactory): Cloned 0 input feature(s) into 0 output feature(s)
+2024-10-01 06:59:58| 349.9|  0.0|STATS |Reprojector_8 (Disabled) Nuker (TeeFactory): Cloned 0 input feature(s) into 0 output feature(s)
+2024-10-01 06:59:58| 349.9|  0.0|STATS |AppearanceStyler (Disabled) Nuker (TeeFactory): Cloned 0 input feature(s) into 0 output feature(s)
+2024-10-01 06:59:58| 349.9|  0.0|STATS |AppearanceSetter (Disabled) Nuker (TeeFactory): Cloned 0 input feature(s) into 0 output feature(s)
+2024-10-01 06:59:58| 349.9|  0.0|STATS |Inspector (Disabled) Nuker (TeeFactory): Cloned 0 input feature(s) into 0 output feature(s)
+2024-10-01 06:59:58| 349.9|  0.0|STATS |Destination Feature Type Routing Correlator (RoutingFactory): Tested 0 input feature(s), wrote 0 output feature(s): 0 matched merge filters, 0 were routed to output, 0 could not be routed.
+2024-10-01 06:59:58| 349.9|  0.0|STATS |Final Output Nuker (TeeFactory): Cloned 0 input feature(s) into 0 output feature(s)
+2024-10-01 06:59:58| 349.9|  0.0|STATS |VisualizerProcessor (CreationFactory): Created 1 features
+2024-10-01 06:59:58| 349.9|  0.0|STATS |VisualizerCleaner (TeeFactory): Cloned 1 input feature(s) into 0 output feature(s)
+2024-10-01 06:59:58| 349.9|  0.0|STATS |=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2024-10-01 06:59:58| 349.9|  0.0|STATS |                            Features Read Summary
+2024-10-01 06:59:58| 349.9|  0.0|STATS |=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2024-10-01 06:59:58| 349.9|  0.0|STATS |Alingsåker                                                               1526
+2024-10-01 06:59:58| 349.9|  0.0|STATS |Björndalen                                                              13893
+2024-10-01 06:59:58| 349.9|  0.0|STATS |Centrala staden                                                         113632
+2024-10-01 06:59:58| 349.9|  0.0|STATS |Dannebacken                                                              10893
+2024-10-01 06:59:58| 349.9|  0.0|STATS |Halltorp                                                                   265
+2024-10-01 06:59:58| 349.9|  0.0|STATS |Halvorstorp                                                              18169
+2024-10-01 06:59:58| 349.9|  0.0|STATS |Hjortmossen                                                               9826
+2024-10-01 06:59:58| 349.9|  0.0|STATS |Hjulkvarn                                                                15736
+2024-10-01 06:59:58| 349.9|  0.0|STATS |Hojum                                                                     3641
+2024-10-01 06:59:58| 349.9|  0.0|STATS |Karlstorp                                                                15405
+2024-10-01 06:59:58| 349.9|  0.0|STATS |Kronogården                                                              8104
+2024-10-01 06:59:58| 349.9|  0.0|STATS |Källstorp                                                                5287
+2024-10-01 06:59:58| 349.9|  0.0|STATS |Lextorp                                                                  19809
+2024-10-01 06:59:58| 349.9|  0.0|STATS |Lärketorpet                                                              1588
+2024-10-01 06:59:58| 349.9|  0.0|STATS |Norra Björke                                                             3000
+2024-10-01 06:59:58| 349.9|  0.0|STATS |Sandhem                                                                  20492
+2024-10-01 06:59:58| 349.9|  0.0|STATS |Sjuntorp                                                                 24835
+2024-10-01 06:59:58| 349.9|  0.0|STATS |Skoftebyn                                                                46297
+2024-10-01 06:59:58| 349.9|  0.0|STATS |Skogshöjden                                                             15680
+2024-10-01 06:59:58| 349.9|  0.0|STATS |Skogstorpa                                                                3727
+2024-10-01 06:59:58| 349.9|  0.0|STATS |Stallbacka                                                               21465
+2024-10-01 06:59:58| 349.9|  0.0|STATS |Stavre                                                                   12546
+2024-10-01 06:59:58| 349.9|  0.0|STATS |Strömslund                                                              29817
+2024-10-01 06:59:58| 349.9|  0.0|STATS |Sylte                                                                     7692
+2024-10-01 06:59:58| 349.9|  0.0|STATS |TROLLKART.AFI_FAST_YTA_GML                                               15603
+2024-10-01 06:59:58| 349.9|  0.0|STATS |Tingvalla                                                                 9087
+2024-10-01 06:59:58| 349.9|  0.0|STATS |Torsred                                                                  12766
+2024-10-01 06:59:58| 349.9|  0.0|STATS |Upphärad                                                                 7095
+2024-10-01 06:59:58| 349.9|  0.0|STATS |Velanda                                                                   7538
+2024-10-01 06:59:58| 349.9|  0.0|STATS |Väne-Åsaka                                                              4929
+2024-10-01 06:59:58| 349.9|  0.0|STATS |Vårvik                                                                   1071
+2024-10-01 06:59:58| 349.9|  0.0|STATS |utanför tätorterna                                                    141508
+2024-10-01 06:59:58| 349.9|  0.0|STATS |Åker                                                                     4145
+2024-10-01 06:59:58| 349.9|  0.0|STATS |Överby                                                                  14801
+2024-10-01 06:59:58| 349.9|  0.0|STATS |==============================================================================
+2024-10-01 06:59:58| 349.9|  0.0|STATS |Total Features Read                                                     641868
+2024-10-01 06:59:58| 349.9|  0.0|STATS |=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2024-10-01 06:59:58| 349.9|  0.0|STATS |=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2024-10-01 06:59:58| 349.9|  0.0|STATS |                           Features Written Summary
+2024-10-01 06:59:58| 349.9|  0.0|STATS |=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2024-10-01 06:59:58| 349.9|  0.0|STATS |==============================================================================
+2024-10-01 06:59:58| 349.9|  0.0|STATS |Total Features Written                                                       0
+2024-10-01 06:59:58| 349.9|  0.0|STATS |=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+2024-10-01 06:59:58| 349.9|  0.0|WARN  |-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
+2024-10-01 06:59:58| 349.9|  0.0|WARN  |-~                                                                             ~-
+2024-10-01 06:59:58| 349.9|  0.0|WARN  |-~    Feature caches have been recorded at every stage of the translation.     ~-
+2024-10-01 06:59:58| 349.9|  0.0|WARN  |-~                      To inspect the recorded features,                      ~-
+2024-10-01 06:59:58| 349.9|  0.0|WARN  |-~              click the feature cache icons next to the ports.               ~-
+2024-10-01 06:59:58| 349.9|  0.0|WARN  |-~                                                                             ~-
+2024-10-01 06:59:58| 349.9|  0.0|WARN  |-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-~-
+2024-10-01 06:59:58| 349.9|  0.0|INFORM|Translation was SUCCESSFUL with 8 warning(s) (0 feature(s) output)
+2024-10-01 06:59:58| 349.9|  0.0|INFORM|FME Session Duration: 8 minutes 40.2 seconds. (CPU: 273.8s user, 76.1s system)
+2024-10-01 06:59:58| 349.9|  0.0|INFORM|END - ProcessID: 24856, peak process memory usage: 4170968 kB, current process memory usage: 171088 kB

@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Inkludera CesiumJS JavaScript och CSS filer, länkarna kan bytas ut för att uppdatera Cesium -->
+  <script src="https://cesium.com/downloads/cesiumjs/releases/1.129/Build/Cesium/Cesium.js"></script>
+  <link href="https://cesium.com/downloads/cesiumjs/releases/1.129/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.8.1/proj4.js" integrity="sha512-aIqYhZWmKBmfxEcdqUuqln8wMYFvGUKw4sqfjNcCoEQgx2iZF26+ikx0kz35uHjwpejMeHCcfHUpCtkohi2raw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <link rel="stylesheet" href="https://unpkg.com/boxicons@2.0.7/css/boxicons.min.css" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200">    <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" href="thn-symbol-only.png" type="image/png">
+  
+  <!-- Turf.js -->    
+  <script src="https://cdn.jsdelivr.net/npm/@turf/turf@latest/turf.min.js"></script>
+  <!-- Tippy.js CDN -->
+  <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/dist/tippy.css">
+  <script src="https://unpkg.com/@popperjs/core@2"></script>
+  <script src="https://unpkg.com/tippy.js@6"></script>
+   <!-- ChartJS -->
+   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+   <!-- HTML 2 Canvas -->
+   <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+   <!-- XLSX -->
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.1/xlsx.full.min.js"></script>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/Turf.js/6.5.0/turf.min.js" integrity="sha512-Q7HOppxoH0L2M7hreVoFCtUZimR2YaY0fBewIYzkCgmNtgOOZ5IgMNYxHgfps0qrO1ef5m7L1FeHrhXlq1I9HA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  
+  <link rel="stylesheet" href="css/navbar.css">
+  <link rel="stylesheet" href="css/chartjs.css">
+  <link rel="stylesheet" href="css/navigation-info.css">
+  <link rel="stylesheet" href="css/address-search.css">
+  <link rel="stylesheet" href="css/cesium-infobox.css">
+  <link rel="stylesheet" href="css/splash-screen.css">
+  <link rel="stylesheet" href="css/pedestrian-mode.css">
+  <link rel="stylesheet" href="css/draggable-divs.css">
+  <link rel="stylesheet" href="css/modal.css">
+  <link rel="stylesheet" href="css/tooltip.css">
+  <link rel="stylesheet" href="css/custom-inputs.css">
+  <link rel="stylesheet" href="css/terrain-section.css">
+  <link rel="stylesheet" href="css/loading-spinner.css">
+
+
+
+  <script>
+    Cesium.defineProperties = Object.defineProperties;
+  </script>
+  <script type="module" src="js/index.js"></script>
+
+  <script src="js/viewerCesiumNavigationMixin.min.js"></script>
+
+  <script type="module" src="js/hide-buildings.js"></script>
+  <title>Trollhättans Stads 3D-karta</title> <!-- Här skriver ni det ni vill att det ska stå uppe i fliken i webbläsaren -->
+</head>
+<body>
+  <header id="header" class="header" aria-label="Page header">
+    <div class="navbar">
+      <button id="mobile-navbar-info-btn" class="mobile-navbar-info-btn" aria-hidden="false" aria-label="Open info-dialog">
+        <i class='Info-icon'>
+          <img src="img/icon-info.svg" class="img" alt="" />
+        </i> 
+      </button>
+      
+      <i class='hamburger-icon'>
+        <img src="img/hamburger-icon.svg" class="img" alt="Hamburger menu" />
+      </i> 
+      <input id="checkbox-hamburger" class="invisible-checkbox checkbox-hamburger" type="checkbox" role="button" aria-label="Open mobile nav" aria-hidden="false" />
+      <div class="logo">
+        <a href="#">
+          <img src="img/thn_logo_liggande_vit_rgb.svg" alt="Trollhättans Stads logo"/> <!-- logga för kommun -->
+        </a>
+      </div> 
+      <nav class="nav-links">
+        <button id="close-nav-mobile-btn" class="close-nav-mobile-btn" aria-label="Close nav" ><i class='close-icon'><img src="img/x-close-white.svg" class="img" alt="Close nav" /></i></button>
+
+        <ul class="links">
+          <li class="nav-link-item">
+            <div class="nav-link-item__text-icon-container">
+              <i class='icon nav-link__icon'>
+                <img src="img/icon-info-small.svg" alt="">
+              </i>
+              <a href="#" id="navigation-help-Btn" class="nav-a">Info</a>
+            </div>
+          </li>
+          <li class="nav-link-item">
+            <div class="nav-link-item__text-icon-container">
+              <i class='icon nav-link__icon'><img src="img/icon-tool.svg" alt=""></i>
+              <a href="#" id="verktyg-nav-a" class="nav-a">Verktyg</a>
+            </div>
+            <i class='verktyg-arrow arrow kommun-arrow'><img src="img/arrow-kommun-white.svg" alt=""></i>
+            <ul class="verktyg-sub-menu sub-menu">
+              <li class="sub-menu-item">
+                <i class='icon sub-menu-item__icon'>
+                  <img src="img/icon-screenshot.svg" alt=""></i>
+                  <a href="#" class="sub-menu-item__label" id="printBtn">Ta skärmklipp</a>
+                </li>
+              <li class="sub-menu-item">
+                <i class='icon sub-menu-item__icon'><img src="img/icon-share.svg" alt=""></i>
+                <a href="#" class="sub-menu-item__label" id="shareBtn">Dela vy</a>
+              </li>
+              <li class="sub-menu-item">
+                <i class='icon sub-menu-item__icon'><img src="img/icon-ped.svg" alt=""></i>
+                <a href="#" class="sub-menu-item__label" id="pedestrianModeBtn">Fotgängarläge</a>
+              </li>
+              <li class="sub-menu-item">
+                <i class='icon sub-menu-item__icon'><img src="img/icon-building.svg" alt=""></i>
+                <a href="#" class="sub-menu-item__label" id="resetBuildings">Återställ gömda byggnader</a>
+              </li>
+              <li class="sub-menu-item">
+                <i class='icon sub-menu-item__icon'><img src="img/icon-tools.svg" alt=""></i>
+                <a href="#" class="sub-menu-item__label" id="showDiv4">Sektionsverktyg</a>
+              </li>
+              <li class="sub-menu-item">
+                <i class='icon sub-menu-item__icon'><img src="img/icon-3d.svg" alt=""></i>
+                <a href="#" class="sub-menu-item__label" id="showDiv1">Rita 3D polygoner</a>
+              </li>
+              <li class="sub-menu-item">
+                <i class='icon sub-menu-item__icon'><img src="img/icon-measure.svg" alt=""></i>
+                <a href="#" class="sub-menu-item__label" id="showDiv2">Mätverktyg</a>
+              </li>
+              <li class="sub-menu-item">
+                <i class='icon sub-menu-item__icon'><img src="img/icon-eye-purple.svg" alt=""></i>
+                <a href="#" class="sub-menu-item__label" id="showDiv6">Siktverktyg</a>
+              </li>
+              <li class="sub-menu-item">
+                <i class='icon sub-menu-item__icon'><img src="img/icon-sun.svg" alt=""></i>
+                <a href="#" class="sub-menu-item__label" id="showDiv3">Solstudie</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-link-item">
+            <div class="nav-link-item__text-icon-container">
+              <i class='icon nav-link__icon'><img src="img/icon-map.svg" alt=""></i>
+              <a href="#" id="bakgrundskartor-nav-a" class="nav-a">Bakgrundskartor</a>
+            </div>
+            <i class='layers-arrow arrow kommun-arrow'><img src="img/arrow-kommun-white.svg" alt="" aria-hidden="true"></i>
+            <ul id="layers-sub-menu" class="layers-sub-menu sub-menu">
+              <li id="kartor-label" class="sub-menu-label"><a class="dropdown-menu-label">Kartor</a></li>
+              <li class="nav-item-w-radio sub-menu-item">
+                <label for="Baselayer-button1" class="default-map sub-menu-item__label base-layer-1">Trollhättans baskarta nedtonad</label> 
+                <input checked type="radio" name="backgroundLayer" id="Baselayer-button1" class="nav-radio">
+              </li>
+              <li class="nav-item-w-radio sub-menu-item">
+                <label for="Baselayer-button2" class="default-map sub-menu-item__label base-layer-2">Trollhättans baskarta</label>
+                <input type="radio" name="backgroundLayer" id="Baselayer-button2" class="nav-radio">
+              </li>
+              <li class="nav-item-w-radio sub-menu-item">
+                <label for="Baselayer-button3" class="default-map sub-menu-item__label base-layer-3">Ortofoto 2022</label> 
+                <input type="radio" name="backgroundLayer" id="Baselayer-button3" class="nav-radio" >
+              </li>
+              <li class="nav-item-w-radio sub-menu-item">
+                <label for="Baselayer-button4" class="default-map sub-menu-item__label base-layer-4">Open Street Map</label> 
+                <input  type="radio" name="backgroundLayer" id="Baselayer-button4" class="nav-radio">
+              </li>
+              <li class="nav-item-w-radio sub-menu-item">
+                <label for="Baselayer-button5" class="default-map sub-menu-item__label base-layer-5">Trollhättans detaljplaner</label>
+                <input type="radio" name="backgroundLayer"  id="Baselayer-button5" class="nav-radio">
+              </li>
+              <li id="terrain-label"class="sub-menu-label">
+                <a class="dropdown-menu-label">Byggnader</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-link-item">
+            <div class="nav-link-item__text-icon-container">
+              <i class='icon nav-link__icon'><img src="img/icon-project.svg" alt=""></i>
+              <a href="#" id="projekt-nav-a" class="nav-a">Projekt</a>
+            </div>
+            <i class='zoom-arrow arrow kommun-arrow'><img src="img/arrow-kommun-white.svg" alt="Arrow icon" aria-hidden="true"></i>
+            <ul class="zoom-sub-menu sub-menu">
+        
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <search class="search-box">
+        <input id="checkbox-search" class="invisible-checkbox checkbox-search" type="checkbox" aria-label="Open search-bar" />
+        <i class='eyeglass-icon'><img src="img/eyeglass-icon.svg" class="img" alt="" /></i>
+        <div class="input-box">
+          <button id="close-input-box-btn" class="close-input-box-btn" aria-label="Close search-bar" ><i class='close-icon'><img src="img/x-close.svg" class="img" alt="" /></i></button>
+          <input type="text" placeholder="Sök adress..." id="address-search">
+          <ul id="addressDropdown" class="address-dropdown"></ul>
+        </div>            
+      </search>
+    </div>
+  </header>
+ <dialog id="pedestrianModeInfo" class="pedestrian-mode-wrapper" style="display: none;" aria-label="Pedestrian mode info" aria-hidden="true">
+    <button id="ped-x-close-btn" class="x-btn"><i><img src="img/x-close.svg" alt="Close pedestrian mode"></i></button>
+    <button id="ped-minus-btn" class="minus-btn"><i><img id="ped-minus-btn__img" src="img/minus-purple.svg" alt="Minimize pedestrian mode-window"></i></button>
+
+    <h3 class="modal-h3">
+      <i class='icon'><img src="img/icon-ped.svg" class="img" alt="" /></i>
+      Fotgängarläge
+    </h3> 
+    <h5 id="ped-h5" class="modal-h5">Buggar kan förekomma</h5><br>
+    <p id="pedestrian-info" class="modal-p">Klicka på marken där du vill placera kameran. 
+              Du kan alltid välja en ny position genom att klicka igen på marken. 
+              Genom att hålla in Shift och dra med vänster musklick kan du vrida huvudet. 
+    </p>
+    <div class="buttonsContainer">
+      <button class="toggle-button hidden modal-btn btn-secondary minimize-pedestrian-mode-btn" id="minimizePedestrianModeBtn" style="display: none;">
+        Minimera och börja<i><img src="img/btn/icon-minimize.svg" alt=""></i>
+      </button>
+      <button class="toggle-button hidden modal-btn btn-primary exit-pedestrian-mode-btn" id="exitPedestrianModeBtn" style="display: none;">
+        Stäng fotgängarläge<i><img src="img/btn/icon-close.svg" alt=""></i>
+      </button>
+    </div>
+  </dialog>
+
+  <div id="draggableDiv1" class="draggable draggable--3d-polygon" aria-label="Draggable modal - 3D Polygons" aria-hidden="true">
+    <header class="drag-bar draggable__header">
+      <i class='icon'>
+        <img src="img/icon-3d-white.svg" class="img" alt="" />
+      </i>
+      <h3 class="modal-h3 draggable__h3">Rita 3D polygoner</h3>
+      <button class='close-btn' aria-label="Close draggable modal - 3D Polygons">
+        <i>
+          <img src="img/x-close-white.svg" alt="Close draggable modal - 3D Polygons">
+        </i>
+      </button>
+    </header>
+    <div class="draggable__inner draggable__inner--3d-polygons">
+      <button id="tooltip-draw-polygon-btn" class="tooltip-btn" aria-label="Help"><i><img class="tool-tip-icon__img" src="img/question-mark.svg" alt=""></i></button>
+      <div id="tooltip-draw-polygon" class="tooltip">
+        <div class="tooltip__inner">
+          <i class="tooltip__inner-icon"><img src="img/arrow-kommun-white.svg" alt=""></i>
+          <p class="tooltip__p">
+            Börja med att välja en höjd. Detta blir polygonens takhöjd, mätt från marken den står på.
+          </p>
+          <i class="tooltip__inner-icon"><img src="img/arrow-kommun-white.svg" alt=""></i>
+          <p class="tooltip__p">
+            Klicka på “Börja rita”, och enkelklicka sedan på minst 3 punkter på kartan.
+          </p>
+          <i class="tooltip__inner-icon"><img src="img/arrow-kommun-white.svg" alt=""></i>
+          <p class="tooltip__p">
+            Dubbelklicka för att fastställa och visualisera polygonen.
+          </p>
+        </div>
+      </div>
+      <div class="draggable__buttons-container buttons-container--3d-polygons">
+        <button id="startExtrudeDrawingButton" class="draggable__button" aria-label="Start drawing"><i><img id="draw-polygon-icon" src="img/btn/icon-draw.svg" alt=""></i>Börja rita</button>
+        <button id="removeExtrudeDrawingButton" class="draggable__button button--danger" aria-label="Clear drawings"><i><img src="img/btn/icon-trash.svg" alt=""></i>Rensa</button>   
+      </div>
+      <div class="draggable__content draggable__content-3d-polygons">
+        <label for="extrusionHeight">Höjd</label>
+        <input type="range" class="draggable__range" id="extrusionHeight" name="extrusionHeight" min="0" max="100" step="1" aria-label="Set polygon height">
+        <span id="heightValue" class="range__height-value">50</span><span>m</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="draggableDiv2" class="draggable draggable--measure-tools" aria-label="Draggable modal - Measuring tools" aria-hidden="true">
+    <header class="drag-bar draggable__header">
+      <i class='icon'>
+        <img src="img/icon-measure-white.svg" class="img" alt="" />
+      </i>
+      <h3 class="modal-h3 draggable__h3">Mätverktyg</h3>
+      <button class='close-btn' aria-label="Close draggable modal - Measuring tools">
+        <i>
+          <img src="img/x-close-white.svg" alt="">
+        </i>
+      </button>
+    </header>
+    
+    <div class="draggable__inner draggable__inner--measure-tools">
+      <button id="tooltip-measure-tools-btn" class="tooltip-btn" aria-label="Help"><i><img class="tool-tip-icon__img" src="img/question-mark.svg" alt=""></i></button>
+      <div id="tooltip-measure-tools" class="tooltip tooltip--measure-tools">
+        <div class="tooltip__inner">
+          <i class="tooltip__inner-icon"><img src="img/arrow-kommun-white.svg" alt=""></i>
+          <p class="tooltip__p">
+            Zooma in kartan så att du kan överblicka det område du vill mäta inom.
+          </p>
+          <i class="tooltip__inner-icon"><img src="img/arrow-kommun-white.svg" alt=""></i>
+          <p class="tooltip__p">
+            Klicka på det verktyg du vill använda.
+          </p>
+          <i class="tooltip__inner-icon"><img src="img/arrow-kommun-white.svg" alt=""></i>
+          <p class="tooltip__p">
+            Enkelklicka för att sätta ut enskilda punkter, och dubbelklicka för att fastställa din mätning.
+          </p>
+        </div>
+      </div>
+      <div class="draggable__buttons-container">
+        <button href="#" id="measureButton" class="draggable__button button--measure" aria-label="Start drawing lines"><i><img src="img/btn/icon-draw.svg" alt="" ></i>Mät längd</button>
+        <button href="#" id="measureAreaButton" class="draggable__button button--measure" aria-label="Start drawing area"><i><img src="img/btn/icon-draw.svg" alt=""></i>Mät yta</button>
+        <button href="#" id="measureHeightButton" class="draggable__button button--measure" aria-label="Start drawing height"><i><img src="img/btn/icon-draw.svg" alt=""></i>Mät höjd</button>
+        <button href="#" id="clearButton" class="draggable__button button--measure button--danger" aria-label="Clear all measurements"><i><img src="img/btn/icon-trash.svg" alt=""></i>Rensa</button>
+      </div>
+    </div>    
+  </div>
+
+  <div id="draggableDiv3" class="draggable draggable--solar" aria-label="Draggable modal - Solar study" aria-hidden="true">
+    <header class="drag-bar draggable__header">
+      <i class='icon'>
+        <img src="img/icon-sun-white.svg" class="img" alt="" />
+      </i>
+      <h3 class="modal-h3 draggable__h3">Solstudie</h3>
+      <button class='close-btn' aria-label="Close draggable modal - Solar study">
+        <i>
+          <img src="img/x-close-white.svg" alt="">
+        </i>
+      </button>
+    </header>
+    <div class="draggable__inner draggable__inner--solar">
+      <button id="tooltip-solar-study-btn" class="tooltip-btn" aria-label="Help"><i><img class="tool-tip-icon__img" src="img/question-mark.svg" alt=""></i></button>
+      <div id="tooltip-solar-study" class="tooltip tooltip--solar-study">
+        <div class="tooltip__inner">
+          <i class="tooltip__inner-icon"><img src="img/arrow-kommun-white.svg" alt=""></i>
+          <p class="tooltip__p">
+            Välj en tid och datum, och klicka på "Aktivera skuggor".
+          </p>
+          <i class="tooltip__inner-icon"><img src="img/arrow-kommun-white.svg" alt=""></i>
+          <p class="tooltip__p">
+            Zooma in på kartan så att du kan se enskilda byggnader.
+          </p>
+          <i class="tooltip__inner-icon"><img src="img/arrow-kommun-white.svg" alt=""></i>
+          <p class="tooltip__p">
+            Justera tid och/eller datum för att se hur skuggorna förändras över tid.
+          </p>
+        </div>
+      </div>
+      <div class="draggable__content draggable__content--solar">
+        <label class="solar__label">Månad <input id="month-slider" class="month-slider-class solar-slider" type="range" min="1" step="1" max="12" value="6"/></label>
+        <div id="month-slider-value">Juni</div>
+        <label class="solar__label">Datum <input id="date-slider" class="date-slider-class solar-slider" type="range" min="1" step="1" max="31" value="15"/></label>
+        <div id="date-slider-value">15</div>
+        <label class="solar__label">Tid <input id="time-slider" class="time-slider-class solar-slider" type="range" min="0.5" step="0.5" max="24" value="10"/></label>
+        <div id="time-slider-value">10:00</div>
+        <div class="solar__text-small">(CEST+1)</div>
+      </div>
+      <button id="sun-study-btn" class="draggable__button btn-primary" aria-label="Activate shadows"><i><img src="img/btn/icon-sun.svg" alt=""></i>Aktivera</button>
+
+    </div>
+  </div>
+
+  <div id="draggableDiv4" class="draggable draggable--section-tool" aria-label="Draggable modal - Section-tool" aria-hidden="true">
+    <header class="drag-bar draggable__header">
+      <i class='icon'>
+        <img src="img/icon-tool-white.svg" class="img" alt="" />
+      </i>
+      <h3 class="modal-h3 draggable__h3">Sektionsverktyg</h3>
+      <button class='close-btn' aria-label="Close draggable modal - Section-tool">
+        <i>
+          <img src="img/x-close-white.svg" alt="">
+        </i>
+      </button>
+    </header>
+    <div class="draggable__inner draggable__inner--section-tool">
+      <button id="tooltip-section-tool-btn" class="tooltip-btn" aria-label="Help"><i><img class="tool-tip-icon__img" src="img/question-mark.svg" alt=""></i></button>
+      <div id="tooltip-section-tool" class="tooltip tooltip--section-tool">
+        <div class="tooltip__inner">
+          <i class="tooltip__inner-icon"><img src="img/arrow-kommun-white.svg" alt=""></i>
+          <p class="tooltip__p">
+            Zooma in så att du kan överblicka det område du vill mäta inom.
+          </p>
+          <i class="tooltip__inner-icon"><img src="img/arrow-kommun-white.svg" alt=""></i>
+          <p class="tooltip__p">
+            Låt terrängen rendera färdigt för att få en så exakt mätning som möjligt.
+          </p>
+          <i class="tooltip__inner-icon"><img src="img/arrow-kommun-white.svg" alt=""></i>
+          <p class="tooltip__p">
+            Klicka på "Rita linje" och klicka sedan ut 2 punkter på kartan att mäta i mellan.
+          </p>
+        </div>
+      </div>
+      <div class="draggable__content draggable__content--section-tool TerrainSectionContent">
+        <label for="numberOfSamples" class="section-tool__label">Antal ekvidistanta brytpunkter</label>
+        <input type="number" id="numberOfSamples" value="10" min="2" max="100">
+        <button class="draggable__button " id="drawLineButton">Rita linje</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="draggableDiv5" class="draggable draggable--viewshed" aria-label="Draggable modal - Viewshed" aria-hidden="true">
+    <header class="drag-bar draggable__header">
+      <i class='icon'>
+        <img src="img/icon-eye-white.svg" class="img" alt="" />
+      </i>
+      <h3 class="modal-h3 draggable__h3">Siktverktyg</h3>
+      <button class='close-btn' aria-label="Close draggable modal - Viewshed">
+        <i>
+          <img src="img/x-close-white.svg" alt="">
+        </i>
+      </button>
+    </header>
+    <div class="draggable__inner draggable__inner--viewshed">
+      <button id="tooltip-viewshed-btn" class="tooltip-btn" aria-label="Help"><i><img class="tool-tip-icon__img" src="img/question-mark.svg" alt=""></i></button>
+      <div id="tooltip-viewshed" class="tooltip tooltip--viewshed">
+        <div class="tooltip__inner">
+          <i class="tooltip__inner-icon"><img src="img/arrow-kommun-white.svg" alt=""></i>
+          <p class="tooltip__p">
+            Klicka på "Aktivera siktverktyget" och välj sedan en utgångspunkt genom att klicka på kartan.
+          </p>
+          <i class="tooltip__inner-icon"><img src="img/arrow-kommun-white.svg" alt=""></i>
+          <p class="tooltip__p">
+            Peka och klicka där du vill fästa blicken.
+          </p>
+          <i class="tooltip__inner-icon"><img src="img/arrow-kommun-white.svg" alt=""></i>
+          <p class="tooltip__p">
+            Allt som färgas grönt är synligt från utgångspunkten, och allt som färgas rött är utom synhåll.
+          </p>
+        </div>
+      </div>
+      <div class="draggable__content draggable__content--viewshed">
+        <button id="start-viewshed-btn" class="draggable__button btn-primary" aria-label="Start viewshed">
+          <i>
+            <img src="img/icon-eye-white.svg" alt="">
+          </i>
+          Aktivera siktverktyget
+        </button>
+        <button href="#" id="clear-viewshed-btn" class="draggable__button button--measure button--danger" aria-label="Clear viewshed">
+          <i>
+            <img src="img/btn/icon-trash.svg" alt="">
+          </i>
+          Rensa
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="draggableDiv6" class="draggable draggable--shader" aria-label="Draggable modal - Viewshed" aria-hidden="true">
+    <header class="drag-bar draggable__header">
+      <i class='icon'>
+        <img src="img/icon-eye-white.svg" class="img" alt="" />
+      </i>
+      <h3 class="modal-h3 draggable__h3">Siktverktyg</h3>
+      <button class='close-btn' aria-label="Close draggable modal - Viewshed">
+        <i>
+          <img src="img/x-close-white.svg" alt="">
+        </i>
+      </button>
+    </header>
+    <div class="draggable__inner draggable__inner--shader">
+      <button id="tooltip-shader-btn" class="tooltip-btn" aria-label="Help"><i><img class="tool-tip-icon__img" src="img/question-mark.svg" alt=""></i></button>
+      <div id="tooltip-shader" class="tooltip tooltip--shader">
+        <div class="tooltip__inner">
+          <i class="tooltip__inner-icon"><img src="img/arrow-kommun-white.svg" alt=""></i>
+          <p class="tooltip__p">
+            Gör dina förval och aktivera siktverktyget. Klicka sedan på kartan för att välja en utgångspunkt följt av en siktpunkt.
+          </p>
+          <i class="tooltip__inner-icon"><img src="img/arrow-kommun-white.svg" alt=""></i>
+          <p class="tooltip__p">
+            Dra och släpp kameran för att flytta utgångspunkten till en ny position. Dra och släpp siktet för att vrida/rotera kameran. 
+          </p>
+          <i class="tooltip__inner-icon"><img src="img/arrow-kommun-white.svg" alt=""></i>
+          <p class="tooltip__p">
+            Allt som färgas grönt är synligt från utgångspunkten, och allt som färgas rött är utom synhåll.
+          </p>
+        </div>
+      </div>
+      <div class="draggable__content draggable__content--shader">
+        <form class="form--shader">
+          <label class="shader-label">
+            Kamerans höjd över marken (m)
+            <input type="number" class="draggable__number" id="shader-height" name="shader-height" value="1.70" min="0" max="1000" step="1" aria-label="Set camera height in meters above terrain">
+          </label>
+          <label class="shader-label">
+            Synfältets bredd (grader °)
+            <input type="number" class="draggable__number" id="shader-width" name="shader-width" value="90" min="10" max="170" step="10" aria-label="Set view field width in degrees">
+          </label>
+        </form>
+        <button id="start-shader-btn" class="draggable__button btn-primary" aria-label="Start shader">
+          <i>
+            <img src="img/icon-eye-white.svg" alt="">
+          </i>
+          Aktivera siktverktyget
+        </button>
+        <button href="#" id="clear-shader-btn" class="draggable__button button--measure button--danger" aria-label="Clear shader">
+          <i>
+            <img src="img/btn/icon-trash.svg" alt="">
+          </i>
+          Rensa
+        </button>
+        <button href="#" id="cancel-shader-btn" class="draggable__button button--measure button--danger" aria-label="Cancel shader creation">
+          <i>
+            <img src="img/btn/icon-trash.svg" alt="">
+          </i>
+          Avbryt
+        </button>
+      </div>
+    </div>
+  </div>
+
+  
+
+  <main id="cesiumContainer" aria-label="3D-map window"></main>
+  <script src="js/navbar.js"></script>
+  <script src="js/cesium-viewshed.js"></script>
+  <script type="module" src="js/navigation-info.js"></script>
+  <script type="module" src="js/draggable-divs.js"></script>
+</body>
+</html>
