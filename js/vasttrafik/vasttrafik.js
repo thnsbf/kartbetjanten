@@ -1,10 +1,12 @@
 import { getApiToken, getResource, getJourneyPositionsBoundaryBox } from "./vasttrafik-api.js";
 import { viewer } from "../viewer.js";
 import { hexToRgb } from "../utils.js";
+import { arbitraryPause } from "../utils-cesium.js";
 
 
 let currentJourneyItems = []
 let currentJourneyRefs = []
+let intervalId = null
 
 export async function initializeVasttrafik() {
   if (!localStorage.getItem("access_token")) {
@@ -40,9 +42,17 @@ export async function initializeVasttrafik() {
   /* setTimeout(() => {
     fetchJourneyUpdates()
   }, 3000); */
-  setInterval(() => {
+  intervalId = setInterval(() => {
     fetchJourneyUpdates()
   }, 1000);
+}
+
+export async function deInitializeVasttrafik() {
+  clearInterval(intervalId)
+  await arbitraryPause(1000)
+  currentJourneyItems.forEach(journeyItem => viewer.entities.remove(journeyItem))
+  currentJourneyItems = []
+  currentJourneyRefs = []
 }
 
 

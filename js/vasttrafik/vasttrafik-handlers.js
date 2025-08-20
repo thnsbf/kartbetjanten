@@ -1,7 +1,9 @@
 import { viewer } from "../viewer.js";
 
+let handlerVasttrafikHover = null
+
 export function initializeVasttrafikHandlers() {
-  const handlerVasttrafikHover = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+  handlerVasttrafikHover = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
   let currentlyHovered = null  
   
   const popUpElem = document.createElement('div')
@@ -15,8 +17,8 @@ export function initializeVasttrafikHandlers() {
     font-size: 12px;
     `
   document.body.appendChild(popUpElem)
-  
-  handlerVasttrafikHover.setInputAction(function (movement) {
+
+  const handlerFunction = function (movement) {
     const pickedObject = viewer.scene.pick(movement.endPosition);  
     if (
       Cesium.defined(pickedObject) &&
@@ -40,6 +42,13 @@ export function initializeVasttrafikHandlers() {
       tooltip.style.display = "none";
       currentlyHovered = null
     }
-  }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+  }
+  
+  handlerVasttrafikHover.setInputAction(handlerFunction, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
 
+}
+
+export function removeVasttrafikHandlers() {
+  handlerVasttrafikHover.removeInputAction(Cesium.ScreenSpaceEventType.MOUSE_MOVE)
+  handlerVasttrafikHover.destroy()
 }

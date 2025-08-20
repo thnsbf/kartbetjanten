@@ -102,10 +102,8 @@ export function waitForTerrainToLoad(viewer, timeout = 10000) {
 }
 
 export async function arbitraryPause(ms = 5000) {
-  console.log("Waiting for milliseconds: ", ms)
   return new Promise((resolve) => {
     setTimeout(() => {
-      console.log("Resolved!")
       resolve(true);
     }, ms);
   });
