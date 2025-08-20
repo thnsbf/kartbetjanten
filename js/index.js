@@ -10,6 +10,8 @@ import { initializeProjects } from "./projects.js";
 import { initializeEventListeners } from "./event-listeners.js";
 import { initializeSectionToolChartContainer } from "./ui-terrain-section.js";
 import { initialCameraView } from "./utils.js"
+import { initializeVasttrafik } from "./vasttrafik/vasttrafik.js";
+import { initializeVasttrafikHandlers } from "./vasttrafik/vasttrafik-handlers.js";
 
 
 initializeBaselayers()
@@ -23,8 +25,8 @@ initializeBuildings()
 initializeProjects()
 initializeSectionToolChartContainer()
 initializeEventListeners()
-
-
+initializeVasttrafik()
+initializeVasttrafikHandlers()
 
 
 

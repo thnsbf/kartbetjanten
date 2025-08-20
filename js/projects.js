@@ -15,7 +15,6 @@ let activeProjectAssets = [] // Tilesets
 export async function initializeProjects() {
   try {
     const jsonUrl = new URL("../json/projects.json", import.meta.url);
-    console.log(jsonUrl)
     const response = await fetch(jsonUrl);
     PROJECTS = await response.json();
     initializeProjectsInNav(PROJECTS)
@@ -35,8 +34,7 @@ function removeProject(projectId) {
 function initializeProjectsInNav(PROJECTS) {
   const parentUl = document.getElementsByClassName("zoom-sub-menu")[0]
   const { features } = PROJECTS
-  console.log(parentUl.childNodes)
-  console.log(features[0].properties)
+
 
   for (let i = 0; i < features.length; i++) {
     const { id, name } = features[i].properties

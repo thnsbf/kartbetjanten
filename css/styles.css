@@ -12,7 +12,7 @@ html, body, #cesiumContainer {
 }
 /* Här ändras kommunfärger */
 :root {
-    --kommunfarg: var(--purple-700);
+    --kommunfarg: var(--red-500);
     --kommunfarg-darker: var(--purple-900);
     --kommunfarg-lighter: var(--purple-300);
     --kommunfarg-lightest: var(--purple-100);
