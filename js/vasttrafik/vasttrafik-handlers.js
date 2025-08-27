@@ -1,9 +1,11 @@
 import { viewer } from "../viewer.js";
+import { showJourneyInfo } from "./vasttrafik-dom.js";
+import { selectJourney } from "./vasttrafik.js";
 
-let handlerVasttrafikHover = null
+let handlerVasttrafik = null
 
 export function initializeVasttrafikHandlers() {
-  handlerVasttrafikHover = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+  handlerVasttrafik = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
   let currentlyHovered = null  
   
   const popUpElem = document.createElement('div')
@@ -18,7 +20,7 @@ export function initializeVasttrafikHandlers() {
     `
   document.body.appendChild(popUpElem)
 
-  const handlerFunction = function (movement) {
+  const hoverFunction = function (movement) {
     const pickedObject = viewer.scene.pick(movement.endPosition);  
     if (
       Cesium.defined(pickedObject) &&
@@ -43,12 +45,22 @@ export function initializeVasttrafikHandlers() {
       currentlyHovered = null
     }
   }
-  
-  handlerVasttrafikHover.setInputAction(handlerFunction, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
 
+  const clickFunction = function(click) {
+    const pickedObject = viewer.scene.pick(click.position);
+    if (Cesium.defined(pickedObject) && pickedObject.id?.isVasttrafikVehicle) {
+      console.log("Point entity clicked:", pickedObject);
+      console.log(pickedObject.id.ref)
+      showJourneyInfo(pickedObject.id)
+      selectJourney(pickedObject.id.ref)
+    }
+  }
+  
+  handlerVasttrafik.setInputAction(hoverFunction, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
+  handlerVasttrafik.setInputAction(clickFunction, Cesium.ScreenSpaceEventType.LEFT_CLICK);
 }
 
 export function removeVasttrafikHandlers() {
-  handlerVasttrafikHover.removeInputAction(Cesium.ScreenSpaceEventType.MOUSE_MOVE)
-  handlerVasttrafikHover.destroy()
+  handlerVasttrafik.removeInputAction(Cesium.ScreenSpaceEventType.MOUSE_MOVE)
+  handlerVasttrafik.destroy()
 }
