@@ -27,8 +27,9 @@ initializeProjects()
 initializeSectionToolChartContainer()
 initializeEventListeners()
 initializeView()
-/* initializeVasttrafik()
-initializeVasttrafikHandlers() */
+
+initializeVasttrafik()
+initializeVasttrafikHandlers()
 
 
 
