@@ -2,111 +2,120 @@ import { getApiToken, getResource, getJourneyPositionsBoundaryBox } from "./vast
 import { viewer } from "../viewer.js";
 import { hexToRgb } from "../utils.js";
 import { arbitraryPause } from "../utils-cesium.js";
-import { EPS, movedEnough, ensureSampledPosition, relaxAvailability, trimSamples, addFutureSampleMonotonic  } from "./vasttrafik-animation.js";
-import { showJourneyInfo } from "./vasttrafik-dom.js";
 
-let currentJourneyItems = []
-let currentJourneyRefs = []
-let sampledPositions = []
-let intervalId = null
+// --- State ---
+let currentJourneyItems = new Map();     // ref -> Entity
+let positionProps = new Map();           // ref -> SampledPositionProperty
+let lastSampleTime = new Map();          // ref -> JulianDate of last sample
+let intervalId = null;
 
-const busUri = await Cesium.IonResource.fromAssetId(3653053);
+// --- Tuning ---
+const POLL_SECONDS    = 1;      // fetch cadence (s)
+const LOOKAHEAD_SEC   = 3.5;    // > POLL_SECONDS to cover hiccups
+const NOISE_METERS    = 2;      // treat moves below this as jitter
+const HEIGHT_OFFSET_M = 0.8;    // slight offset to avoid clamp popping
+
+// --- Assets ---
+const busUri   = await Cesium.IonResource.fromAssetId(3653053);
 const trainUri = await Cesium.IonResource.fromAssetId(3653065);
 
+// --- Helpers ---
+function toCartesian(lon, lat, height = HEIGHT_OFFSET_M) {
+  return Cesium.Cartesian3.fromDegrees(lon, lat, height);
+}
+function nowJulian() {
+  return viewer.clock.currentTime.clone();
+}
+function ensureExtrapolation(spp) {
+  spp.forwardExtrapolationType = Cesium.ExtrapolationType.HOLD;
+  spp.forwardExtrapolationDuration = 30; // seconds
+  spp.backwardExtrapolationType = Cesium.ExtrapolationType.HOLD;
+  spp.backwardExtrapolationDuration = 15;
+}
+function ensureAvailability(entity) {
+  const start = Cesium.JulianDate.addHours(viewer.clock.currentTime, -12, new Cesium.JulianDate());
+  const stop  = Cesium.JulianDate.addHours(viewer.clock.currentTime,  +24, new Cesium.JulianDate());
+  entity.availability = new Cesium.TimeIntervalCollection([
+    new Cesium.TimeInterval({ start, stop })
+  ]);
+}
+function createOrGetSPP(ref) {
+  let spp = positionProps.get(ref);
+  if (!spp) {
+    spp = new Cesium.SampledPositionProperty();
+    spp.setInterpolationOptions({
+      interpolationAlgorithm: Cesium.LinearApproximation,
+      interpolationDegree: 1
+    });
+    ensureExtrapolation(spp);
+    positionProps.set(ref, spp);
+  }
+  return spp;
+}
+function makeScaleByDistanceProperty(positionProperty, options = {}) {
+  const {
+    near = 80,
+    nearScale = 1.25,
+    far = 5000,
+    farScale = 0.16,
+    base = 3.5
+  } = options;
+  console.log(options)
+  const lerp = (a, b, t) => a + (b - a) * t;
+  return new Cesium.CallbackProperty((time) => {
+    const pos = positionProperty.getValue(time);
+    if (!pos) return base * nearScale;
+    const cam = viewer.camera.positionWC;
+    const dist = Cesium.Cartesian3.distance(cam, pos);
+    const t = Cesium.Math.clamp((dist - near) / (far - near), 0.0, 1.0);
+    return base * lerp(nearScale, farScale, t);
+  }, false);
+}
+
+// Add a sample with strictly increasing time.
+// If movement is below NOISE_METERS, add a keepalive sample at the last position (prevents gaps).
+function addSampleForRef(ref, lon, lat, atJulianDate) {
+  const spp = createOrGetSPP(ref);
+
+  const lastT = lastSampleTime.get(ref);
+  let t = atJulianDate;
+
+  if (lastT && Cesium.JulianDate.lessThanOrEquals(t, lastT)) {
+    t = Cesium.JulianDate.addSeconds(lastT, 0.001, new Cesium.JulianDate());
+  }
+
+  if (lastT) {
+    const lastPos = spp.getValue(lastT);
+    if (lastPos) {
+      const newPos = toCartesian(lon, lat);
+      const dist = Cesium.Cartesian3.distance(lastPos, newPos);
+      if (dist < NOISE_METERS) {
+        spp.addSample(t, lastPos); // keepalive
+        lastSampleTime.set(ref, t);
+        return spp;
+      }
+    }
+  }
+
+  spp.addSample(t, toCartesian(lon, lat));
+  lastSampleTime.set(ref, t);
+  return spp;
+}
+
+// --- Public API ---
 export async function initializeVasttrafik() {
   if (!localStorage.getItem("access_token")) {
     const apiToken = await getApiToken();
     localStorage.setItem("access_token", JSON.stringify(apiToken));
   }
 
-  const testFetch = await getResource(
-    `/journeys?originGid=9021014005460000&destinationGid=9021014004090000`
-  );
-
+  const testFetch = await getResource(`/journeys?originGid=9021014005460000&destinationGid=9021014004090000`);
   if (!testFetch) {
     const apiToken = await getApiToken();
     localStorage.setItem("access_token", JSON.stringify(apiToken));
   }
 
-  const timeOfFirstFetch = new Date().toISOString()
-  console.log(timeOfFirstFetch)
-  const journeyPositions = await getJourneyPositionsBoundaryBox(58.095256, 12.052452, 58.352497, 12.596755)
-  console.log(journeyPositions)
-   
-
-  if (currentJourneyItems.length <= 0) {
-    const visualizedJourneys = await visualizeJourneyPositions(journeyPositions)
-    currentJourneyItems = [...visualizedJourneys]
-  }
-  
-  intervalId = setInterval(() => {
-    fetchJourneyUpdates()
-  }, 1000);
-}
-
-export async function deInitializeVasttrafik() {
-  clearInterval(intervalId)
-  await arbitraryPause(1000)
-  currentJourneyItems.forEach(journeyItem => viewer.entities.remove(journeyItem))
-  currentJourneyItems = []
-  currentJourneyRefs = []
-}
-
-
-
-
-
-async function visualizeJourneyPositions(arrayOfJourneys) {
-  const returnArray = []
-  for (let i = 0; i < arrayOfJourneys.length; i++) {
-    const journey = arrayOfJourneys[i]
-    const bgCol = hexToRgb(journey.line.backgroundColor)
-    const borCol = hexToRgb(journey.line.borderColor)
-
-    const transpMode = journey.line.transportMode
-    const vehicleType = transpMode === "bus" ? "Buss" : transpMode === "tram" ? "Spårvagn" : transpMode === "train" ? "Tåg" : transpMode === "ferry" ? "Båt" : transpMode === "taxi" ? "Taxi" : "Okänt färdmedel"
-    const position = Cesium.Cartesian3.fromDegrees(journey.longitude, journey.latitude)
-    const addedJourney = await viewer.entities.add({
-      description: `Location: (${journey.longitude}, ${journey.latitude})`,
-      position: position,
-      point: { 
-        pixelSize: 10, 
-        color: Cesium.Color.fromBytes(bgCol.r, bgCol.g, bgCol.b, 255),
-        outlineColor: Cesium.Color.fromBytes(borCol.r, borCol.g, borCol.b, 255),
-        outlineWidth: 1,
-        heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
-        disableDepthTestDistance: Number.POSITIVE_INFINITY
-      }/* ,
-      model: { 
-        uri: transpMode === 'bus' ? busUri : transpMode === 'train' ? trainUri : null,
-        heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,  // <- key fix
-        scale: 1.0,
-        minimumPixelSize: 240, // makes it visible at distance
-        runAnimations: false,
-      
-      }  */
-
-    });
-    addedJourney.ref = journey.detailsReference
-    addedJourney.directionDetails = journey.directionDetails
-    addedJourney.line = journey.line
-    addedJourney.isVasttrafikVehicle = true
-    addedJourney.vehicleType = vehicleType
-    returnArray.push(addedJourney)
-    currentJourneyRefs.push(journey.detailsReference)
-  }
-  returnArray.forEach(entity => {
-    ensureSampledPosition(entity);
-    relaxAvailability(entity, 600, 120);
-  });
-  return returnArray
-}
-const POLL_SECONDS  = 1;    // your fetch cadence
-const LOOKAHEAD_SEC = 1.5;  // add future samples slightly beyond cadence
-
-async function fetchJourneyUpdates() {
-
-  // Make sure the clock actually ticks
+  // Simulation clock
   viewer.clock.shouldAnimate = true;
   viewer.clock.clockRange = Cesium.ClockRange.UNBOUNDED;
   viewer.clock.multiplier = 1;
@@ -115,100 +124,189 @@ async function fetchJourneyUpdates() {
     58.095256, 12.052452, 58.352497, 12.596755
   );
 
+  if (currentJourneyItems.size < 1) {
+    await visualizeJourneyPositions(journeyPositions);
+  }
+
+  // Poll for updates
+  intervalId = setInterval(() => {
+    fetchJourneyUpdates();
+  }, POLL_SECONDS * 1000);
+}
+
+export async function deInitializeVasttrafik() {
+  clearInterval(intervalId);
+  await arbitraryPause(1000);
+  currentJourneyItems.forEach(entity => viewer.entities.remove(entity));
+  currentJourneyItems.clear();
+  positionProps.clear();
+  lastSampleTime.clear();
+}
+
+// --- Visualization / entity creation ---
+// --- VISUALIZATION / ENTITY CREATION ---
+async function visualizeJourneyPositions(arrayOfJourneys) {
+  for (let i = 0; i < arrayOfJourneys.length; i++) {
+    const journey = arrayOfJourneys[i];
+
+    // Colors (safe defaults)
+    const bgHex = journey?.line?.backgroundColor || "#0D47A1";
+    const borHex = journey?.line?.borderColor    || "#082E66";
+    const bgCol = hexToRgb(bgHex);
+    const borCol = hexToRgb(borHex);
+
+    // Normalize transport mode robustly
+    const modeRaw = (journey?.line?.transportMode ?? "").toString();
+    const mode = modeRaw.trim().toLowerCase();
+
+    // Treat anything that's NOT an explicit "train" as a bus for now.
+    // (Some feeds use "coach", "busrapid", etc.)
+    const isTrain = mode.includes("train");
+    const isBus   = !isTrain; // default to bus unless clearly train
+
+    const vehicleType = isBus ? "Buss"
+                      : isTrain ? "Tåg"
+                      : "Okänt färdmedel";
+
+    const ref = journey.detailsReference;
+    const tNow = nowJulian();
+
+    // Seed SPP with now + lookahead for orientation
+    let spp = addSampleForRef(ref, journey.longitude, journey.latitude, tNow);
+    const tFuture = Cesium.JulianDate.addSeconds(tNow, LOOKAHEAD_SEC, new Cesium.JulianDate());
+    spp = addSampleForRef(ref, journey.longitude, journey.latitude, tFuture);
+
+    // Choose a model URI. If it's not a train, use the BUS model.
+    const uri = isTrain ? trainUri : busUri; // <-- ensures buses always get a model
+
+    // === DEBUG/CONFIRMATION SWITCHES ===
+    // 1) Force buses to a huge, constant scale so you can verify the model is there.
+    //    Set to 0 later to re-enable distance-based scaling.
+    const FORCE_BUS_CONSTANT_SCALE = 60;  // try 60–100 to be unmistakable
+
+    // 2) Make bus models glow so you can’t miss them while tuning
+    const DEBUG_BUS_SILHOUETTE = true;
+
+    // If you want distance-based scaling later, keep this helper:
+  /*   const scaleProp = makeScaleByDistanceProperty(spp, {
+      near: 35,
+      nearScale: 1.8,
+      far: 4000,
+      farScale: 0.5,
+      base: isBus ? 20.0 : 3.0
+    });
+
+    console.log(scaleProp) */
+console.log(isBus)
+
+const addedJourney = viewer.entities.add({
+  position: spp,
+  orientation: new Cesium.VelocityOrientationProperty(spp),
+
+  point: {
+    pixelSize: 10,
+    color: Cesium.Color.fromBytes(bgCol.r, bgCol.g, bgCol.b, 255),
+    outlineColor: Cesium.Color.fromBytes(borCol.r, borCol.g, borCol.b, 255),
+    outlineWidth: 1,
+    heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND,
+    disableDepthTestDistance: Number.POSITIVE_INFINITY
+  },
+
+  model: {
+    uri,
+    heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND,
+
+    // CRITICAL: let scale be the only thing that controls size
+    minimumPixelSize: isBus ? 0 : 0,  // no pixel floor for buses
+    // maximumScale: (omit entirely),
+
+    // >>> Hard constant scale for buses <<<
+    // If the bus still looks unchanged, your model scale isn’t being applied at all.
+    // Start with 60; if still small, try 120 or 240.
+    scale: isBus ? 112 : 1.5,   // trains keep a modest constant for now
+
+    runAnimations: false,
+
+    // optional: make it obvious while testing
+    // silhouetteColor: isBus ? Cesium.Color.YELLOW : undefined,
+    // silhouetteSize: isBus ? 2.0 : 0.0
+  },
+
+  description: `Location: (${journey.longitude}, ${journey.latitude})`
+});
+
+    ensureAvailability(addedJourney);
+
+    addedJourney.ref = ref;
+    addedJourney.directionDetails = journey.directionDetails;
+    addedJourney.line = journey.line;
+    addedJourney.isVasttrafikVehicle = true;
+    addedJourney.vehicleType = vehicleType;
+
+    currentJourneyItems.set(ref, addedJourney);
+  }
+}
+
+
+
+// --- Poll/update loop ---
+async function fetchJourneyUpdates() {
+  const journeyPositions = await getJourneyPositionsBoundaryBox(
+    58.095256, 12.052452, 58.352497, 12.596755
+  );
+
   const newJourneys = [];
-  const newJourneyRefs = [];
   const existingJourneys = [];
-  const allRefsFromCurrentFetch = [];
+
+  let refsToBeRemoved = Array.from(currentJourneyItems.keys()).map(String);
 
   for (let i = 0; i < journeyPositions.length; i++) {
-    const journeyRef = journeyPositions[i].detailsReference;
-    allRefsFromCurrentFetch.push(journeyRef);
-
-    if (currentJourneyRefs.includes(journeyRef)) {
-      existingJourneys.push(journeyPositions[i]);
+    const jp = journeyPositions[i];
+    const ref = jp.detailsReference;
+    if (currentJourneyItems.has(ref)) {
+      existingJourneys.push(jp);
+      refsToBeRemoved = refsToBeRemoved.filter(r => r !== ref);
     } else {
-      newJourneys.push(journeyPositions[i]);
-      newJourneyRefs.push(journeyRef);
+      newJourneys.push(jp);
     }
   }
 
   // Remove refs/items that left the bbox
-  const refsToBeRemoved = currentJourneyRefs.filter(ref => !allRefsFromCurrentFetch.includes(ref));
-  const itemsToBeRemoved = currentJourneyItems.filter(item => refsToBeRemoved.includes(item.ref));
+  if (refsToBeRemoved.length > 0) {
+    refsToBeRemoved.forEach(ref => {
+      const entity = currentJourneyItems.get(ref);
+      if (entity) viewer.entities.remove(entity);
+      currentJourneyItems.delete(ref);
+      positionProps.delete(ref);
+      lastSampleTime.delete(ref);
+    });
+  }
 
-  // Remove from state
-  currentJourneyItems = currentJourneyItems.filter(item => !refsToBeRemoved.includes(item.ref));
-  currentJourneyRefs  = currentJourneyRefs.filter(ref => !refsToBeRemoved.includes(ref)); // <-- fix: reassign
+  // Update positions of existing journeys with a future sample
+  const tFuture = Cesium.JulianDate.addSeconds(viewer.clock.currentTime, LOOKAHEAD_SEC, new Cesium.JulianDate());
 
-  // Remove from Cesium
-  itemsToBeRemoved.forEach(item => viewer.entities.remove(item));
+  existingJourneys.forEach(journey => {
+    const ref = journey.detailsReference;
+    addSampleForRef(ref, journey.longitude, journey.latitude, tFuture);
 
- 
-
-  currentJourneyItems.forEach(entity => {
-    const fetchedJourney = existingJourneys.find(j => j.detailsReference === entity.ref);
-    if (!fetchedJourney) return;
-
-    const { longitude, latitude, height = 0 } = fetchedJourney;
-    const nextPos = Cesium.Cartesian3.fromDegrees(longitude, latitude, height);
-
-    // ensure time-dynamic position with HOLD extrapolation
-    const spp = ensureSampledPosition(entity);
-     // Smoothly update existing journeys
-    const now = viewer.clock.currentTime;
-    const future = Cesium.JulianDate.addSeconds(now, LOOKAHEAD_SEC, new Cesium.JulianDate());
-
-    // ---- (4) Seed a sample at `now` if missing to avoid gaps
-   const tinyPast = Cesium.JulianDate.addSeconds(now, -EPS, new Cesium.JulianDate());
-
-    // if no value at 'now', add a trailing anchor just behind it
-    if (!spp.getValue(now)) {
-      const seed = (entity.position && entity.position.getValue)
-        ? entity.position.getValue(now)
-        : entity.position;
-      if (seed) spp.addSample(tinyPast, seed);
-    }
-
-    // avoid micro-jitter
-    const lastKnown = spp.getValue(now);
-    if (!movedEnough(lastKnown, nextPos)) {
-      relaxAvailability(entity, 60, 30);
-      return;
-    }
-
-    // Add the next sample slightly beyond the poll interval
-    addFutureSampleMonotonic(entity, future, nextPos);
-
-    // Keep availability generous (prevents flicker)
-    relaxAvailability(entity, 600, 120);
-
-    // Occasionally trim old samples (every ~30s; cheap to call each tick)
-    trimSamples(entity, 180);
+    // Keep availability window sliding forward
+    const entity = currentJourneyItems.get(ref);
+    if (entity) ensureAvailability(entity);
   });
 
-  // Add any new journeys and prep them for interpolation
-  const newEntities = await visualizeJourneyPositions(newJourneys);
-  newEntities.forEach(entity => {
-    ensureSampledPosition(entity);
-    relaxAvailability(entity, 600, 120);
-  });
-
-  // Update state
-  currentJourneyItems = [...currentJourneyItems, ...newEntities];
-  currentJourneyRefs  = [...currentJourneyRefs,  ...newJourneyRefs];
-
+  // Add any new journeys
+  if (newJourneys.length > 0) {
+    await visualizeJourneyPositions(newJourneys);
+  }
 }
 
-
+// --- UX helper ---
 export function selectJourney(ref) {
-  const originalPixelSize = 10
-  const selectedPixelSize = 20
+  const originalPixelSize = 10;
+  const selectedPixelSize = 20;
   currentJourneyItems.forEach(item => {
-    item.point.pixelSize = item.ref === ref ? selectedPixelSize : originalPixelSize
-  })
+    if (item.point) {
+      item.point.pixelSize = (item.ref === ref) ? selectedPixelSize : originalPixelSize;
+    }
+  });
 }
-
-
-
-
-

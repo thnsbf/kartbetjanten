@@ -1,10 +1,17 @@
 import { getResource } from './vasttrafik-api.js'
 
+let timeUntilNextStation = null
+let selectedJourney = null
 
+function getSelectedJourney() {
+  return selectedJourney
+}
 
 export async function showJourneyInfo(journey) {
 
   removeExistingJourneyInfoElem()
+
+  selectedJourney = journey.ref
 
   const vehicleType = journey.vehicleType
   const shortDirection = journey.directionDetails.shortDirection
@@ -41,11 +48,16 @@ export async function showJourneyInfo(journey) {
 
     if (!isOnTripLeg) return ""
     let firstStopThatIsAlreadyPassed = false
-    const timeComparison = new Date(estimatedOtherwisePlannedArrivalTime || estimatedOtherwisePlannedDepartureTime).getTime()
+    const timeComparison = new Date(estimatedOtherwisePlannedDepartureTime || estimatedOtherwisePlannedArrivalTime).getTime()
     const alreadyPassed = now > timeComparison
     if (!alreadyPassed && !zoomStop) {
       firstStopThatIsAlreadyPassed = true
       zoomStop = true
+      timeUntilNextStation = timeComparison - now
+      setTimeout(() => {
+        const j = getSelectedJourney()
+        if (j === journey.ref) showJourneyInfo(journey)
+      }, timeUntilNextStation + 500);
     }
     let time = ''
     if (isTripLegStart) {
@@ -139,4 +151,17 @@ function removeExistingJourneyInfoElem() {
 
 function extractTime(dateStr) {
   return dateStr.slice(11, 16)
+}
+
+function msToTime(duration) {
+    var milliseconds = parseInt((duration%1000)/100)
+        , seconds = parseInt((duration/1000)%60)
+        , minutes = parseInt((duration/(1000*60))%60)
+        , hours = parseInt((duration/(1000*60*60))%24);
+
+    hours = (hours < 10) ? "0" + hours : hours;
+    minutes = (minutes < 10) ? "0" + minutes : minutes;
+    seconds = (seconds < 10) ? "0" + seconds : seconds;
+
+    return hours + ":" + minutes + ":" + seconds + "." + milliseconds;
 }
