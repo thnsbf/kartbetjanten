@@ -1,6 +1,7 @@
 import { viewer } from "../viewer.js";
-import { showJourneyInfo } from "./vasttrafik-dom.js";
+import { showJourneyInfo, removeExistingJourneyInfoElem } from "./vasttrafik-dom.js";
 import { selectJourney } from "./vasttrafik.js";
+import { startSpeedTracker, stopSpeedTracker } from "./vasttrafik-speed.js";
 
 let handlerVasttrafik = null
 
@@ -49,10 +50,14 @@ export function initializeVasttrafikHandlers() {
   const clickFunction = function(click) {
     const pickedObject = viewer.scene.pick(click.position);
     if (Cesium.defined(pickedObject) && pickedObject.id?.isVasttrafikVehicle) {
-      console.log("Point entity clicked:", pickedObject);
-      console.log(pickedObject.id.ref)
+      stopSpeedTracker()
       showJourneyInfo(pickedObject.id)
       selectJourney(pickedObject.id.ref)
+      startSpeedTracker(pickedObject.id)
+    } else {
+      selectJourney('')
+      removeExistingJourneyInfoElem()
+      stopSpeedTracker()
     }
   }
   

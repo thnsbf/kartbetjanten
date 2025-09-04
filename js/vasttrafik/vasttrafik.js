@@ -2,12 +2,14 @@ import { getApiToken, getResource, getJourneyPositionsBoundaryBox } from "./vast
 import { viewer } from "../viewer.js";
 import { hexToRgb } from "../utils.js";
 import { arbitraryPause } from "../utils-cesium.js";
+import { startSpeedTracker, stopSpeedTracker, activeSpeedTracker } from "./vasttrafik-speed.js";
 
 // --- State ---
 let currentJourneyItems = new Map();     // ref -> Entity
 let positionProps = new Map();           // ref -> SampledPositionProperty
 let lastSampleTime = new Map();          // ref -> JulianDate of last sample
 let intervalId = null;
+let speedEMA = new Map()
 
 // --- Tuning ---
 const POLL_SECONDS    = 1;      // fetch cadence (s)
@@ -275,6 +277,9 @@ async function fetchJourneyUpdates() {
   if (refsToBeRemoved.length > 0) {
     refsToBeRemoved.forEach(ref => {
       const entity = currentJourneyItems.get(ref);
+      if (activeSpeedTracker?.entity === entity) {
+        stopSpeedTracker();             // stop UI updates for the removed bus
+      }
       if (entity) viewer.entities.remove(entity);
       currentJourneyItems.delete(ref);
       positionProps.delete(ref);

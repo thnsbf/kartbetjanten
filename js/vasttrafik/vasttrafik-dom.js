@@ -8,7 +8,7 @@ function getSelectedJourney() {
 }
 
 export async function showJourneyInfo(journey) {
-
+  console.log(journey)
   removeExistingJourneyInfoElem()
 
   selectedJourney = journey.ref
@@ -136,7 +136,19 @@ export async function showJourneyInfo(journey) {
     const classList = Array.from(child.classList)
     return classList.includes("vasttrafik-info__inner")
   })
+  const speedTrackerParentElem = document.createElement('div')
+  speedTrackerParentElem.id = "tracker-wrapper"
+  speedTrackerParentElem.classList.add("tracker-wrapper") 
+  speedTrackerParentElem.textContent = "Uppskattad hastighet: "
+
+  const speedTrackingElem = document.createElement('div')
+  speedTrackingElem.id = "speed-tracker"
+  speedTrackingElem.classList.add('speed-tracker')
+  speedTrackerParentElem.appendChild(speedTrackingElem)
+
   inner.appendChild(timeTable)
+  inner.appendChild(speedTrackerParentElem)
+
   const zoomToThis = document.getElementById('zoom-to-time-table-station')
   zoomToThis.scrollIntoView({
     behavior: "smooth",
@@ -144,9 +156,10 @@ export async function showJourneyInfo(journey) {
   })
 }
 
-function removeExistingJourneyInfoElem() {
+export function removeExistingJourneyInfoElem() {
   const allActiveJourneyInfoElems = Array.from(document.getElementsByClassName('vasttrafik-journey-info-elem'))
   allActiveJourneyInfoElems.forEach(elem => elem.remove())
+  selectedJourney = null
 }
 
 function extractTime(dateStr) {

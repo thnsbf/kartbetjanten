@@ -145,3 +145,15 @@
 #zoom-to-time-table-station {
   scroll-margin-top: 55px;
 }
+
+.speed-tracker {
+  color: var(--kommunfarg);
+  font-size: 1rem;
+  margin-block: 4px;
+}
+
+.tracker-wrapper {
+  padding: 12px;
+  font-size: 0.75rem;
+  color: var(--black-700);
+}
