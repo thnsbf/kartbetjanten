@@ -13,6 +13,7 @@ import { initialCameraView } from "./utils.js"
 import { initializeVasttrafik } from "./vasttrafik/vasttrafik.js";
 import { initializeVasttrafikHandlers } from "./vasttrafik/vasttrafik-handlers.js";
 import { initializeView } from "./view.js";
+import { initializeBoatApi } from "./boats/boats.js";
 
 
 initializeBaselayers()
@@ -27,9 +28,11 @@ initializeProjects()
 initializeSectionToolChartContainer()
 initializeEventListeners()
 initializeView()
+// initializeBoatApi()
+/* initializeVasttrafik()
+initializeVasttrafikHandlers() */
+// initializeBridges()
 
-initializeVasttrafik()
-initializeVasttrafikHandlers()
 
 
 

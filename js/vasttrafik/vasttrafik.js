@@ -9,13 +9,21 @@ let currentJourneyItems = new Map();     // ref -> Entity
 let positionProps = new Map();           // ref -> SampledPositionProperty
 let lastSampleTime = new Map();          // ref -> JulianDate of last sample
 let intervalId = null;
-let speedEMA = new Map()
+
+// Quarantine for anti-teleport (ref -> {lon, lat, t, count})
+let jumpQuarantine = new Map();
 
 // --- Tuning ---
 const POLL_SECONDS    = 1;      // fetch cadence (s)
 const LOOKAHEAD_SEC   = 3.5;    // > POLL_SECONDS to cover hiccups
-const NOISE_METERS    = 2;      // treat moves below this as jitter
+const NOISE_METERS    = 5;      // ↑ bigger jitter gate to avoid tiny backsteps at stops (was 2)
 const HEIGHT_OFFSET_M = 0.8;    // slight offset to avoid clamp popping
+
+// Anti-teleport thresholds
+const JUMP_METERS         = 200;  // suspect if new point is farther than this from last
+const MAX_SPEED_KMH       = 120;  // suspect if implied speed exceeds this
+const CONFIRM_RADIUS_M    = 100;  // require next sample to land within this of quarantined point
+const QUARANTINE_TTL_SEC  = 12;   // expire quarantine if not confirmed in this time
 
 // --- Assets ---
 const busUri   = await Cesium.IonResource.fromAssetId(3653053);
@@ -54,28 +62,72 @@ function createOrGetSPP(ref) {
   }
   return spp;
 }
-function makeScaleByDistanceProperty(positionProperty, options = {}) {
-  const {
-    near = 80,
-    nearScale = 1.25,
-    far = 5000,
-    farScale = 0.16,
-    base = 3.5
-  } = options;
-  console.log(options)
-  const lerp = (a, b, t) => a + (b - a) * t;
+
+// ---- Sticky orientation helpers ----
+
+// Estimate speed (m/s) using a central difference over dtSec seconds
+function estimateSpeedMps(positionProperty, time, dtSec = 1.5) {
+  const half = dtSec / 2;
+  const t1 = Cesium.JulianDate.addSeconds(time, -half, new Cesium.JulianDate());
+  const t2 = Cesium.JulianDate.addSeconds(time,  half, new Cesium.JulianDate());
+  const p1 = positionProperty.getValue(t1);
+  const p2 = positionProperty.getValue(t2);
+  if (!p1 || !p2) return 0;
+  const meters = Cesium.Cartesian3.distance(p1, p2);
+  return meters / dtSec;
+}
+
+/**
+ * Orientation that "sticks" to the last good moving orientation when speed is low.
+ * Hysteresis avoids flip/flop around the threshold.
+ */
+function makeStickyVelocityOrientation(positionProperty, opts = {}) {
+  const base = new Cesium.VelocityOrientationProperty(positionProperty);
+
+  const dtSec           = opts.dtSec ?? 1.5;     // window for speed estimate
+  const stopSpeedKmh    = opts.stopSpeedKmh ?? 2.5; // below this, HOLD (~0.7 m/s)
+  const startSpeedKmh   = opts.startSpeedKmh ?? 4.0; // above this, UPDATE (~1.1 m/s)
+  const stopMps         = stopSpeedKmh / 3.6;
+  const startMps        = startSpeedKmh / 3.6;
+
+  let moving = false;
+  let lastMovingOrientation = null;
+
   return new Cesium.CallbackProperty((time) => {
-    const pos = positionProperty.getValue(time);
-    if (!pos) return base * nearScale;
-    const cam = viewer.camera.positionWC;
-    const dist = Cesium.Cartesian3.distance(cam, pos);
-    const t = Cesium.Math.clamp((dist - near) / (far - near), 0.0, 1.0);
-    return base * lerp(nearScale, farScale, t);
+    const v = estimateSpeedMps(positionProperty, time, dtSec);
+
+    // hysteresis
+    if (moving) {
+      if (v < stopMps) moving = false;
+    } else {
+      if (v > startMps) moving = true;
+    }
+
+    if (moving) {
+      const o = base.getValue(time);
+      if (o) lastMovingOrientation = o;
+      return o || lastMovingOrientation;
+    } else {
+      // HOLD last known moving orientation while "stopped"
+      return lastMovingOrientation || base.getValue(time);
+    }
   }, false);
 }
 
-// Add a sample with strictly increasing time.
-// If movement is below NOISE_METERS, add a keepalive sample at the last position (prevents gaps).
+// ---- Distance helpers for anti-teleport ----
+function cartesianToCarto(cart) {
+  return Cesium.Cartographic.fromCartesian(cart);
+}
+function surfaceDistanceMetersCarto(c1, c2) {
+  const geod = new Cesium.EllipsoidGeodesic(c1, c2);
+  return geod.surfaceDistance;
+}
+
+// Add a sample with strictly increasing time and anti-teleport gating.
+// - If move < NOISE_METERS => keepalive at lastPos.
+// - If move is a big jump AND implied speed is unrealistic => quarantine
+//   until the next sample confirms it by landing near the same place.
+// - While quarantined => keepalive at lastPos (prevents yank).
 function addSampleForRef(ref, lon, lat, atJulianDate) {
   const spp = createOrGetSPP(ref);
 
@@ -86,20 +138,72 @@ function addSampleForRef(ref, lon, lat, atJulianDate) {
     t = Cesium.JulianDate.addSeconds(lastT, 0.001, new Cesium.JulianDate());
   }
 
+  // New point in Cartographic
+  const newCarto = new Cesium.Cartographic(
+    Cesium.Math.toRadians(lon),
+    Cesium.Math.toRadians(lat),
+    HEIGHT_OFFSET_M
+  );
+
+  // Expire stale quarantine
+  const q = jumpQuarantine.get(ref);
+  if (q && lastT) {
+    const age = Cesium.JulianDate.secondsDifference(t, q.t);
+    if (age > QUARANTINE_TTL_SEC) jumpQuarantine.delete(ref);
+  }
+
   if (lastT) {
     const lastPos = spp.getValue(lastT);
     if (lastPos) {
-      const newPos = toCartesian(lon, lat);
-      const dist = Cesium.Cartesian3.distance(lastPos, newPos);
+      const lastCarto = cartesianToCarto(lastPos);
+      const dist = surfaceDistanceMetersCarto(lastCarto, newCarto);
+
+      // Keepalive for tiny jitter
       if (dist < NOISE_METERS) {
-        spp.addSample(t, lastPos); // keepalive
+        spp.addSample(t, lastPos); // keepalive (prevents tiny backward nudge)
         lastSampleTime.set(ref, t);
         return spp;
+      }
+
+      // Sanity-check implied speed
+      const dtSec = Math.max(0.001, Cesium.JulianDate.secondsDifference(t, lastT));
+      const speedKmh = (dist / dtSec) * 3.6;
+
+      // If it's a huge jump AND too fast to be plausible => quarantine it
+      if (dist > JUMP_METERS && speedKmh > MAX_SPEED_KMH) {
+        if (!q) {
+          // first suspicious sample -> store & hold position
+          jumpQuarantine.set(ref, { lon, lat, t, count: 1 });
+          spp.addSample(t, lastPos);        // hold at last position
+          lastSampleTime.set(ref, t);
+          return spp;
+        } else {
+          // we already have a suspicious sample; confirm if close to it
+          const qCarto = new Cesium.Cartographic(
+            Cesium.Math.toRadians(q.lon),
+            Cesium.Math.toRadians(q.lat),
+            HEIGHT_OFFSET_M
+          );
+          const dConfirm = surfaceDistanceMetersCarto(qCarto, newCarto);
+          if (dConfirm <= CONFIRM_RADIUS_M) {
+            // confirmed: accept the jump, clear quarantine
+            jumpQuarantine.delete(ref);
+          } else {
+            // still inconsistent: keep holding
+            spp.addSample(t, lastPos);
+            lastSampleTime.set(ref, t);
+            return spp;
+          }
+        }
+      } else {
+        // Not suspicious => clear any prior quarantine
+        if (q) jumpQuarantine.delete(ref);
       }
     }
   }
 
-  spp.addSample(t, toCartesian(lon, lat));
+  // Accept the new sample
+  spp.addSample(t, Cesium.Cartesian3.fromRadians(newCarto.longitude, newCarto.latitude, HEIGHT_OFFSET_M));
   lastSampleTime.set(ref, t);
   return spp;
 }
@@ -143,9 +247,9 @@ export async function deInitializeVasttrafik() {
   currentJourneyItems.clear();
   positionProps.clear();
   lastSampleTime.clear();
+  jumpQuarantine.clear();
 }
 
-// --- Visualization / entity creation ---
 // --- VISUALIZATION / ENTITY CREATION ---
 async function visualizeJourneyPositions(arrayOfJourneys) {
   for (let i = 0; i < arrayOfJourneys.length; i++) {
@@ -179,63 +283,42 @@ async function visualizeJourneyPositions(arrayOfJourneys) {
     spp = addSampleForRef(ref, journey.longitude, journey.latitude, tFuture);
 
     // Choose a model URI. If it's not a train, use the BUS model.
-    const uri = isTrain ? trainUri : busUri; // <-- ensures buses always get a model
+    const uri = isTrain ? trainUri : busUri;
 
-    // === DEBUG/CONFIRMATION SWITCHES ===
-    // 1) Force buses to a huge, constant scale so you can verify the model is there.
-    //    Set to 0 later to re-enable distance-based scaling.
-    const FORCE_BUS_CONSTANT_SCALE = 60;  // try 60–100 to be unmistakable
+    const addedJourney = viewer.entities.add({
+      position: spp,
 
-    // 2) Make bus models glow so you can’t miss them while tuning
-    const DEBUG_BUS_SILHOUETTE = true;
+      // <<< Sticky orientation to avoid flip when stopped >>>
+      orientation: makeStickyVelocityOrientation(spp, {
+        dtSec: 1.5,        // 1–2 s works well
+        stopSpeedKmh: 10,  // your current thresholds
+        startSpeedKmh: 10
+      }),
 
-    // If you want distance-based scaling later, keep this helper:
-  /*   const scaleProp = makeScaleByDistanceProperty(spp, {
-      near: 35,
-      nearScale: 1.8,
-      far: 4000,
-      farScale: 0.5,
-      base: isBus ? 20.0 : 3.0
+      // Keep the point always visible
+      point: {
+        pixelSize: 10,
+        color: Cesium.Color.fromBytes(bgCol.r, bgCol.g, bgCol.b, 255),
+        outlineColor: Cesium.Color.fromBytes(borCol.r, borCol.g, borCol.b, 255),
+        outlineWidth: 1,
+        heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND,
+        disableDepthTestDistance: Number.POSITIVE_INFINITY
+      },
+
+      model: {
+        uri,
+        heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND,
+
+        // Let scale control size; no floor/cap fighting it
+        minimumPixelSize: 0,
+
+        // Your current constants (tweak to taste)
+        scale: isBus ? 112 : 1.5,
+        runAnimations: false
+      },
+
+      description: `Location: (${journey.longitude}, ${journey.latitude})`
     });
-
-    console.log(scaleProp) */
-console.log(isBus)
-
-const addedJourney = viewer.entities.add({
-  position: spp,
-  orientation: new Cesium.VelocityOrientationProperty(spp),
-
-  point: {
-    pixelSize: 10,
-    color: Cesium.Color.fromBytes(bgCol.r, bgCol.g, bgCol.b, 255),
-    outlineColor: Cesium.Color.fromBytes(borCol.r, borCol.g, borCol.b, 255),
-    outlineWidth: 1,
-    heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND,
-    disableDepthTestDistance: Number.POSITIVE_INFINITY
-  },
-
-  model: {
-    uri,
-    heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND,
-
-    // CRITICAL: let scale be the only thing that controls size
-    minimumPixelSize: isBus ? 0 : 0,  // no pixel floor for buses
-    // maximumScale: (omit entirely),
-
-    // >>> Hard constant scale for buses <<<
-    // If the bus still looks unchanged, your model scale isn’t being applied at all.
-    // Start with 60; if still small, try 120 or 240.
-    scale: isBus ? 112 : 1.5,   // trains keep a modest constant for now
-
-    runAnimations: false,
-
-    // optional: make it obvious while testing
-    // silhouetteColor: isBus ? Cesium.Color.YELLOW : undefined,
-    // silhouetteSize: isBus ? 2.0 : 0.0
-  },
-
-  description: `Location: (${journey.longitude}, ${journey.latitude})`
-});
 
     ensureAvailability(addedJourney);
 
@@ -249,13 +332,13 @@ const addedJourney = viewer.entities.add({
   }
 }
 
-
-
 // --- Poll/update loop ---
 async function fetchJourneyUpdates() {
   const journeyPositions = await getJourneyPositionsBoundaryBox(
     58.095256, 12.052452, 58.352497, 12.596755
   );
+
+  console.log(journeyPositions)
 
   const newJourneys = [];
   const existingJourneys = [];
@@ -284,6 +367,7 @@ async function fetchJourneyUpdates() {
       currentJourneyItems.delete(ref);
       positionProps.delete(ref);
       lastSampleTime.delete(ref);
+      jumpQuarantine.delete(ref);
     });
   }
 

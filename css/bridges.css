@@ -1,0 +1,96 @@
+.bridges-wrapper-elem {
+  width: 300px;
+  min-height: 350px;
+  max-height: calc(100vh - (var(--navbar-height)));
+  background: var(--c-background-modal);
+  position: absolute;
+  top: var(--navbar-height); 
+  right: 0;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.bridge-circle {
+  width: 18px;
+  height: 18px;
+  border-radius: 100vmax;
+  background-color: brown;
+}
+
+.bridges__header {
+  background: var(--kommunfarg);
+  color: var(--c-text-default);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+  padding-block: 0.5rem;
+}
+
+.bridges__main {
+  padding-inline: 0.75rem;
+  padding-block: 2rem;
+  background: var(--c-background-modal);
+}
+
+.bridges__list {
+  list-style: none;
+}
+.bridges__list-item {
+  margin-block-end: 12px;
+}
+
+.bridge-text {
+  color: var(--kommunfarg);
+}
+
+.bridge-text--big {
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.bridge-text--small {
+  font-size: 0.625rem;
+}
+
+.bridge-text--starttime {
+  min-width: 6ch;
+  text-align: center;
+}
+
+.bridge-info-box {
+  background: var(--white-100);
+  border-radius: 3px;
+  padding-inline: 0.75rem;
+  padding-block-start: 2px;
+}
+
+.info-box__top-level {
+  display: flex;
+  justify-content: space-between;
+  padding-block-end: 1px;
+}
+
+.bridge-info-hr {
+  color: var(--c-background-modal);
+  width: 100%;
+  opacity: 0.2;
+}
+
+.info-box__bottom-level {
+  display: flex;
+  justify-content: space-between;
+  padding-block: 0.325rem;
+}
+
+.bridge-h2 {
+  margin-bottom: 3px;
+}
+
+.bridge-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.close-btn--bridges {
+  top: 5px;
+}

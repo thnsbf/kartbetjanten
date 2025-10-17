@@ -8,7 +8,6 @@ function getSelectedJourney() {
 }
 
 export async function showJourneyInfo(journey) {
-  console.log(journey)
   removeExistingJourneyInfoElem()
 
   selectedJourney = journey.ref

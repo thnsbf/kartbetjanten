@@ -1,12 +1,11 @@
 import { readJson } from "./utils.js";
 import { initializeVasttrafik, deInitializeVasttrafik } from "./vasttrafik/vasttrafik.js";
 import { initializeVasttrafikHandlers, removeVasttrafikHandlers } from "./vasttrafik/vasttrafik-handlers.js";
+import { deInitializeBridges, initializeBridges, initializeBoats, deInitializeBoats } from "./boats/boats.js";
 
 export async function initializeView() {
   const json = await readJson("../json/view.json")
   initializeViewItemsInNav(json)
-  console.log(json)
-
 }
 
 function initializeViewItemsInNav(viewItems) {
@@ -51,6 +50,20 @@ async function startAndStopViewModule(id, toBeStarted) {
       } else {
         deInitializeVasttrafik()
         removeVasttrafikHandlers()
+      }
+      break
+    case "brooppningar":
+      if (toBeStarted) {
+        initializeBridges()
+      } else {
+        deInitializeBridges()
+      }
+      break
+    case "battrafik":
+      if (toBeStarted) {
+        initializeBoats()
+      } else {
+        deInitializeBoats()
       }
       break
   }

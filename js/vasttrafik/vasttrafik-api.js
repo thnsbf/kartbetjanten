@@ -25,8 +25,6 @@ export async function getApiToken() {
     }
   }
 
-  const token = await getApiToken()
-  console.log(token)
 
   export async function getResource(urlExtension) {
   try {
