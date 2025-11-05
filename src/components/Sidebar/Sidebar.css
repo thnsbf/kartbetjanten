@@ -1,0 +1,79 @@
+.sidebar ul {
+  list-style: none;
+  padding-left: 0;
+  display: flex;
+  gap: 4px;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.sidebar-hr {
+  border-top: 1px solid white;
+  opacity: 0.5;
+  max-width: 70%;
+  margin-block: 2rem;
+}
+
+.sidebar-menu-item {
+  display: grid;
+  grid-template-rows: 44px 20px;
+  align-items: center;
+  justify-items: center;
+  position: relative;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: var(--c-text-default);
+  font-size: 0.825rem;
+}
+
+.sidebar-menu-item:has(> .checkbox-menu:checked), 
+.sidebar-menu-item:has(> .radio-menu:checked) {
+  color: var(--kommunfarg-lighter);
+}
+
+#radio-no-tool:after {
+  background-image: url("/icon-arrow--white.svg");
+}
+#radio-no-tool:checked:after {
+  background-image: url("/icon-arrow--purple.svg");
+}
+#radio-place-dot:after {
+  background-image: url("/icon-dot--white.svg");
+}
+#radio-place-dot:checked:after {
+  background-image: url("/icon-dot--purple.svg");
+}
+#radio-draw-lines:after {
+  background-image: url("/icon-ruler--white.svg");
+}
+#radio-draw-lines:checked:after {
+  background-image: url("/icon-ruler--purple.svg");
+}
+#radio-draw-area:after {
+  background-image: url("/icon-area--white.svg");
+}
+#radio-draw-area:checked:after {
+  background-image: url("/icon-area--purple.svg");
+}
+#radio-move-object:after {
+  background-image: url("/icon-move--white.svg");
+}
+#radio-move-object:checked:after {
+  background-image: url("/icon-move--purple.svg");
+}
+#radio-place-text:after {
+  background-image: url("/icon-text--white.svg");
+}
+#radio-place-text:checked:after {
+  background-image: url("/icon-text--purple.svg");
+}
+
+
+.pop-up-tool-settings {
+  position: absolute;
+  right: 0;
+}
+
+

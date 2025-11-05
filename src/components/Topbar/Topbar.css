@@ -1,0 +1,35 @@
+.topbar {
+  display: flex;
+  justify-content: center;
+  position: relative;
+  padding-inline: var(--topbar-padding);
+}
+
+
+.topbar__tool-list-wrapper {
+  position: absolute;
+  right: var(--topbar-padding);
+}
+
+.topbar__tool-list {
+  list-style: none;
+  padding-left: 0;
+  display: flex;
+  gap: 8px;
+}
+
+.topbar-tool {
+  cursor: pointer;
+}
+.topbar-tool:hover {
+  opacity: 0.9;
+}
+
+
+.download-icon {
+  margin-top: 4px;
+}
+
+@media (min-width:600px) {
+
+}

@@ -1,0 +1,9 @@
+/* src/components/Tools/DrawLines/LinesModal.css */
+.lines-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.lines-field { display: flex; flex-direction: column; gap: 4px; margin-bottom: 8px; }
+.lines-field > label { font-size: 12px; opacity: 0.85; }
+.lines-field input[type="number"] { width: 100%; padding: 6px 8px; border-radius: 8px; border: 1px solid #444; background: #111; color: #fff; }
+.lines-field select { padding: 6px 8px; border-radius: 8px; border: 1px solid #444; background: #111; color: #fff; }
+.lines-field input[type="color"] { width: 36px; height: 28px; border: 1px solid #444; border-radius: 6px; background: transparent; padding: 0; }
+.checkbox { display: inline-flex; align-items: center; gap: 8px; }
+.btn-ghost { background: transparent; border: 1px solid #444; color: #fff; padding: 6px 10px; border-radius: 8px; cursor: pointer; }

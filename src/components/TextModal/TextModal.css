@@ -1,0 +1,20 @@
+.label-text {
+  font-weight: 500;
+}
+
+input[type="color"] {
+	appearance: none;
+	border: none;
+  cursor: pointer;
+}
+input[type="color"]::-webkit-color-swatch-wrapper {
+	padding: 0;
+}
+input[type="color"]::-webkit-color-swatch {
+	border: none;
+}
+
+input[type="color"]:focus {
+  outline: 2px solid var(--blue-700);
+  outline-color: var(--blue-700);
+}

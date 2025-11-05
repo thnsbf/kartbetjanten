@@ -1,0 +1,21 @@
+.main {
+  position: relative;
+
+}
+
+.heading-address-display {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0;
+  padding: 0 0.25rem;
+  background: var(--c-background-modal);
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  cursor: pointer;
+}
+
+.heading-address-display:hover {
+  text-decoration: underline;
+}

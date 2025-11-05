@@ -1,0 +1,11 @@
+.mouse-move-coordinates-wrapper {
+  background: rgba(0, 0, 0, 0.6);
+  color: var(--c-text-default);
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+  padding-inline: 0.25rem;
+  min-width: 29ch;
+}

@@ -1,0 +1,94 @@
+:root {
+  --kommunfont: "Barlow", "sans-serif";
+
+  font-family: var(--kommunfont);
+  line-height: 1.5;
+  font-weight: 400;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  --module-content-max-width: 450px;
+  --thumb-circle-size: 20px;
+  --navbar-height: 80px;
+  --scrollbar-width: 5px;
+  --topbar-padding: 16px;
+
+  --scale-bar-width: 2px;
+
+
+
+  /* COLORS */
+
+  --kommunfarg: var(--purple-700);
+  --kommunfarg-darker: var(--purple-900);
+  --kommunfarg-lighter: var(--purple-300);
+  --kommunfarg-lightest: var(--purple-100);
+
+  --c-text-default: var(--white-100);
+  --c-text-darker: var(--grey-300);
+  --c-text-inverted: var(--kommunfarg-darker);
+  --c-text-highlight: var(--kommunfarg);
+  --c-text-black: var(--black-700);
+
+  --c-background-white: var(--white-100);
+  --c-danger: var(--red-500);
+
+  --c-scrollbar-blue: var(--kommunfarg-lighter);
+  --c-scrollbar-track: var(--white-100);
+  --c-scrollbar-hover: var(--blue-300);
+
+  --c-background-bar: var(--kommunfarg);
+  --c-background-modal: var(--grey-300);
+  --c-background-nav-link: var(--grey-300);
+  --c-background-input: var(--grey-300);
+  --c-background-spinner: var(--grey-300);
+  --c-background-popup-hover: var(--grey-300);
+  --c-border-dropdown: var(--grey-300);
+
+  --c-btn-background--primary: var(--green-700);
+  --c-btn-border--primary: var(--black-700);
+
+
+  --c-success: var(--green-700);
+  --c-danger: var(--red-500);
+
+  --black-700: rgba(41, 41, 41, 1);
+  --white-100: rgba(255, 255, 255, 1);
+  --grey-300: rgba(240, 240, 240, 1);
+
+  --purple-900: rgba(57, 35, 89, 1);
+  --purple-700: rgba(75, 45, 120, 1);
+  --purple-300: rgba(210, 195, 255, 1);
+  --purple-100: rgba(241, 236, 255, 1);
+
+  --green-700: rgba(25, 200, 150, 1);
+  --green-500: rgba(100, 220, 100, 1);
+
+  --blue-700: rgba(0, 185, 255, 1);
+  --blue-300: rgba(125, 225, 255, 1);
+
+  --yellow-700: rgba(240, 250, 90, 1);
+  --yellow-300: rgba(255, 250, 190, 1);
+
+  --red-500: rgba(235, 95, 95, 1);
+  --red-300: rgba(255, 250, 190, 1);
+
+}
+
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: var(--kommunfarg);
+    color: var(--c-text-default);
+  }
+}

@@ -1,0 +1,49 @@
+
+.scale-bar {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  background: rgba(0,0,0,0.55);
+  color: #fff;
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  line-height: 1.2;
+  pointer-events: none;
+  user-select: none;
+}
+
+.scale-bar__bar {
+  height: var(--scale-bar-width); 
+  background: #fff; 
+  border-radius: 2px;
+  position: relative; 
+}
+
+.scale-bar__bar:before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: var(--scale-bar-width);
+  height: 12px;
+  border-radius: 2px;
+  background: #fff;
+}
+.scale-bar__bar:after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: var(--scale-bar-width);
+  height: 12px;
+  border-radius: 2px;
+  background: #fff;
+}
+
+.scale-bar__label {
+  margin-top: 6px; 
+  margin-inline-end: 6px;
+  text-align: right;
+  letter-spacing: 0.25px;
+}

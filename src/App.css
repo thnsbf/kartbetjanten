@@ -1,0 +1,204 @@
+body {
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow-y: hidden;
+  box-sizing: border-box;
+}
+
+
+#root {
+
+  --header-height: 90px;
+
+  min-height: 100vh;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 100px 1fr 320px;
+  grid-template-rows: var(--header-height) calc(100vh - var(--header-height));
+}
+
+button {
+  font-family: var(--kommunfont);
+}
+
+.sidebar {
+  grid-column: 1 / span 1;
+  grid-row: 2 / -1;
+  background: var(--c-background-bar);
+}
+
+.topbar {
+  grid-column: 1 / -1;
+  grid-row: 1 / span 1;
+  background: var(--c-background-bar);
+  display: flex;
+  align-items: center;
+  padding-inline: 18px;
+}
+
+.main {
+  grid-column: 2 / -2;
+  grid-row: 2 / -1;
+}
+
+.main--start {
+  grid-column: 1 / -1;
+  grid-row: 2 / -1;
+}
+
+#cesiumContainer {
+  min-height: 100vh;
+  background: grey;
+}
+
+.main-logo {
+  margin-block-start: 10px;
+  display: inline-block;
+  position: absolute;
+  left: var(--topbar-padding);
+}
+
+
+/* TYPOGRAPHY */
+
+.text {
+  font-weight: 400;
+  max-width: 425px;
+  color: var(--kommunfarg);
+}
+
+.text--bold {
+  font-weight: 600;
+}
+
+.heading {
+ font-weight: 600;
+}
+
+h1, h2, h3, h4, h5 {
+  color: var(--kommunfarg);
+}
+
+a {
+  color: var(--kommunfarg);
+  font-weight: 500;
+}
+
+a:hover {
+  opacity: 0.75;
+}
+
+select {
+  font-family: var(--kommunfont);
+  max-height: 32px;
+  line-height: 1;
+}
+
+
+
+/* BUTTONS */
+
+.button {
+  border: none;
+  font-size: 1rem;
+  padding: 0.5em 2em;
+  border-radius: 100vmax;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--kommunfont);
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.button:hover {
+}
+
+.button--primary {
+  background: var(--c-btn-background--primary);
+  border-color: var(--c-btn-border--primary);
+  color: var(--c-btn-border--primary);
+}
+
+.button--primary:hover {
+}
+
+.button:active {
+  opacity: 0.95;
+
+}
+
+.checkbox-menu {
+  width:38px;
+  height:38px;
+  background-color: var(--kommunfarg);
+  border: none;
+  cursor: pointer;
+}
+
+.radio-menu {
+  background-color: var(--kommunfarg);
+  border: none;
+  cursor: pointer;
+}
+
+.checkbox-menu:before, .radio-menu:before {
+  content: "";
+  position: absolute;
+  inset: 0px;
+}
+
+
+
+.checkbox-menu:after {
+  width:40px;
+  height:40px;
+  border-radius: 3px;
+  top: -1px;
+  left: -1px;
+  position: relative;
+  content: '';
+  display: inline-block;
+  visibility: visible;
+  background-color: var(--kommunfarg);
+  border: 2px solid var(--kommunfarg);
+  background-image: url("/icon-my-objects--white.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+
+.checkbox-menu:checked:after {
+  width:40px;
+  height:40px;
+  border-radius: 3px;
+  top: -1px;
+  left: -1px;
+  position: relative;
+  background-color: var(--kommunfarg);
+  content: '';
+  display: inline-block;
+  visibility: visible;
+  border: 2px solid var(--kommunfarg);
+  background-image: url("/icon-my-objects--purple.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.radio-menu:after {
+  width:40px;
+  height:40px;
+  border-radius: 3px;
+  top: -12px;
+  left: -15px;
+  position: relative;
+  content: '';
+  display: inline-block;
+  visibility: visible;
+  background-color: var(--kommunfarg);
+  border: 2px solid var(--kommunfarg);
+  background-repeat: no-repeat;
+  background-position: center;
+}
+

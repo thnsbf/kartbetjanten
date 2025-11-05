@@ -1,0 +1,146 @@
+
+.my-objects {
+  grid-column: 3 / -1;
+  grid-row: 2 / -1;
+  background: var(--c-background-modal);
+  min-width: 300px;
+}
+
+.my-objects img {
+  margin: 0;
+}
+
+.my-objects__ul {
+  padding-left: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.object-li-item {
+  display: grid;
+  grid-template-columns: 8ch 1fr 60px;
+  background: var(--c-background-white);
+  align-items: center;
+  border-left: 8px solid var(--c-danger);
+  padding-inline-start: 8px; 
+  padding-inline-end: 4px;
+  padding-block: 8px;
+  border-radius: 4px;
+}
+
+.object-li-item__button {
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  background: transparent;
+}
+
+.object-li-item__object-type {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.object-li-item__date-time {
+  font-size: 0.825rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-block-start: 4px;
+}
+
+.my-objects h2, .my-objects h3 {
+  margin: 0;
+  font-weight: 600;
+}
+
+.my-objects h2 {
+  font-size: 1rem;
+}
+
+.my-objects h3 {
+  text-align: left;
+  font-size: 0.875rem;
+}
+
+.my-objects__header {
+  color: var(--c-text-highlight);
+  background: var(--kommunfarg-lighter);
+  padding-block: 0.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.header-btn {
+  position: absolute;
+  top: unset;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  margin-block-start: 2px;
+}
+
+.header-btn > i > img {
+  width: 16px;
+  height: 16px;
+}
+
+.header-btn--left {
+  left: 8px;
+}
+.header-btn--right {
+  right: 8px;
+}
+
+.my-objects__inner {
+  padding: 1rem;
+  display: block;
+  visibility: visible;
+}
+
+.my-objects__inner--hidden {
+  display: none;
+  visibility: collapse;
+}
+
+.object-li-item--active {
+  border-color: var(--c-success);
+}
+
+.object-li-item__button-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  margin-inline-end: 2px;
+}
+
+.object-li-item__img {
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.my-objects__btn-clear {
+  background: var(--c-danger);
+  color: var(--c-text-default);
+  border: none;
+  padding: 1em 2em;
+  border-radius: 100vmax;
+  justify-self: center;
+  cursor: pointer;
+}
+
+.my-objects__btn-clear:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.my-objects__footer {
+  display: flex;
+  justify-content: center;
+}
