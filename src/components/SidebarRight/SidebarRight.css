@@ -1,0 +1,10 @@
+.sidebar-right {
+  background: var(--c-background-modal);
+  overflow-y: auto;
+  min-height: 220px;
+}
+
+.pop-up-tool-settings {
+  position: absolute;
+  right: 0;
+}

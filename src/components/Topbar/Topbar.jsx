@@ -1,45 +1,97 @@
 import "./Topbar.css";
 import { useState, useEffect } from "react";
+import SearchBar from "../SearchBar/SearchBar";
+import DownloadButton from "../DownloadButton/DownloadButton";
 
-export default function Topbar({ isStartpage, zoomOut, zoomIn }) {
-  
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 600);
-
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 600);
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
+export default function Topbar({
+  isStartpage,
+  zoomOut,
+  zoomIn,
+  setPickedAddress,
+  rightPane,
+  isMobile,
+  setIsUserShowMenu,
+  placeTextState,
+}) {
+  const [isUserShowSearchbar, setIsUserShowSearchbar] = useState(false);
 
   function handleZoomClick(isUp) {
     if (isUp) {
-      zoomOut()
+      zoomOut();
     } else {
-      zoomIn()
+      zoomIn();
     }
   }
-  
+  function handleShowSearchbarClick() {
+    setIsUserShowSearchbar((prev) => !prev);
+  }
+  function handleShowMenuClick() {
+    setIsUserShowMenu((prev) => !prev);
+  }
 
+  const isMobileAndMain = isMobile && !isStartpage;
 
   return (
     <header className="topbar">
       <div className="main-logo">
-        <a href="#">
-          <img src={ isMobile && !isStartpage ? "thn_logo2_liggande_vit_rgb.svg" : "thn_logo_liggande_vit_rgb.svg"} alt="Trollhättans Stads logo"/> 
+        <a
+          className={isMobileAndMain ? "hamburger-a" : ""}
+          onClick={handleShowMenuClick}
+        >
+          <img
+            src={
+              isMobileAndMain
+                ? "icon-hamburger--white.svg"
+                : "thn_logo_liggande_vit_rgb.svg"
+            }
+            alt="Trollhättans Stads logo"
+          />
         </a>
-      </div>       
-      { !isStartpage && (
+      </div>
+      {!isStartpage && (
         <>
-          <button title="Ladda ner din karta som en PDF" className="button button--primary" id="btn-save-my-map"><i><img className="download-icon" src="/icon-download--black.svg" alt="Download-icon" /></i>Ladda ner karta</button>
+          <SearchBar
+            setPickedAddress={setPickedAddress}
+            show={!isMobile || isUserShowSearchbar}
+            isMobile={isMobile}
+          />
+          {!isMobile && <DownloadButton isMobile={true} />}
           <div className="topbar__tool-list-wrapper">
             <ul className="topbar__tool-list">
-              <li title="Zooma ut" className="topbar-tool"><i><img src="/icon-zoom-out--white.svg" alt="Icon for zooming out" onClick={() => handleZoomClick(false)} /></i></li>
-              <li title="Zooma in" className="topbar-tool"><i><img src="/icon-zoom-in--white.svg" alt="Icon for zooming in" onClick={() => handleZoomClick(true)} /></i></li>
-              <li className="topbar-tool"><i><img src="/icon-map-position--white.svg" alt="Icon showing my position on the map" /></i></li>
+              <li title="Zooma ut" className="topbar-tool">
+                <i>
+                  <img
+                    src="/icon-zoom-out--white.svg"
+                    alt="Icon for zooming out"
+                    onClick={() => handleZoomClick(false)}
+                  />
+                </i>
+              </li>
+              <li title="Zooma in" className="topbar-tool">
+                <i>
+                  <img
+                    src="/icon-zoom-in--white.svg"
+                    alt="Icon for zooming in"
+                    onClick={() => handleZoomClick(true)}
+                  />
+                </i>
+              </li>
+              {isMobile && (
+                <li className="topbar-tool">
+                  <i>
+                    <img
+                      style={{ maxHeight: 36 }}
+                      src="/icon-map-position--white.svg"
+                      alt="Icon showing my position on the map"
+                      onClick={handleShowSearchbarClick}
+                    />
+                  </i>
+                </li>
+              )}
             </ul>
           </div>
         </>
-      ) }
+      )}
     </header>
-  )
+  );
 }

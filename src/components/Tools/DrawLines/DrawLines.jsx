@@ -193,7 +193,7 @@ export default function DrawLines({
     });
 
     // Attach metadata + keep the junction points VISIBLE
-    ent.type = "Line";
+    ent.type = "Linje";
     ent.isActive = true;
     ent.lastUpdated = new Date().toISOString();
     ent.__draft = { ...draftRef.current };

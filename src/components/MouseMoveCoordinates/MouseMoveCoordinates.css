@@ -8,4 +8,13 @@
   letter-spacing: 0.5px;
   padding-inline: 0.25rem;
   min-width: 29ch;
+  display: none;
+  visibility: hidden;
+}
+
+@media (min-width: 992px) {
+  .mouse-move-coordinates-wrapper {
+    display: unset;
+    visibility: visible;
+  }
 }

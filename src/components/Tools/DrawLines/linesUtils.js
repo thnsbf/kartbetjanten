@@ -61,7 +61,7 @@ export function rebuildLabelsForLineEntity(viewer, ent) {
         showBackground: true,
         backgroundColor: Color.fromAlpha(Color.BLACK, 0.6),
         disableDepthTestDistance: Number.POSITIVE_INFINITY,
-        pixelOffset: isLast ? new Cartesian2(0, offsetY) : Cartesian2.ZERO,
+        pixelOffset: isLast ? new Cartesian2(0, offsetY - 18) : Cartesian2.ZERO,
         verticalOrigin: isLast ? VerticalOrigin.BOTTOM : VerticalOrigin.CENTER,
       },
       show: true,

@@ -1,12 +1,11 @@
-
 .scale-bar {
   position: absolute;
-  left: 10px;
-  bottom: 10px;
-  background: rgba(0,0,0,0.55);
+  left: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.55);
   color: #fff;
-  padding: 6px 8px;
-  border-radius: 6px;
+  padding: 4px 4px;
+  border-radius: 0 6px 0 0;
   font-size: 0.75rem;
   line-height: 1.2;
   pointer-events: none;
@@ -14,10 +13,10 @@
 }
 
 .scale-bar__bar {
-  height: var(--scale-bar-width); 
-  background: #fff; 
+  height: var(--scale-bar-width);
+  background: #fff;
   border-radius: 2px;
-  position: relative; 
+  position: relative;
 }
 
 .scale-bar__bar:before {
@@ -42,8 +41,22 @@
 }
 
 .scale-bar__label {
-  margin-top: 6px; 
+  margin-top: 6px;
   margin-inline-end: 6px;
   text-align: right;
   letter-spacing: 0.25px;
+}
+
+@media (min-height: 600px) {
+  .scale-bar {
+    padding: 6px 8px;
+  }
+}
+
+@media (min-width: 992px) {
+  .scale-bar {
+    left: 10px;
+    bottom: 10px;
+    border-radius: 6px;
+  }
 }

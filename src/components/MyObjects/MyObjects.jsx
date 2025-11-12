@@ -1,199 +1,146 @@
-// src/components/MyObjects/MyObjects.jsx
 import "./MyObjects.css";
-import { useState } from "react";
-
-import TextModal from "../TextModal/TextModal";
-import LinesModal from "../LinesModal/LinesModal";
-import AreaModal from "../AreaModal/AreaModal";
-import MarkerModal from "../MarkerModal/MarkerModal";
-
-import { draftFromEntityLabel, applyDraftToEntityLabel } from "../Tools/AddText/labelDraft";
-import { draftFromLineEntity, applyDraftToLineEntity } from "../Tools/DrawLines/linesDraft";
-import {
-  draftFromAreaEntity,
-  applyDraftToAreaEntity,
-} from "../Tools/DrawArea/areaDraft";
-import {
-  draftFromMarkerEntity,
-  applyDraftToMarkerEntity,
-} from "../Tools/AddMarker/markersDraft";
+import DownloadButton from "../DownloadButton/DownloadButton";
 
 export default function MyObjects({
-  entitiesUpdateUI,               // () => void
-  entitiesRef,                    // useRef(Map<uuid, Cesium.Entity>)
-  updateShowHideEntitiesRef,      // (uuid, showBool) => void
-  removeAllInactiveEntitiesRef,   // () => void
-  viewer,                         // Cesium viewer (needed for applyDraftTo* functions that rebuild labels, etc.)
+  entitiesUpdateUI, // () => void
+  entitiesRef, // useRef(Map<uuid, Cesium.Entity>)
+  updateShowHideEntitiesRef, // (uuid, showBool) => void
+  removeAllInactiveEntitiesRef, // (optional)
+  viewer, // ref to Cesium viewer: { current: Viewer | null }
+  onEdit, // (uuid) => void
+  isMobile,
 }) {
-  // --- TEXT modal state ---
-  const [textOpen, setTextOpen] = useState(false);
-  const [editTextUuid, setEditTextUuid] = useState(null);
-  const [textDraft, setTextDraft] = useState({
-    text: "",
-    color: "#ffffff",
-    backgroundColor: "#111111",
-    fontSize: 20,
-  });
+  // --- Helpers ---------------------------------------------------------------
 
-  // --- LINES modal state ---
-  const [lineOpen, setLineOpen] = useState(false);
-  const [editLineUuid, setEditLineUuid] = useState(null);
-  const [lineDraft, setLineDraft] = useState({
-    lineColor: "#ff3b30",
-    lineWidth: 3,
-    lineType: "solid",
-    pointColor: "#0066ff",
-    pointSize: 8,
-    showValues: true,
-  });
+  function safeRemove(v, e) {
+    if (!v || !v.entities || !e) return;
+    try {
+      if (v.entities.contains(e)) v.entities.remove(e);
+    } catch {
+      /* ignore */
+    }
+  }
 
-  // --- AREA modal state ---
-  const [areaOpen, setAreaOpen] = useState(false);
-  const [editAreaUuid, setEditAreaUuid] = useState(null);
-  const [areaDraft, setAreaDraft] = useState({
-    pointColor: "#0066ff",
-    pointSize: 8,
-    fillHex: "#ff3b30",
-    fillOpacity: 0.25,
-    outlineColor: "#ff3b30",
-    outlineWidth: 2,
-    showAreaLabel: true,
-    showPoints: false,
-    showEdgeValues: true,
-  });
+  function scanAndRemoveSceneChildren(v, ent) {
+    // Some labels/points may not have been registered in ent.__children.
+    // We also remove any entity whose __parent === ent,
+    // or whose id string begins with `${parentId}__`.
+    const coll = v?.entities;
+    if (!coll) return;
+    const list = coll.values ? coll.values.slice() : []; // copy
+    const parentId = (ent.id ?? ent._id ?? ent.__uuid ?? "").toString();
 
-  // --- MARKER modal state ---
-  const [markerOpen, setMarkerOpen] = useState(false);
-  const [editMarkerUuid, setEditMarkerUuid] = useState(null);
-  const [markerDraft, setMarkerDraft] = useState({
-    color: "#ff0000",
-    pixelSize: 10,
-    outlineColor: "#ffffff",
-    outlineWidth: 2,
-  });
+    for (const child of list) {
+      if (!child) continue;
+      if (child.__parent && child.__parent === ent) {
+        safeRemove(v, child);
+        continue;
+      }
+      // fallback heuristic: id starts with `${parentId}__`
+      const cid = (child.id ?? "").toString?.() ?? "";
+      if (parentId && cid && cid.startsWith(parentId + "__")) {
+        safeRemove(v, child);
+      }
+    }
+  }
 
-  // Snapshot for rendering
-  const usedObjects = Array.from(entitiesRef.current.values() || []);
-  usedObjects.sort(
-    (a, b) => new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime()
-  );
+  function removeEntityGroup(v, ent) {
+    if (!v || !ent) return;
+
+    // 1) Remove anything we *do* track
+    const ch = ent.__children || {};
+
+    const arrays = ["labels", "edgeLabels", "points"];
+    for (const key of arrays) {
+      const arr = ch[key];
+      if (Array.isArray(arr)) {
+        for (const child of arr) safeRemove(v, child);
+        ch[key] = [];
+      }
+    }
+
+    if (ch.totalLabel) {
+      safeRemove(v, ch.totalLabel);
+      ch.totalLabel = null;
+    }
+    if (ch.label) {
+      safeRemove(v, ch.label);
+      ch.label = null;
+    }
+
+    if (ch.temp && typeof ch.temp === "object") {
+      if (ch.temp.poly) {
+        safeRemove(v, ch.temp.poly);
+        ch.temp.poly = null;
+      }
+      if (ch.temp.label) {
+        safeRemove(v, ch.temp.label);
+        ch.temp.label = null;
+      }
+    }
+
+    ent.__children = ch;
+
+    // 2) Sweep the scene for any untracked children tied to this parent
+    scanAndRemoveSceneChildren(v, ent);
+
+    // 3) Finally remove the parent entity
+    safeRemove(v, ent);
+  }
 
   function handleRemove(uuid) {
     updateShowHideEntitiesRef(uuid, false);
   }
+
   function handleRestore(uuid) {
     updateShowHideEntitiesRef(uuid, true);
   }
+
   function handleRemoveInactive() {
-    removeAllInactiveEntitiesRef();
-  }
+    const v = viewer?.current;
+    if (!v) return;
 
-  function handleEdit(uuid) {
-    const ent = entitiesRef.current.get(uuid);
-    if (!ent) return;
-
-    // TEXT
-    if (ent.label && !ent.polyline && !ent.polygon) {
-      setTextDraft(draftFromEntityLabel(ent));
-      setEditTextUuid(uuid);
-      setTextOpen(true);
-      return;
+    const toDelete = [];
+    for (const [uuid, ent] of entitiesRef.current.entries()) {
+      if (!ent || ent.isActive) continue;
+      removeEntityGroup(v, ent);
+      toDelete.push(uuid);
     }
-
-    // LINE
-    if (ent.polyline) {
-      setLineDraft(draftFromLineEntity(ent));
-      setEditLineUuid(uuid);
-      setLineOpen(true);
-      return;
+    for (const uuid of toDelete) {
+      entitiesRef.current.delete(uuid);
     }
-
-    // AREA (polygon)
-    if (ent.polygon) {
-      setAreaDraft(draftFromAreaEntity(ent));
-      setEditAreaUuid(uuid);
-      setAreaOpen(true);
-      return;
-    }
-
-    // MARKER (point)
-    if (ent.point) {
-      setMarkerDraft(draftFromMarkerEntity(ent));
-      setEditMarkerUuid(uuid);
-      setMarkerOpen(true);
-      return;
-    }
-  }
-
-  // --- CONFIRM handlers ---
-  function confirmTextEdit() {
-    const ent = entitiesRef.current.get(editTextUuid);
-    if (!ent) {
-      setTextOpen(false);
-      setEditTextUuid(null);
-      return;
-    }
-    applyDraftToEntityLabel(ent, textDraft);
-    ent.lastUpdated = new Date().toISOString();
-    ent.isActive = true;
     entitiesUpdateUI?.();
-    setTextOpen(false);
-    setEditTextUuid(null);
   }
 
-  function confirmLineEdit() {
-    const ent = entitiesRef.current.get(editLineUuid);
-    if (!ent) {
-      setLineOpen(false);
-      setEditLineUuid(null);
-      return;
-    }
-    applyDraftToLineEntity(ent, lineDraft, viewer);
-    ent.lastUpdated = new Date().toISOString();
-    ent.isActive = true;
-    entitiesUpdateUI?.();
-    setLineOpen(false);
-    setEditLineUuid(null);
-  }
-
-  function confirmAreaEdit() {
-    const ent = entitiesRef.current.get(editAreaUuid);
-    if (!ent) {
-      setAreaOpen(false);
-      setEditAreaUuid(null);
-      return;
-    }
-    applyDraftToAreaEntity(ent, areaDraft, viewer);
-    ent.lastUpdated = new Date().toISOString();
-    ent.isActive = true;
-    entitiesUpdateUI?.();
-    setAreaOpen(false);
-    setEditAreaUuid(null);
-  }
-
-  function confirmMarkerEdit() {
-    const ent = entitiesRef.current.get(editMarkerUuid);
-    if (!ent) {
-      setMarkerOpen(false);
-      setEditMarkerUuid(null);
-      return;
-    }
-    applyDraftToMarkerEntity(ent, markerDraft);
-    ent.lastUpdated = new Date().toISOString();
-    ent.isActive = true;
-    entitiesUpdateUI?.();
-    setMarkerOpen(false);
-    setEditMarkerUuid(null);
-  }
+  // --- Render list -----------------------------------------------------------
+  const usedObjects = Array.from(entitiesRef.current.values() || []);
+  usedObjects.sort(
+    (a, b) =>
+      new Date(b.lastUpdated).getTime() - new Date(a.lastUpdated).getTime()
+  );
 
   const liItems = usedObjects.map((obj) => {
-    const { type, lastUpdated, isActive, id } = obj;
-    const tsLabel = new Date(lastUpdated).toLocaleString("sv-SE", { hour12: false });
+    const id = obj.id ?? obj._id ?? obj.__uuid;
+    const isActive = !!obj.isActive;
+    const type =
+      obj.type ??
+      (obj.polyline
+        ? "Linje"
+        : obj.polygon
+        ? "Area"
+        : obj.label
+        ? "Text"
+        : "Punkt");
+    const tsLabel = new Date(obj.lastUpdated).toLocaleString("sv-SE", {
+      hour12: false,
+    });
 
     return (
       <li
         key={id}
-        className={isActive ? "object-li-item object-li-item--active" : "object-li-item"}
+        className={
+          isActive ? "object-li-item object-li-item--active" : "object-li-item"
+        }
       >
         <span className="object-li-item__object-type">{type}</span>
         <span className="object-li-item__date-time">{tsLabel}</span>
@@ -203,7 +150,7 @@ export default function MyObjects({
               <button
                 className="object-li-item__button"
                 title="Ändra objekt"
-                onClick={() => handleEdit(id)}
+                onClick={() => onEdit?.(id)}
               >
                 <i>
                   <img
@@ -255,7 +202,7 @@ export default function MyObjects({
   });
 
   return (
-    <aside id="my-objects" className="my-objects">
+    <section id="my-objects" className="my-objects">
       <header className="my-objects__header">
         <h2>Mina objekt</h2>
       </header>
@@ -266,14 +213,14 @@ export default function MyObjects({
           {activeLiItems.length ? activeLiItems : "Inga aktiva objekt"}
         </ul>
 
-        <hr />
+        <hr className="my-objects__hr" />
 
         <h3>Senast borttagna</h3>
-        <ul className="my-objects__ul">
+        <ul className="my-objects__ul my-objects__ul--last-removed">
           {inActiveLiItems.length ? inActiveLiItems : "Inga borttagna objekt"}
         </ul>
 
-        <hr />
+        <hr className="my-objects__hr" />
 
         <footer className="my-objects__footer">
           <button
@@ -283,60 +230,9 @@ export default function MyObjects({
           >
             Rensa borttagna
           </button>
+          {isMobile && <DownloadButton isMobile={true} />}
         </footer>
       </div>
-
-      {/* TEXT modal */}
-      <TextModal
-        open={textOpen}
-        draft={textDraft}
-        setDraft={setTextDraft}
-        onConfirm={confirmTextEdit}
-        onClose={() => {
-          setTextOpen(false);
-          setEditTextUuid(null);
-        }}
-        isPlaceText={false}
-      />
-
-      {/* LINES modal */}
-      <LinesModal
-        open={lineOpen}
-        draft={lineDraft}
-        setDraft={setLineDraft}
-        onConfirm={confirmLineEdit}
-        onClose={() => {
-          setLineOpen(false);
-          setEditLineUuid(null);
-        }}
-        isCreate={false}
-      />
-
-      {/* AREA modal */}
-      <AreaModal
-        open={areaOpen}
-        draft={areaDraft}
-        setDraft={setAreaDraft}
-        onConfirm={confirmAreaEdit}
-        onClose={() => {
-          setAreaOpen(false);
-          setEditAreaUuid(null);
-        }}
-        isCreate={false}
-      />
-
-      {/* MARKER modal */}
-      <MarkerModal
-        open={markerOpen}
-        draft={markerDraft}
-        setDraft={setMarkerDraft}
-        onConfirm={confirmMarkerEdit}
-        onClose={() => {
-          setMarkerOpen(false);
-          setEditMarkerUuid(null);
-        }}
-        isCreate={false}
-      />
-    </aside>
+    </section>
   );
 }

@@ -1,6 +1,6 @@
 .main {
   position: relative;
-
+  overflow: hidden;
 }
 
 .heading-address-display {
@@ -14,8 +14,10 @@
   left: 0;
   z-index: 10;
   cursor: pointer;
+  display: none;
+  visibility: hidden;
 }
 
-.heading-address-display:hover {
+/* .heading-address-display:hover {
   text-decoration: underline;
-}
+} */

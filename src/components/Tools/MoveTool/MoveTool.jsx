@@ -64,7 +64,6 @@ function resolveRootEntity(pickedEnt, entitiesRef) {
       const inLabels = Array.isArray(ch.labels)
         ? ch.labels.some((l) => l === pickedEnt)
         : (ch.label && ch.label === pickedEnt);
-      // allow tail/misc temps
       const inTail = ch.tailPoint && ch.tailPoint === pickedEnt;
       const inMisc = Array.isArray(ch.misc) && ch.misc.includes(pickedEnt);
 
@@ -78,6 +77,11 @@ function resolveRootEntity(pickedEnt, entitiesRef) {
 function setLineLabelsVisible(ent, visible, viewer) {
   const labels = ent.__children?.labels || [];
   for (const l of labels) l.show = !!visible;
+  viewer?.scene?.requestRender?.();
+}
+function setLineTotalLabelVisible(ent, visible, viewer) {
+  const tl = ent.__children?.totalLabel;
+  if (tl) tl.show = !!visible;
   viewer?.scene?.requestRender?.();
 }
 function setAreaLabelVisible(ent, visible, viewer) {
@@ -96,38 +100,48 @@ function rebuildLineLabels(ent, viewer, helpers) {
   const positions = readPolylinePositions(ent, time);
   const ch = (ent.__children ||= {});
 
-  // remove old
+  // remove old segment labels
   if (Array.isArray(ch.labels)) {
     for (const l of ch.labels) viewer.entities.remove(l);
   }
   ch.labels = [];
 
-  const show = !!ent.__draft?.showValues;
-  if (!show || positions.length < 2) {
+  const showSegments = !!ent.__draft?.showValues;
+  if (!showSegments || positions.length < 2) {
     ent.__children = ch;
-    return;
+  } else {
+    for (let i = 0; i < positions.length - 1; i++) {
+      const p0 = positions[i], p1 = positions[i + 1];
+      const info = segmentInfo(p0, p1, ellipsoid);
+      const label = viewer.entities.add({
+        position: info.mid,
+        label: {
+          text: formatMeters(info.meters),
+          font: "14px Barlow",
+          fillColor: Color.WHITE,
+          outlineColor: Color.BLACK,
+          outlineWidth: 3,
+          showBackground: true,
+          backgroundColor: Color.fromAlpha(Color.BLACK, 0.6),
+          disableDepthTestDistance: Number.POSITIVE_INFINITY,
+        },
+        show: true,
+      });
+      label.__parent = ent;
+      ch.labels.push(label);
+    }
+    ent.__children = ch;
   }
-  for (let i = 0; i < positions.length - 1; i++) {
-    const p0 = positions[i], p1 = positions[i + 1];
-    const info = segmentInfo(p0, p1, ellipsoid);
-    const label = viewer.entities.add({
-      position: info.mid,
-      label: {
-        text: formatMeters(info.meters),
-        font: "14px Barlow",
-        fillColor: Color.WHITE,
-        outlineColor: Color.BLACK,
-        outlineWidth: 3,
-        showBackground: true,
-        backgroundColor: Color.fromAlpha(Color.BLACK, 0.6),
-        disableDepthTestDistance: Number.POSITIVE_INFINITY,
-      },
-      show: true,
-    });
-    label.__parent = ent;
-    ch.labels.push(label);
+
+  // Reposition total-length label (keep text; moving doesn't change length)
+  if (ch.totalLabel && positions.length > 0) {
+    const lastPos = positions[positions.length - 1];
+    ch.totalLabel.position = lastPos;
+
+    // Show or hide total per draft (if you support showTotal; fallback to showValues)
+    const showTotal = ent.__draft?.showTotal ?? ent.__draft?.showValues ?? true;
+    ch.totalLabel.show = !!showTotal;
   }
-  ent.__children = ch;
 }
 
 function rebuildAreaLabel(ent, viewer, helpers) {
@@ -243,7 +257,10 @@ export default function MoveTool({
       startCartoRef.current = Cartographic.fromCartesian(p, ellipsoid);
 
       // hide labels while dragging
-      if (root.polyline) setLineLabelsVisible(root, false, viewer);
+      if (root.polyline) {
+        setLineLabelsVisible(root, false, viewer);
+        setLineTotalLabelVisible(root, false, viewer);
+      }
       if (root.polygon) setAreaLabelVisible(root, false, viewer);
 
       // gather child points (include any stray temp handles so they move too)
@@ -299,6 +316,12 @@ export default function MoveTool({
         for (let i = 0; i < cps.length && i < moved.length; i++) {
           cps[i].position = moved[i];
         }
+
+        // Keep total-length label following the last vertex *during* drag
+        const ch = root.__children || {};
+        if (ch.totalLabel && moved.length > 0) {
+          ch.totalLabel.position = moved[moved.length - 1];
+        }
       }
       // area
       else if (areaCartosRef.current && root.polygon) {
@@ -324,7 +347,21 @@ export default function MoveTool({
       const root = pickedRootRef.current;
       if (root) {
         // rebuild labels
-        if (root.polyline) rebuildLineLabels(root, viewer, lineHelpers);
+        if (root.polyline) {
+          rebuildLineLabels(root, viewer, lineHelpers);
+
+          // Ensure total-length label is visible per draft and positioned at the last vertex
+          const ch = root.__children || {};
+          const positions = readPolylinePositions(root, viewer.clock.currentTime);
+          const showTotal = root.__draft?.showTotal ?? root.__draft?.showValues ?? true;
+          if (ch.totalLabel) {
+            if (positions.length > 0) {
+              ch.totalLabel.position = positions[positions.length - 1];
+            }
+            ch.totalLabel.show = !!showTotal;
+          }
+        }
+
         if (root.polygon) {
           rebuildAreaLabel(root, viewer, areaHelpers);
           rebuildAreaEdgeLabels(root, viewer);
@@ -351,6 +388,7 @@ export default function MoveTool({
         root.isActive = true;
       }
 
+      // restore camera + reset drag state
       restoreCamera();
       clearSnapshots();
       entitiesUpdateUI?.();

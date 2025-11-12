@@ -1,47 +1,80 @@
-// src/modules/labelDraft.js
-import { Color, Cartesian2, LabelStyle } from "cesium";
+// src/components/Tools/AddText/labelDraft.js
+import { Color } from "cesium";
 
-// Turn a Cesium entity.label into a draft for editing
-export function draftFromEntityLabel(entity) {
-  let text = entity.label?.text || "";
-  // unwrap Cesium ConstantProperty if necessary
-  if (text && typeof text.getValue === "function") {
-    text = text.getValue();
+function toCssFromColorProperty(prop) {
+  try {
+    const v = prop?.getValue ? prop.getValue() : prop;
+    if (!v) return null;
+    // best-effort: Color -> rgba string
+    const r = Math.round((v.red ?? 0) * 255);
+    const g = Math.round((v.green ?? 0) * 255);
+    const b = Math.round((v.blue ?? 0) * 255);
+    const a = v.alpha ?? 1;
+    return `rgba(${r}, ${g}, ${b}, ${a})`;
+  } catch {
+    return null;
   }
-  if (typeof text !== "string") text = String(text ?? "");
-  const font = entity.label?.font || "18px Barlow";
-  const fontSize = parseInt(font, 10) || 18;
+}
 
-  const toHex = (c) => {
-    if (!c) return "#ffffff";
-    const r = Math.round((c.red ?? 1) * 255).toString(16).padStart(2, "0");
-    const g = Math.round((c.green ?? 1) * 255).toString(16).padStart(2, "0");
-    const b = Math.round((c.blue ?? 1) * 255).toString(16).padStart(2, "0");
-    return `#${r}${g}${b}`;
-  };
-  const backgroundColor = typeof entity.label?.backgroundColor === "string" ? entity.label?.backgroundColor : entity.label?.backgroundColor.value || entity.label?.backgroundColor._value
-  const textColor = typeof entity.label?.fillColor === "string" ? entity.label?.fillColor : entity.label?.fillColor.value || entity.label?.fillColor._value
+export function draftFromEntityLabel(ent) {
+  // Prefer saved draft if present (created by us)
+  if (ent.__draft) {
+    // Ensure new key exists for older entities
+    return {
+      text: ent.__draft.text ?? ent.label?.text ?? "",
+      color: ent.__draft.color ?? "#ffffff",
+      backgroundColor: ent.__draft.backgroundColor ?? "#111111",
+      fontSize: ent.__draft.fontSize ?? 20,
+      backgroundEnabled:
+        ent.__draft.backgroundEnabled ?? ent.label?.showBackground ?? true,
+    };
+  }
+
+  // Fallback: best-effort read from live label
+  const text = ent.label?.text ?? "";
+  const font = ent.label?.font ?? "20px Barlow";
+  const fontSize = Number(String(font).split("px")[0]) || 20;
+  const colorCss = toCssFromColorProperty(ent.label?.fillColor) ?? "#ffffff";
+  const bgCss = toCssFromColorProperty(ent.label?.backgroundColor) ?? "#111111";
+  const showBg =
+    typeof ent.label?.showBackground === "boolean"
+      ? ent.label.showBackground
+      : true;
 
   return {
     text,
+    color: colorCss,
+    backgroundColor: bgCss,
     fontSize,
-    color: toHex(textColor),
-    backgroundColor: toHex(backgroundColor),
+    backgroundEnabled: showBg,
   };
 }
 
-// Apply a draft to an entity.label (create or update)
-export function applyDraftToEntityLabel(entity, draft) {
-  if (!entity.label) entity.label = {};
-  entity.label.text = draft.text.trim();
-  entity.label.font = `${draft.fontSize}px Barlow`;
-  entity.label.style = LabelStyle.FILL_AND_OUTLINE;
-  entity.label.fillColor = Color.fromCssColorString(draft.color);
-  entity.label.outlineColor = Color.fromCssColorString("#000");
-  entity.label.outlineWidth = 0;
-  entity.label.showBackground = true;
-  entity.label.backgroundColor = Color.fromCssColorString(draft.backgroundColor);
-  entity.label.backgroundPadding = new Cartesian2(8, 6);
-  entity.label.pixelOffset = new Cartesian2(0, -12);
-  entity.label.disableDepthTestDistance = Number.POSITIVE_INFINITY;
+export function applyDraftToEntityLabel(ent, draft) {
+  if (!ent?.label) return;
+
+  const {
+    text,
+    color = "#ffffff",
+    backgroundColor = "#111111",
+    fontSize = 20,
+    backgroundEnabled = true,
+  } = draft || {};
+
+  ent.label.text = text;
+  ent.label.font = `${fontSize}px Barlow`;
+  ent.label.fillColor = Color.fromCssColorString(color);
+
+  // Show/hide background
+  ent.label.showBackground = !!backgroundEnabled;
+  ent.label.backgroundColor = Color.fromCssColorString(backgroundColor);
+
+  // Persist for later edits & restore logic
+  ent.__draft = {
+    text,
+    color,
+    backgroundColor,
+    fontSize,
+    backgroundEnabled,
+  };
 }

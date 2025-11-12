@@ -1,6 +1,6 @@
 :root {
   --kommunfont: "Barlow", "sans-serif";
-
+  box-sizing: border-box;
   font-family: var(--kommunfont);
   line-height: 1.5;
   font-weight: 400;
@@ -12,13 +12,9 @@
 
   --module-content-max-width: 450px;
   --thumb-circle-size: 20px;
-  --navbar-height: 80px;
   --scrollbar-width: 5px;
-  --topbar-padding: 16px;
 
   --scale-bar-width: 2px;
-
-
 
   /* COLORS */
 
@@ -51,7 +47,6 @@
   --c-btn-background--primary: var(--green-700);
   --c-btn-border--primary: var(--black-700);
 
-
   --c-success: var(--green-700);
   --c-danger: var(--red-500);
 
@@ -75,9 +70,7 @@
 
   --red-500: rgba(235, 95, 95, 1);
   --red-300: rgba(255, 250, 190, 1);
-
 }
-
 
 @media (prefers-color-scheme: light) {
   :root {
