@@ -48,7 +48,11 @@ function toCartesianAll(arr, ellipsoid) {
   );
 }
 function applyDelta(cg, dLon, dLat) {
-  return new Cartographic(cg.longitude + dLon, cg.latitude + dLat, cg.height ?? 0);
+  return new Cartographic(
+    cg.longitude + dLon,
+    cg.latitude + dLat,
+    cg.height ?? 0
+  );
 }
 
 // parent resolution
@@ -63,7 +67,7 @@ function resolveRootEntity(pickedEnt, entitiesRef) {
       const inPoints = ch.points?.some((p) => p === pickedEnt) ?? false;
       const inLabels = Array.isArray(ch.labels)
         ? ch.labels.some((l) => l === pickedEnt)
-        : (ch.label && ch.label === pickedEnt);
+        : ch.label && ch.label === pickedEnt;
       const inTail = ch.tailPoint && ch.tailPoint === pickedEnt;
       const inMisc = Array.isArray(ch.misc) && ch.misc.includes(pickedEnt);
 
@@ -111,7 +115,8 @@ function rebuildLineLabels(ent, viewer, helpers) {
     ent.__children = ch;
   } else {
     for (let i = 0; i < positions.length - 1; i++) {
-      const p0 = positions[i], p1 = positions[i + 1];
+      const p0 = positions[i],
+        p1 = positions[i + 1];
       const info = segmentInfo(p0, p1, ellipsoid);
       const label = viewer.entities.add({
         position: info.mid,
@@ -145,7 +150,8 @@ function rebuildLineLabels(ent, viewer, helpers) {
 }
 
 function rebuildAreaLabel(ent, viewer, helpers) {
-  const { polygonCentroid, polygonAreaMeters2, formatSquareMeters } = helpers || {};
+  const { polygonCentroid, polygonAreaMeters2, formatSquareMeters } =
+    helpers || {};
   if (!polygonCentroid || !polygonAreaMeters2 || !formatSquareMeters) return;
 
   const ellipsoid = viewer.scene.globe.ellipsoid;
@@ -274,12 +280,17 @@ export default function MoveTool({
 
       const time = viewer.clock.currentTime;
 
-      if (root.point && !root.polyline && !root.polygon) {
+      // SINGLE-POSITION ENTITIES (marker/text): point OR billboard OR label,
+      // and not a polyline/polygon
+      if (
+        (root.point || root.billboard || root.label) &&
+        !root.polyline &&
+        !root.polygon
+      ) {
         const pos = root.position?.getValue?.(time) ?? root.position;
-        pointCartoRef.current = Cartographic.fromCartesian(pos, ellipsoid);
-      } else if (root.label && !root.polyline && !root.polygon) {
-        const pos = root.position?.getValue?.(time) ?? root.position;
-        pointCartoRef.current = Cartographic.fromCartesian(pos, ellipsoid);
+        if (pos) {
+          pointCartoRef.current = Cartographic.fromCartesian(pos, ellipsoid);
+        }
       } else if (root.polyline) {
         const arr = readPolylinePositions(root, time);
         lineCartosRef.current = toCartographicAll(arr, ellipsoid);
@@ -301,14 +312,26 @@ export default function MoveTool({
       const dLon = cur.longitude - startCartoRef.current.longitude;
       const dLat = cur.latitude - startCartoRef.current.latitude;
 
-      // single position (marker/text)
-      if (pointCartoRef.current && (root.point || root.label) && !root.polyline && !root.polygon) {
+      // SINGLE-POSITION ENTITIES (marker/text)
+      if (
+        pointCartoRef.current &&
+        (root.point || root.billboard || root.label) &&
+        !root.polyline &&
+        !root.polygon
+      ) {
         const newCarto = applyDelta(pointCartoRef.current, dLon, dLat);
-        root.position = Cartesian3.fromRadians(newCarto.longitude, newCarto.latitude, newCarto.height ?? 0, ellipsoid);
+        root.position = Cartesian3.fromRadians(
+          newCarto.longitude,
+          newCarto.latitude,
+          newCarto.height ?? 0,
+          ellipsoid
+        );
       }
       // line
       else if (lineCartosRef.current && root.polyline) {
-        const movedCartos = lineCartosRef.current.map((cg) => applyDelta(cg, dLon, dLat));
+        const movedCartos = lineCartosRef.current.map((cg) =>
+          applyDelta(cg, dLon, dLat)
+        );
         const moved = toCartesianAll(movedCartos, ellipsoid);
         writePolylinePositions(root, moved);
 
@@ -325,7 +348,9 @@ export default function MoveTool({
       }
       // area
       else if (areaCartosRef.current && root.polygon) {
-        const movedCartos = areaCartosRef.current.map((cg) => applyDelta(cg, dLon, dLat));
+        const movedCartos = areaCartosRef.current.map((cg) =>
+          applyDelta(cg, dLon, dLat)
+        );
         const moved = toCartesianAll(movedCartos, ellipsoid);
         writePolygonPositions(root, moved);
 
@@ -352,8 +377,12 @@ export default function MoveTool({
 
           // Ensure total-length label is visible per draft and positioned at the last vertex
           const ch = root.__children || {};
-          const positions = readPolylinePositions(root, viewer.clock.currentTime);
-          const showTotal = root.__draft?.showTotal ?? root.__draft?.showValues ?? true;
+          const positions = readPolylinePositions(
+            root,
+            viewer.clock.currentTime
+          );
+          const showTotal =
+            root.__draft?.showTotal ?? root.__draft?.showValues ?? true;
           if (ch.totalLabel) {
             if (positions.length > 0) {
               ch.totalLabel.position = positions[positions.length - 1];
@@ -420,7 +449,15 @@ export default function MoveTool({
       clearSnapshots();
       if (canvas) canvas.style.cursor = "default";
     };
-  }, [viewer, active, onCancel, entitiesRef, entitiesUpdateUI, lineHelpers, areaHelpers]);
+  }, [
+    viewer,
+    active,
+    onCancel,
+    entitiesRef,
+    entitiesUpdateUI,
+    lineHelpers,
+    areaHelpers,
+  ]);
 
   return null;
 }

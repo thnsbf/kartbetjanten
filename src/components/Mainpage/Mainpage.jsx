@@ -339,7 +339,12 @@ export default function Mainpage({ pickedAddress, setPickedAddress }) {
         return;
       }
 
-      if (ent.point && !ent.label) {
+      if (
+        (ent.point || ent.billboard) &&
+        !ent.label &&
+        !ent.polyline &&
+        !ent.polygon
+      ) {
         const d = draftFromMarkerEntity ? draftFromMarkerEntity(ent) : null;
         if (d) setMarkerDraft(d);
         setRightPane({ kind: "edit-marker", uuid });

@@ -1,6 +1,18 @@
 // src/components/MarkerModal/MarkerModal.jsx
 import React from "react";
 
+const ICON_OPTIONS = [
+  { value: "dot", label: "Punkt" },
+  { value: "pin", label: "Kartnål" },
+  { value: "flag", label: "Flagga" },
+  { value: "star", label: "Stjärna" },
+  { value: "toilet", label: "Toalett" },
+  { value: "outlet", label: "Eluttag" },
+  { value: "borehole", label: "Borrhål" },
+  { value: "water", label: "Dricksvatten" },
+  { value: "sewage", label: "Avloppsanläggning" },
+];
+
 export default function MarkerModal({
   open,
   draft,
@@ -9,6 +21,8 @@ export default function MarkerModal({
   onClose,
 }) {
   if (!open) return null;
+
+  const isDot = (draft.iconId || "dot") === "dot";
 
   return (
     <div
@@ -22,6 +36,43 @@ export default function MarkerModal({
         Redigera punkt
       </h3>
 
+      {/* Row 0: Icon select */}
+      <div className="modal-row" style={{ marginBottom: 6 }}>
+        <label
+          className="label-text"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 6,
+            minWidth: 140,
+          }}
+        >
+          <span style={{ fontSize: 12, opacity: 0.8 }}>Ikon</span>
+          <select
+            className="modal-input"
+            value={draft.iconId || "dot"}
+            onChange={(e) =>
+              setDraft((d) => ({ ...d, iconId: e.target.value }))
+            }
+            style={{
+              padding: "6px 8px",
+              minHeight: 32,
+              borderRadius: 8,
+              border: "1px solid #444",
+              background: "#fff",
+              color: "var(--c-text-black)",
+              outlineColor: "var(--blue-700)",
+            }}
+          >
+            {ICON_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>
+                {o.label}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+
       {/* Row 1: Fill color + Size */}
       <div className="modal-row">
         <label
@@ -33,7 +84,9 @@ export default function MarkerModal({
             minWidth: "52px",
           }}
         >
-          <span style={{ fontSize: 12, opacity: 0.8 }}>Punktfärg</span>
+          <span style={{ fontSize: 12, opacity: 0.8 }}>
+            {isDot ? "Punktfärg" : "Ikonfärg"}
+          </span>
           <input
             type="color"
             value={draft.color}
@@ -63,11 +116,11 @@ export default function MarkerModal({
           <input
             className="modal-input modal-input__number"
             type="number"
-            min={2}
-            max={64}
+            min={8}
+            max={128}
             value={draft.size}
             onChange={(e) => {
-              const v = Number(e.target.value || 10);
+              const v = Number(e.target.value || 16);
               setDraft((d) => ({ ...d, size: v }));
             }}
             style={{
@@ -75,7 +128,7 @@ export default function MarkerModal({
               border: "1px solid #444",
               background: "#fff",
               color: "var(--c-text-black)",
-              maxWidth: "40px",
+              maxWidth: "56px",
               height: "32px",
               textAlign: "center",
               outlineColor: "var(--blue-700)",
@@ -84,8 +137,14 @@ export default function MarkerModal({
         </label>
       </div>
 
-      {/* Row 2: Border color + Border width */}
-      <div className="modal-row">
+      {/* Row 2: Border color + width (only for dot) */}
+      <div
+        className="modal-row"
+        style={{
+          opacity: isDot ? 1 : 0.5,
+          pointerEvents: isDot ? "auto" : "none",
+        }}
+      >
         <label
           style={{
             display: "flex",
@@ -138,7 +197,7 @@ export default function MarkerModal({
               border: "1px solid #444",
               background: "#fff",
               color: "var(--c-text-black)",
-              maxWidth: "40px",
+              maxWidth: "56px",
               height: "32px",
               textAlign: "center",
               outlineColor: "var(--blue-700)",
