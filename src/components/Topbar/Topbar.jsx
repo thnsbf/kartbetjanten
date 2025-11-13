@@ -8,10 +8,8 @@ export default function Topbar({
   zoomOut,
   zoomIn,
   setPickedAddress,
-  rightPane,
   isMobile,
   setIsUserShowMenu,
-  placeTextState,
 }) {
   const [isUserShowSearchbar, setIsUserShowSearchbar] = useState(false);
 

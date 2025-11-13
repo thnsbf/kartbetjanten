@@ -8,7 +8,7 @@ import {
   Cartesian3,
   CallbackProperty,
   LabelStyle,
-  EllipsoidGeodesic
+  EllipsoidGeodesic,
 } from "cesium";
 import { v4 as uuidv4 } from "uuid";
 
@@ -24,23 +24,23 @@ import {
 export default function DrawLines({
   viewer,
   active,
-  onCancel,           // () => setActiveTool("no-tool")
-  setEntitiesRef,     // (uuid, ent) => void
-  entitiesUpdateUI,   // () => void
+  onCancel, // () => setActiveTool("no-tool")
+  setEntitiesRef, // (uuid, ent) => void
+  entitiesUpdateUI, // () => void
 }) {
   const handlerRef = useRef(null);
 
   // Draft + state
   const draftRef = useRef({ ...defaultLineDraft });
 
-  const committedPositionsRef = useRef([]);  // committed Cartesian3[]
-  const pointEntsRef = useRef([]);           // Cesium entities for junction points
+  const committedPositionsRef = useRef([]); // committed Cartesian3[]
+  const pointEntsRef = useRef([]); // Cesium entities for junction points
 
-  const mouseCartesianRef = useRef(null);    // current mouse world pos (rubber)
+  const mouseCartesianRef = useRef(null); // current mouse world pos (rubber)
 
   // Temps
-  const tempSegmentRef = useRef(null);       // current rubber-band segment entity
-  const tempLabelRef = useRef(null);         // current rubber-band label
+  const tempSegmentRef = useRef(null); // current rubber-band segment entity
+  const tempLabelRef = useRef(null); // current rubber-band label
 
   // Optional: committed polyline preview while drawing
   const committedLineRef = useRef(null);
@@ -55,8 +55,6 @@ export default function DrawLines({
     }
     return [];
   }, false);
-
-  // Helpers ---------------
 
   function ensureCommittedLine(v) {
     if (!committedLineRef.current) {
@@ -104,49 +102,47 @@ export default function DrawLines({
   }
 
   function upsertTempLabel(v) {
-  const scene = v.scene;
-  const ellipsoid = scene.globe.ellipsoid;
-  const pts = committedPositionsRef.current || [];
-  const m = mouseCartesianRef.current;
-  if (!m || pts.length < 1) {
-    if (tempLabelRef.current) {
-      v.entities.remove(tempLabelRef.current);
-      tempLabelRef.current = null;
+    const scene = v.scene;
+    const ellipsoid = scene.globe.ellipsoid;
+    const pts = committedPositionsRef.current || [];
+    const m = mouseCartesianRef.current;
+    if (!m || pts.length < 1) {
+      if (tempLabelRef.current) {
+        v.entities.remove(tempLabelRef.current);
+        tempLabelRef.current = null;
+      }
+      return;
     }
-    return;
+
+    const a = pts[pts.length - 1];
+    const cartoA = ellipsoid.cartesianToCartographic(a);
+    const cartoB = ellipsoid.cartesianToCartographic(m);
+    const g = new EllipsoidGeodesic(cartoA, cartoB);
+    const meters = g.surfaceDistance;
+
+    if (!tempLabelRef.current) {
+      tempLabelRef.current = v.entities.add({
+        position: m,
+        label: {
+          text: formatMeters(meters),
+          font: "14px Barlow",
+          style: LabelStyle.FILL_AND_OUTLINE,
+          fillColor: Color.WHITE,
+          outlineColor: Color.BLACK,
+          outlineWidth: 3,
+          showBackground: true,
+          backgroundColor: Color.fromAlpha(Color.BLACK, 0.6),
+          pixelOffset: new Cartesian2(0, -12),
+          disableDepthTestDistance: Number.POSITIVE_INFINITY,
+        },
+        show: true,
+      });
+    } else {
+      tempLabelRef.current.position = m;
+      tempLabelRef.current.label.text = formatMeters(meters);
+      tempLabelRef.current.show = true;
+    }
   }
-
-  const a = pts[pts.length - 1];
-  // Compute geodesic distance between last committed point and current mouse
-  const cartoA = ellipsoid.cartesianToCartographic(a);
-  const cartoB = ellipsoid.cartesianToCartographic(m);
-  const g = new EllipsoidGeodesic(cartoA, cartoB);
-  const meters = g.surfaceDistance;
-
-  if (!tempLabelRef.current) {
-    tempLabelRef.current = v.entities.add({
-      position: m,
-      label: {
-        text: formatMeters(meters),
-        font: "14px Barlow",
-        style: LabelStyle.FILL_AND_OUTLINE,
-        fillColor: Color.WHITE,
-        outlineColor: Color.BLACK,
-        outlineWidth: 3,
-        showBackground: true,
-        backgroundColor: Color.fromAlpha(Color.BLACK, 0.6),
-        pixelOffset: new Cartesian2(0, -12),
-        disableDepthTestDistance: Number.POSITIVE_INFINITY,
-      },
-      show: true,
-    });
-  } else {
-    tempLabelRef.current.position = m;
-    tempLabelRef.current.label.text = formatMeters(meters);
-    tempLabelRef.current.show = true;
-  }
-}
-
 
   function clearTemps(v) {
     removeTempSegment(v);
@@ -185,41 +181,37 @@ export default function DrawLines({
     const ent = v.entities.add({
       id: uuid,
       polyline: {
-        positions: positions.slice(), // fix positions
+        positions: positions.slice(),
         width: draftRef.current.lineWidth,
         material: materialFromDraft(draftRef.current),
       },
       show: true,
     });
 
-    // Attach metadata + keep the junction points VISIBLE
     ent.type = "Linje";
     ent.isActive = true;
     ent.lastUpdated = new Date().toISOString();
     ent.__draft = { ...draftRef.current };
     ent.__children = {
-      points: pointEntsRef.current.slice(), // <— keep points
+      points: pointEntsRef.current.slice(),
       labels: [],
       totalLabel: null,
       temp: null,
     };
 
-    // Build labels if desired
     if (draftRef.current.showValues) {
       rebuildCommittedLabels(ent, v);
       upsertTotalLengthLabel(ent, v);
     }
 
-    // Register and refresh UI
     setEntitiesRef?.(uuid, ent);
     entitiesUpdateUI?.();
 
-    // Reset tool state (do NOT remove the point entities; they belong to ent)
+    // reset temp arrays (the created point entities now belong to ent)
     committedPositionsRef.current = [];
     pointEntsRef.current = [];
     mouseCartesianRef.current = null;
 
-    // Exit tool
     v.scene.canvas.style.cursor = "default";
     onCancel?.();
   }
@@ -234,8 +226,16 @@ export default function DrawLines({
     const handler = new ScreenSpaceEventHandler(canvas);
     handlerRef.current = handler;
 
+    // external finish signal (from ActiveToolModal)
+    const onFinish = () => {
+      finishLine();
+    };
+    window.addEventListener("kb:finish-active-tool", onFinish);
+
     // Disable Cesium default double-click zoom
-    v.screenSpaceEventHandler?.removeInputAction?.(ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
+    v.screenSpaceEventHandler?.removeInputAction?.(
+      ScreenSpaceEventType.LEFT_DOUBLE_CLICK
+    );
 
     // LEFT_CLICK: commit a point
     handler.setInputAction((e) => {
@@ -246,19 +246,13 @@ export default function DrawLines({
       pts.push(p);
       committedPositionsRef.current = pts;
 
-      // Create or update the preview of committed polyline
       ensureCommittedLine(v);
-
-      // Add a junction point entity that will remain after finish
       addCommittedPointEntity(v, p);
-
-      // Ensure rubber band exists if we have mouse
       ensureTempSegment(v);
     }, ScreenSpaceEventType.LEFT_CLICK);
 
     // LEFT_DOUBLE_CLICK: finish the line
     handler.setInputAction(() => {
-      // Remove the extra duplicate vertex left by dblclick if any
       const pts = committedPositionsRef.current;
       if (pts.length >= 2) {
         const a = pts[pts.length - 1];
@@ -266,7 +260,6 @@ export default function DrawLines({
         if (Cartesian3.distance(a, b) < 1e-6) {
           pts.pop();
           committedPositionsRef.current = pts;
-          // Also remove the last visual point we just added on dblclick
           const lastPoint = pointEntsRef.current.pop();
           if (lastPoint) v.entities.remove(lastPoint);
         }
@@ -274,13 +267,15 @@ export default function DrawLines({
       finishLine();
     }, ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
 
-    // RIGHT_CLICK: undo last committed point (and its point entity)
+    // RIGHT_CLICK: undo last point (or cancel if none)
     handler.setInputAction(() => {
       const pts = committedPositionsRef.current;
       if (!pts.length) {
-        // cancel tool
         clearTemps(v);
         removeCommittedLine(v);
+        for (const p of pointEntsRef.current) v.entities.remove(p);
+        pointEntsRef.current = [];
+        committedPositionsRef.current = [];
         canvas.style.cursor = "default";
         onCancel?.();
         return;
@@ -291,7 +286,6 @@ export default function DrawLines({
       const lastPoint = pointEntsRef.current.pop();
       if (lastPoint) v.entities.remove(lastPoint);
 
-      // If no points remain, hide temps
       if (pts.length === 0) {
         clearTemps(v);
         removeCommittedLine(v);
@@ -300,9 +294,12 @@ export default function DrawLines({
       }
     }, ScreenSpaceEventType.RIGHT_CLICK);
 
-    // MOUSE_MOVE: update rubber-band & temp label
+    // MOUSE_MOVE: update rubber & label
     handler.setInputAction((movement) => {
-      const m = v.camera.pickEllipsoid(movement.endPosition, v.scene.globe.ellipsoid);
+      const m = v.camera.pickEllipsoid(
+        movement.endPosition,
+        v.scene.globe.ellipsoid
+      );
       mouseCartesianRef.current = m || null;
 
       const hasAnchor = committedPositionsRef.current.length >= 1;
@@ -310,7 +307,6 @@ export default function DrawLines({
         ensureTempSegment(v);
         upsertTempLabel(v);
       } else {
-        // Nothing to show yet
         clearTemps(v);
       }
     }, ScreenSpaceEventType.MOUSE_MOVE);
@@ -320,7 +316,6 @@ export default function DrawLines({
       if (ev.key === "Escape") {
         clearTemps(v);
         removeCommittedLine(v);
-        // Remove the point entities we created during this drawing session
         for (const p of pointEntsRef.current) v.entities.remove(p);
         pointEntsRef.current = [];
         committedPositionsRef.current = [];
@@ -332,9 +327,9 @@ export default function DrawLines({
 
     return () => {
       try {
+        window.removeEventListener("kb:finish-active-tool", onFinish);
         clearTemps(v);
         removeCommittedLine(v);
-        // If we unmount while drawing (not finished), remove temp point entities
         for (const p of pointEntsRef.current) v.entities.remove(p);
         pointEntsRef.current = [];
       } finally {

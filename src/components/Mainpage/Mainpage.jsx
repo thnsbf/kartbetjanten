@@ -15,6 +15,7 @@ import TextModal from "../TextModal/TextModal";
 import LinesModal from "../LinesModal/LinesModal";
 import AreaModal from "../AreaModal/AreaModal";
 import MarkerModal from "../MarkerModal/MarkerModal";
+import ActiveToolModal from "../ActiveToolModal/ActiveToolModal";
 
 // Draft helpers (apply + draftFrom)
 import {
@@ -34,6 +35,12 @@ import {
   draftFromMarkerEntity,
   applyDraftToMarkerEntity,
 } from "../Tools/AddMarker/markersDraft";
+import {
+  startAreaEdit,
+  startLineEdit,
+  stopEdit,
+} from "../Tools/EditJunctions/editGeometry";
+
 import * as Cesium from "cesium";
 
 export default function Mainpage({ pickedAddress, setPickedAddress }) {
@@ -41,6 +48,9 @@ export default function Mainpage({ pickedAddress, setPickedAddress }) {
 
   const viewerRef = useRef(null);
   const entitiesRef = useRef(new Map());
+
+  // Active in-map edit sessions (drag junctions)
+  const editSessionsRef = useRef(new Map());
 
   const [activeTool, setActiveTool] = useState("no-tool");
 
@@ -96,8 +106,11 @@ export default function Mainpage({ pickedAddress, setPickedAddress }) {
       switch (ent.type) {
         case "Linje": {
           ent.show = v;
-          toggleArray(ch.points, v); // always show points with the line
+          // always show points with the line
+          toggleArray(ch.points, v);
+          // segment labels honor draft.showValues
           toggleArray(ch.labels, v && !!draft.showValues);
+          // total label honors showTotal (fallback to showValues true by default)
           toggleOne(
             ch.totalLabel,
             v && (draft.showTotal ?? draft.showValues ?? true)
@@ -131,7 +144,7 @@ export default function Mainpage({ pickedAddress, setPickedAddress }) {
 
       ent.isActive = v;
       ent.lastUpdated = new Date().toISOString();
-      entitiesUpdateUI?.();
+      entitiesUpdateUI?.(); // <<< ensure UI refresh
     },
     [entitiesUpdateUI]
   );
@@ -182,6 +195,81 @@ export default function Mainpage({ pickedAddress, setPickedAddress }) {
     zoomIn();
   }
 
+  // --- Snapshot helpers (static arrays from Cesium properties) ---
+  function snapshotPolygonPositions(ent, viewer) {
+    const t = viewer?.clock?.currentTime;
+    const h = ent?.polygon?.hierarchy;
+    const val = h?.getValue ? h.getValue(t) : h;
+    const arr =
+      val && val.positions ? val.positions : Array.isArray(val) ? val : [];
+    return arr.slice(); // clone
+  }
+
+  function snapshotPolylinePositions(ent, viewer) {
+    const t = viewer?.clock?.currentTime;
+    const p = ent?.polyline?.positions;
+    const arr = Array.isArray(p) ? p : p?.getValue ? p.getValue(t) || [] : [];
+    return arr.slice(); // clone
+  }
+
+  // Recreate/show Area junction points from current polygon positions if missing.
+  // Ensures the points are visible during the edit session.
+  function rehydrateAreaJunctionPoints(ent, viewer) {
+    if (!ent || !ent.polygon || !viewer) return;
+
+    // Read current positions (static array)
+    const t = viewer.clock.currentTime;
+    const h = ent.polygon.hierarchy;
+    const val = h?.getValue ? h.getValue(t) : h;
+    const positions =
+      val && val.positions ? val.positions : Array.isArray(val) ? val : [];
+
+    if (!ent.__children) ent.__children = {};
+    const ch = ent.__children;
+
+    // If there are no point entities, create them now
+    if (!Array.isArray(ch.points) || ch.points.length === 0) {
+      ch.points = positions.map((pos) =>
+        viewer.entities.add({
+          position: pos,
+          point: {
+            pixelSize: ent.__draft?.pointSize ?? 8,
+            color: Cesium.Color.fromCssColorString(
+              ent.__draft?.pointColor ?? "#0066ff"
+            ),
+            outlineColor: Cesium.Color.WHITE,
+            outlineWidth: Math.max(
+              1,
+              Math.round((ent.__draft?.pointSize ?? 8) / 5)
+            ),
+            disableDepthTestDistance: Number.POSITIVE_INFINITY,
+          },
+          show: true, // force visible while editing
+        })
+      );
+      for (const p of ch.points) p.__parent = ent;
+    } else {
+      // Ensure they’re visible while editing
+      for (const p of ch.points) if (p) p.show = true;
+    }
+
+    // Mark that we are in an edit session so other logic can respect this
+    ent.__edit = ent.__edit || {};
+    ent.__edit.pointsShownForEdit = true;
+
+    ent.__children = ch;
+  }
+
+  // --- Helpers to write positions back (used by cancel) ---
+  function applyPolygonPositions(ent, positions) {
+    if (!ent?.polygon) return;
+    ent.polygon.hierarchy = new Cesium.PolygonHierarchy(positions.slice());
+  }
+  function applyPolylinePositions(ent, positions) {
+    if (!ent?.polyline) return;
+    ent.polyline.positions = positions.slice();
+  }
+
   // ---------------- Right Pane routing (edits in SidebarRight) ----------------
   const [rightPane, setRightPane] = useState({ kind: "list" });
 
@@ -209,42 +297,73 @@ export default function Mainpage({ pickedAddress, setPickedAddress }) {
     outlineWidth: 2,
   });
 
-  // Edit router by geometry
-  const openEditForUuid = useCallback((uuid) => {
-    const ent = entitiesRef.current.get(uuid);
-    if (!ent) return;
+  const openEditForUuid = useCallback(
+    (uuid) => {
+      const ent = entitiesRef.current.get(uuid);
+      if (!ent) return;
 
-    if (ent.polyline) {
-      setLineDraft(draftFromLineEntity(ent));
-      setRightPane({ kind: "edit-line", uuid });
-      return;
-    }
-    if (ent.polygon) {
-      setAreaDraft(draftFromAreaEntity ? draftFromAreaEntity(ent) : null);
-      setRightPane({ kind: "edit-area", uuid });
-      return;
-    }
-    if (ent.point && !ent.label) {
-      const d = draftFromMarkerEntity ? draftFromMarkerEntity(ent) : null;
-      if (d) setMarkerDraft(d);
-      setRightPane({ kind: "edit-marker", uuid });
-      return;
-    }
-    if (ent.label && !ent.polyline && !ent.polygon) {
-      const d = draftFromEntityLabel(ent);
-      // Ensure flag exists for older entities
-      setTextDraft({
-        text: d.text,
-        color: d.color,
-        backgroundColor: d.backgroundColor,
-        fontSize: d.fontSize,
-        backgroundEnabled:
-          typeof d.backgroundEnabled === "boolean" ? d.backgroundEnabled : true,
-      });
-      setRightPane({ kind: "edit-text", uuid });
-      return;
-    }
-  }, []);
+      const v = viewerRef.current;
+
+      if (ent.polyline) {
+        if (v) {
+          ent.__edit = ent.__edit || {};
+          ent.__edit.originalPositions = snapshotPolylinePositions(ent, v);
+          // start interactive line edit (drag junctions)
+          startLineEdit(v, ent, {
+            onAfterMutate: () => {
+              ent.lastUpdated = new Date().toISOString();
+              entitiesUpdateUI?.();
+            },
+          });
+        }
+        setLineDraft(draftFromLineEntity(ent));
+        setRightPane({ kind: "edit-line", uuid });
+        return;
+      }
+
+      if (ent.polygon) {
+        if (v) {
+          ent.__edit = ent.__edit || {};
+          ent.__edit.originalPositions = snapshotPolygonPositions(ent, v);
+          // Ensure visible junction points + start edit session
+          rehydrateAreaJunctionPoints(ent, v);
+          startAreaEdit(v, ent, {
+            onAfterMutate: () => {
+              ent.lastUpdated = new Date().toISOString();
+              entitiesUpdateUI?.();
+            },
+          });
+        }
+        setAreaDraft(draftFromAreaEntity ? draftFromAreaEntity(ent) : null);
+        setRightPane({ kind: "edit-area", uuid });
+        return;
+      }
+
+      if (ent.point && !ent.label) {
+        const d = draftFromMarkerEntity ? draftFromMarkerEntity(ent) : null;
+        if (d) setMarkerDraft(d);
+        setRightPane({ kind: "edit-marker", uuid });
+        return;
+      }
+
+      if (ent.label && !ent.polyline && !ent.polygon) {
+        const d = draftFromEntityLabel(ent);
+        setTextDraft({
+          text: d.text,
+          color: d.color,
+          backgroundColor: d.backgroundColor,
+          fontSize: d.fontSize,
+          backgroundEnabled:
+            typeof d.backgroundEnabled === "boolean"
+              ? d.backgroundEnabled
+              : true,
+        });
+        setRightPane({ kind: "edit-text", uuid });
+        return;
+      }
+    },
+    [entitiesUpdateUI]
+  );
 
   // Confirm handlers (edits)
   const confirmTextEdit = useCallback(() => {
@@ -265,8 +384,21 @@ export default function Mainpage({ pickedAddress, setPickedAddress }) {
     const v = viewerRef.current;
     if (!ent || !v) return setRightPane({ kind: "list" });
 
+    // end interactive drag session
+    stopEdit();
+
     applyDraftToLineEntity(ent, lineDraft, v);
     setLineLabelsVisibility(ent, !!lineDraft.showValues, v);
+
+    // Refresh stored snapshots to the *current confirmed* geometry
+    const confirmedPositions = snapshotPolylinePositions(ent, v);
+    ent.__positions = confirmedPositions.slice();
+    ent.__edit = ent.__edit || {};
+    ent.__edit.originalPositions = confirmedPositions.slice();
+
+    ent.lastUpdated = new Date().toISOString();
+    ent.isActive = true;
+
     entitiesUpdateUI();
     setRightPane({ kind: "list" });
   }, [rightPane, lineDraft, entitiesUpdateUI]);
@@ -277,7 +409,31 @@ export default function Mainpage({ pickedAddress, setPickedAddress }) {
     const v = viewerRef.current;
     if (!ent || !v) return setRightPane({ kind: "list" });
 
-    applyDraftToAreaEntity(ent, areaDraft, v);
+    // end interactive drag session
+    stopEdit();
+
+    // Force-hide junction points after confirming
+    const editedDraft = { ...(areaDraft || {}), showPoints: false };
+
+    // Apply visual changes
+    applyDraftToAreaEntity(ent, editedDraft, v);
+
+    // Safety: hide any existing point entities
+    if (ent.__children && Array.isArray(ent.__children.points)) {
+      for (const p of ent.__children.points) {
+        if (p) p.show = false;
+      }
+    }
+
+    // Refresh stored snapshots to the *current confirmed* geometry
+    const confirmedPositions = snapshotPolygonPositions(ent, v);
+    ent.__positions = confirmedPositions.slice();
+    ent.__edit = ent.__edit || {};
+    ent.__edit.originalPositions = confirmedPositions.slice();
+
+    ent.lastUpdated = new Date().toISOString();
+    ent.isActive = true;
+
     entitiesUpdateUI();
     setRightPane({ kind: "list" });
   }, [rightPane, areaDraft, entitiesUpdateUI]);
@@ -294,7 +450,30 @@ export default function Mainpage({ pickedAddress, setPickedAddress }) {
     setRightPane({ kind: "list" });
   }, [rightPane, markerDraft, entitiesUpdateUI]);
 
-  const closeRightPane = useCallback(() => setRightPane({ kind: "list" }), []);
+  const closeRightPane = useCallback(() => {
+    // If we were editing a line/area, cancel (revert) the session
+    if (rightPane.kind === "edit-line" || rightPane.kind === "edit-area") {
+      const v = viewerRef.current;
+      const ent = entitiesRef.current.get(rightPane.uuid);
+
+      // stop interactive handler
+      stopEdit();
+
+      if (v && ent?.__edit?.originalPositions) {
+        if (rightPane.kind === "edit-line" && ent.polyline) {
+          applyPolylinePositions(ent, ent.__edit.originalPositions);
+        } else if (rightPane.kind === "edit-area" && ent.polygon) {
+          applyPolygonPositions(ent, ent.__edit.originalPositions);
+          // Hide the edit points on cancel for area
+          if (ent.__children?.points?.length) {
+            for (const p of ent.__children.points) if (p) p.show = false;
+          }
+        }
+        ent.lastUpdated = new Date().toISOString();
+      }
+    }
+    setRightPane({ kind: "list" });
+  }, [rightPane]);
 
   // ---------------- PLACE TEXT flow (AddText → SidebarRight modal) ------------
   const [placeTextState, setPlaceTextState] = useState({
@@ -371,7 +550,7 @@ export default function Mainpage({ pickedAddress, setPickedAddress }) {
       color,
       backgroundColor,
       fontSize,
-      backgroundEnabled, // NEW (persist for hide/restore)
+      backgroundEnabled, // persist
     };
 
     setEntitiesRef(uuid, ent);
@@ -407,6 +586,19 @@ export default function Mainpage({ pickedAddress, setPickedAddress }) {
 
   // ---------------- SidebarRight content (NO useMemo: depend on uiTick) -------
   function renderRightPane() {
+    // If a tool is active (and we are NOT currently in TextModal), show ActiveToolModal
+    if (activeTool !== "no-tool" && !placeTextState.open) {
+      return (
+        <ActiveToolModal
+          open
+          activeTool={activeTool}
+          onConfirmExit={() => setActiveTool("no-tool")}
+          onCancelExit={() => setActiveTool("no-tool")}
+          isMobile={isMobile}
+        />
+      );
+    }
+
     // Place Text takes precedence when open
     if (placeTextState.open) {
       return (
@@ -493,9 +685,7 @@ export default function Mainpage({ pickedAddress, setPickedAddress }) {
         zoomOut={zoomOut}
         setPickedAddress={setPickedAddress}
         isMobile={isMobile}
-        rightPane={rightPane}
         setIsUserShowMenu={setIsUserShowMenu}
-        placeTextState={placeTextState}
       />
       {isRenderSidebar && (
         <Sidebar

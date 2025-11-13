@@ -5,7 +5,12 @@ import { ScreenSpaceEventHandler, ScreenSpaceEventType } from "cesium";
  * AddText only captures a map click and notifies parent to open the TextModal in SidebarRight.
  * It does NOT create the entity itself.
  */
-export default function AddText({ viewer, active, onRequestPlaceText, onCancel }) {
+export default function AddText({
+  viewer,
+  active,
+  onRequestPlaceText,
+  onCancel,
+}) {
   useEffect(() => {
     if (!viewer || !active) return;
 
@@ -15,16 +20,24 @@ export default function AddText({ viewer, active, onRequestPlaceText, onCancel }
 
     // Left click -> pick position and tell parent to open modal
     handler.setInputAction((e) => {
-      const p = viewer.camera.pickEllipsoid(e.position, viewer.scene.globe.ellipsoid);
+      const p = viewer.camera.pickEllipsoid(
+        e.position,
+        viewer.scene.globe.ellipsoid
+      );
       if (!p) return;
       onRequestPlaceText?.(p);
     }, ScreenSpaceEventType.LEFT_CLICK);
 
     // Right click -> cancel
-    handler.setInputAction(() => onCancel?.(), ScreenSpaceEventType.RIGHT_CLICK);
+    handler.setInputAction(
+      () => onCancel?.(),
+      ScreenSpaceEventType.RIGHT_CLICK
+    );
 
     // ESC -> cancel
-    const onKey = (ev) => { if (ev.key === "Escape") onCancel?.(); };
+    const onKey = (ev) => {
+      if (ev.key === "Escape") onCancel?.();
+    };
     window.addEventListener("keydown", onKey);
 
     return () => {
@@ -36,5 +49,3 @@ export default function AddText({ viewer, active, onRequestPlaceText, onCancel }
 
   return null;
 }
-
-            const hej = 0
