@@ -9,6 +9,8 @@ import MyObjects from "../MyObjects/MyObjects";
 import { useRef, useCallback, useState, useEffect } from "react";
 import { zoomToNextScaleStep } from "../../modules/zoom-to-scale";
 import { zoomTo } from "../../modules/utils";
+import { exportMainViewportToPdf } from "../../modules/export-pdf";
+import * as Cesium from "cesium";
 
 // Modals
 import TextModal from "../TextModal/TextModal";
@@ -40,8 +42,6 @@ import {
   startLineEdit,
   stopEdit,
 } from "../Tools/EditJunctions/editGeometry";
-
-import * as Cesium from "cesium";
 
 export default function Mainpage({ pickedAddress, setPickedAddress }) {
   const [lon, lat] = pickedAddress.geometry.coordinates;
@@ -106,11 +106,8 @@ export default function Mainpage({ pickedAddress, setPickedAddress }) {
       switch (ent.type) {
         case "Linje": {
           ent.show = v;
-          // always show points with the line
           toggleArray(ch.points, v);
-          // segment labels honor draft.showValues
           toggleArray(ch.labels, v && !!draft.showValues);
-          // total label honors showTotal (fallback to showValues true by default)
           toggleOne(
             ch.totalLabel,
             v && (draft.showTotal ?? draft.showValues ?? true)
@@ -144,7 +141,7 @@ export default function Mainpage({ pickedAddress, setPickedAddress }) {
 
       ent.isActive = v;
       ent.lastUpdated = new Date().toISOString();
-      entitiesUpdateUI?.(); // <<< ensure UI refresh
+      entitiesUpdateUI?.();
     },
     [entitiesUpdateUI]
   );
@@ -157,9 +154,7 @@ export default function Mainpage({ pickedAddress, setPickedAddress }) {
     const safeRemove = (e) => {
       try {
         if (e && v.entities.contains(e)) v.entities.remove(e);
-      } catch {
-        /* ignore */
-      }
+      } catch {}
     };
 
     for (const [uuid, ent] of entitiesRef.current.entries()) {
@@ -187,6 +182,149 @@ export default function Mainpage({ pickedAddress, setPickedAddress }) {
     zoomIn();
   }, []);
 
+  const handleDownloadMap = useCallback(async () => {
+    const v = viewerRef.current;
+    const mainEl = document.querySelector("main.main");
+    if (!v || !mainEl) return;
+
+    await exportMainViewportToPdf(v, mainEl, {
+      filename: "min-karta.pdf",
+      resolutionScale: Math.max(2, Math.floor(window.devicePixelRatio || 2)),
+      margin: 0,
+    });
+  }, []);
+
+  // ---- GEOJSON EXPORT -------------------------------------------------------
+  function cartesianToLonLat(cart, ellipsoid) {
+    const c = Cesium.Cartographic.fromCartesian(cart, ellipsoid);
+    return [
+      Cesium.Math.toDegrees(c.longitude),
+      Cesium.Math.toDegrees(c.latitude),
+    ];
+  }
+
+  function readPolylinePositions(ent, time) {
+    const p = ent?.polyline?.positions;
+    return Array.isArray(p) ? p : p?.getValue?.(time) ?? [];
+  }
+
+  function readPolygonPositions(ent, time) {
+    const h = ent?.polygon?.hierarchy;
+    const val = h?.getValue ? h.getValue(time) : h;
+    if (!val) return [];
+    if (Array.isArray(val)) return val;
+    if (val.positions) return val.positions;
+    return [];
+  }
+
+  function readPosition(ent, time) {
+    const p = ent?.position;
+    return p?.getValue ? p.getValue(time) : p;
+    // returns Cartesian3 or undefined
+  }
+
+  const handleDownloadGeoJSON = useCallback(() => {
+    const v = viewerRef.current;
+    if (!v) return;
+
+    const time = v.clock.currentTime;
+    const ellipsoid = v.scene.globe.ellipsoid;
+
+    const features = [];
+
+    for (const [uuid, ent] of entitiesRef.current.entries()) {
+      // Only export active/visible items
+      if (!ent?.isActive || ent.show === false) continue;
+
+      // Normalize a type for properties
+      const typeGuess =
+        ent.type ??
+        (ent.polyline
+          ? "Linje"
+          : ent.polygon
+          ? "Area"
+          : ent.label
+          ? "Text"
+          : "Punkt");
+
+      // Punkt or Text → Point
+      if (
+        (ent.point || ent.billboard || ent.label) &&
+        !ent.polyline &&
+        !ent.polygon
+      ) {
+        const pos = readPosition(ent, time);
+        if (!pos) continue;
+        const [lon, lat] = cartesianToLonLat(pos, ellipsoid);
+
+        const props = {
+          id: uuid,
+          type: typeGuess,
+        };
+        if (ent.label?.text)
+          props.text = ent.label.text?.getValue?.(time) ?? ent.label.text;
+        if (ent.__draft?.iconId) props.iconId = ent.__draft.iconId;
+
+        features.push({
+          type: "Feature",
+          geometry: { type: "Point", coordinates: [lon, lat] },
+          properties: props,
+        });
+      }
+      // Linje → LineString
+      else if (ent.polyline) {
+        const arr = readPolylinePositions(ent, time);
+        if (!arr?.length) continue;
+        const coords = arr.map((c) => cartesianToLonLat(c, ellipsoid));
+        features.push({
+          type: "Feature",
+          geometry: { type: "LineString", coordinates: coords },
+          properties: {
+            id: uuid,
+            type: typeGuess,
+          },
+        });
+      }
+      // Area → Polygon
+      else if (ent.polygon) {
+        const arr = readPolygonPositions(ent, time);
+        if (!arr?.length) continue;
+        let coords = arr.map((c) => cartesianToLonLat(c, ellipsoid));
+        // Ensure ring closure
+        if (coords.length > 2) {
+          const first = coords[0];
+          const last = coords[coords.length - 1];
+          if (first[0] !== last[0] || first[1] !== last[1]) {
+            coords = [...coords, first];
+          }
+        }
+        features.push({
+          type: "Feature",
+          geometry: { type: "Polygon", coordinates: [coords] },
+          properties: {
+            id: uuid,
+            type: typeGuess,
+          },
+        });
+      }
+    }
+
+    const fc = { type: "FeatureCollection", features };
+    const blob = new Blob([JSON.stringify(fc, null, 2)], {
+      type: "application/geo+json",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "mina-objekt.geojson";
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }, 0);
+  }, []);
+
   const zoomIn = () => zoomToNextScaleStep(viewerRef.current, +1, 140);
   const zoomOut = () => zoomToNextScaleStep(viewerRef.current, -1, 140);
 
@@ -202,22 +340,18 @@ export default function Mainpage({ pickedAddress, setPickedAddress }) {
     const val = h?.getValue ? h.getValue(t) : h;
     const arr =
       val && val.positions ? val.positions : Array.isArray(val) ? val : [];
-    return arr.slice(); // clone
+    return arr.slice();
   }
 
   function snapshotPolylinePositions(ent, viewer) {
     const t = viewer?.clock?.currentTime;
     const p = ent?.polyline?.positions;
     const arr = Array.isArray(p) ? p : p?.getValue ? p.getValue(t) || [] : [];
-    return arr.slice(); // clone
+    return arr.slice();
   }
 
-  // Recreate/show Area junction points from current polygon positions if missing.
-  // Ensures the points are visible during the edit session.
   function rehydrateAreaJunctionPoints(ent, viewer) {
     if (!ent || !ent.polygon || !viewer) return;
-
-    // Read current positions (static array)
     const t = viewer.clock.currentTime;
     const h = ent.polygon.hierarchy;
     const val = h?.getValue ? h.getValue(t) : h;
@@ -227,7 +361,6 @@ export default function Mainpage({ pickedAddress, setPickedAddress }) {
     if (!ent.__children) ent.__children = {};
     const ch = ent.__children;
 
-    // If there are no point entities, create them now
     if (!Array.isArray(ch.points) || ch.points.length === 0) {
       ch.points = positions.map((pos) =>
         viewer.entities.add({
@@ -244,23 +377,19 @@ export default function Mainpage({ pickedAddress, setPickedAddress }) {
             ),
             disableDepthTestDistance: Number.POSITIVE_INFINITY,
           },
-          show: true, // force visible while editing
+          show: true,
         })
       );
       for (const p of ch.points) p.__parent = ent;
     } else {
-      // Ensure they’re visible while editing
       for (const p of ch.points) if (p) p.show = true;
     }
 
-    // Mark that we are in an edit session so other logic can respect this
     ent.__edit = ent.__edit || {};
     ent.__edit.pointsShownForEdit = true;
-
     ent.__children = ch;
   }
 
-  // --- Helpers to write positions back (used by cancel) ---
   function applyPolygonPositions(ent, positions) {
     if (!ent?.polygon) return;
     ent.polygon.hierarchy = new Cesium.PolygonHierarchy(positions.slice());
@@ -279,7 +408,7 @@ export default function Mainpage({ pickedAddress, setPickedAddress }) {
     color: "#ffffff",
     backgroundColor: "#111111",
     fontSize: 20,
-    backgroundEnabled: true, // NEW
+    backgroundEnabled: true,
   });
   const [lineDraft, setLineDraft] = useState({
     lineColor: "#ff3b30",
@@ -308,7 +437,6 @@ export default function Mainpage({ pickedAddress, setPickedAddress }) {
         if (v) {
           ent.__edit = ent.__edit || {};
           ent.__edit.originalPositions = snapshotPolylinePositions(ent, v);
-          // start interactive line edit (drag junctions)
           startLineEdit(v, ent, {
             onAfterMutate: () => {
               ent.lastUpdated = new Date().toISOString();
@@ -325,7 +453,6 @@ export default function Mainpage({ pickedAddress, setPickedAddress }) {
         if (v) {
           ent.__edit = ent.__edit || {};
           ent.__edit.originalPositions = snapshotPolygonPositions(ent, v);
-          // Ensure visible junction points + start edit session
           rehydrateAreaJunctionPoints(ent, v);
           startAreaEdit(v, ent, {
             onAfterMutate: () => {
@@ -389,13 +516,11 @@ export default function Mainpage({ pickedAddress, setPickedAddress }) {
     const v = viewerRef.current;
     if (!ent || !v) return setRightPane({ kind: "list" });
 
-    // end interactive drag session
     stopEdit();
 
     applyDraftToLineEntity(ent, lineDraft, v);
     setLineLabelsVisibility(ent, !!lineDraft.showValues, v);
 
-    // Refresh stored snapshots to the *current confirmed* geometry
     const confirmedPositions = snapshotPolylinePositions(ent, v);
     ent.__positions = confirmedPositions.slice();
     ent.__edit = ent.__edit || {};
@@ -414,23 +539,17 @@ export default function Mainpage({ pickedAddress, setPickedAddress }) {
     const v = viewerRef.current;
     if (!ent || !v) return setRightPane({ kind: "list" });
 
-    // end interactive drag session
     stopEdit();
 
-    // Force-hide junction points after confirming
     const editedDraft = { ...(areaDraft || {}), showPoints: false };
-
-    // Apply visual changes
     applyDraftToAreaEntity(ent, editedDraft, v);
 
-    // Safety: hide any existing point entities
     if (ent.__children && Array.isArray(ent.__children.points)) {
       for (const p of ent.__children.points) {
         if (p) p.show = false;
       }
     }
 
-    // Refresh stored snapshots to the *current confirmed* geometry
     const confirmedPositions = snapshotPolygonPositions(ent, v);
     ent.__positions = confirmedPositions.slice();
     ent.__edit = ent.__edit || {};
@@ -456,12 +575,10 @@ export default function Mainpage({ pickedAddress, setPickedAddress }) {
   }, [rightPane, markerDraft, entitiesUpdateUI]);
 
   const closeRightPane = useCallback(() => {
-    // If we were editing a line/area, cancel (revert) the session
     if (rightPane.kind === "edit-line" || rightPane.kind === "edit-area") {
       const v = viewerRef.current;
       const ent = entitiesRef.current.get(rightPane.uuid);
 
-      // stop interactive handler
       stopEdit();
 
       if (v && ent?.__edit?.originalPositions) {
@@ -469,7 +586,6 @@ export default function Mainpage({ pickedAddress, setPickedAddress }) {
           applyPolylinePositions(ent, ent.__edit.originalPositions);
         } else if (rightPane.kind === "edit-area" && ent.polygon) {
           applyPolygonPositions(ent, ent.__edit.originalPositions);
-          // Hide the edit points on cancel for area
           if (ent.__children?.points?.length) {
             for (const p of ent.__children.points) if (p) p.show = false;
           }
@@ -489,7 +605,7 @@ export default function Mainpage({ pickedAddress, setPickedAddress }) {
       color: "#ffffff",
       backgroundColor: "#111111",
       fontSize: 20,
-      backgroundEnabled: true, // NEW
+      backgroundEnabled: true,
     },
   });
 
@@ -502,7 +618,7 @@ export default function Mainpage({ pickedAddress, setPickedAddress }) {
         color: "#ffffff",
         backgroundColor: "#111111",
         fontSize: 20,
-        backgroundEnabled: true, // NEW
+        backgroundEnabled: true,
       },
     });
   }, []);
@@ -538,7 +654,7 @@ export default function Mainpage({ pickedAddress, setPickedAddress }) {
         text,
         font: `${fontSize}px Barlow`,
         fillColor: Cesium.Color.fromCssColorString(color),
-        showBackground: !!backgroundEnabled, // NEW
+        showBackground: !!backgroundEnabled,
         backgroundColor: Cesium.Color.fromCssColorString(backgroundColor),
         outlineColor: Cesium.Color.BLACK,
         outlineWidth: 3,
@@ -555,7 +671,7 @@ export default function Mainpage({ pickedAddress, setPickedAddress }) {
       color,
       backgroundColor,
       fontSize,
-      backgroundEnabled, // persist
+      backgroundEnabled,
     };
 
     setEntitiesRef(uuid, ent);
@@ -568,7 +684,7 @@ export default function Mainpage({ pickedAddress, setPickedAddress }) {
         color: "#ffffff",
         backgroundColor: "#111111",
         fontSize: 20,
-        backgroundEnabled: true, // NEW
+        backgroundEnabled: true,
       },
     });
     setActiveTool("no-tool");
@@ -583,7 +699,7 @@ export default function Mainpage({ pickedAddress, setPickedAddress }) {
         color: "#ffffff",
         backgroundColor: "#111111",
         fontSize: 20,
-        backgroundEnabled: true, // NEW
+        backgroundEnabled: true,
       },
     });
     setActiveTool("no-tool");
@@ -591,7 +707,6 @@ export default function Mainpage({ pickedAddress, setPickedAddress }) {
 
   // ---------------- SidebarRight content (NO useMemo: depend on uiTick) -------
   function renderRightPane() {
-    // If a tool is active (and we are NOT currently in TextModal), show ActiveToolModal
     if (activeTool !== "no-tool" && !placeTextState.open) {
       return (
         <ActiveToolModal
@@ -604,7 +719,6 @@ export default function Mainpage({ pickedAddress, setPickedAddress }) {
       );
     }
 
-    // Place Text takes precedence when open
     if (placeTextState.open) {
       return (
         <TextModal
@@ -666,7 +780,6 @@ export default function Mainpage({ pickedAddress, setPickedAddress }) {
       default:
         return (
           <MyObjects
-            // >>> passing uiTick guarantees MyObjects re-renders on any entity change
             uiTick={uiTick}
             entitiesUpdateUI={entitiesUpdateUI}
             entitiesRef={entitiesRef}
@@ -675,6 +788,9 @@ export default function Mainpage({ pickedAddress, setPickedAddress }) {
             viewer={viewerRef}
             onEdit={openEditForUuid}
             isMobile={isMobile}
+            onDownloadMap={handleDownloadMap}
+            onDownloadJson={handleDownloadGeoJSON}
+            activeTool={activeTool}
           />
         );
     }
@@ -691,6 +807,8 @@ export default function Mainpage({ pickedAddress, setPickedAddress }) {
         setPickedAddress={setPickedAddress}
         isMobile={isMobile}
         setIsUserShowMenu={setIsUserShowMenu}
+        handleDownloadMap={handleDownloadMap}
+        handleDownloadJson={handleDownloadGeoJSON}
       />
       {isRenderSidebar && (
         <Sidebar
@@ -719,6 +837,7 @@ export default function Mainpage({ pickedAddress, setPickedAddress }) {
           entitiesUpdateUI={entitiesUpdateUI}
           entitiesRef={entitiesRef}
           onRequestPlaceText={onRequestPlaceText}
+          onPickEdit={openEditForUuid}
         />
       </main>
     </>

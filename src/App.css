@@ -141,12 +141,6 @@ select {
   opacity: 0.95;
 }
 
-.btn-save-my-map {
-  z-index: 11;
-  font-size: 0.825rem;
-  padding: 1em 2em;
-}
-
 .btn-icon {
   display: none;
   visibility: hidden;

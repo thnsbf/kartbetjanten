@@ -200,7 +200,6 @@
     grid-template-columns: 8ch 1fr 60px;
     background: var(--c-background-white);
     align-items: center;
-    border-left: 8px solid var(--c-danger);
     padding-inline-start: 8px;
     padding-inline-end: 4px;
     border-radius: 4px;

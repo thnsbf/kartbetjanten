@@ -40,9 +40,16 @@
   background: #fff;
 }
 
+.scale-bar__label-row {
+  display: flex;
+  justify-content: space-between;
+  padding-inline: 6px;
+  padding-block-start: 2px;
+}
+
 .scale-bar__label {
-  margin-top: 6px;
-  margin-inline-end: 6px;
+  margin-top: 0px;
+  margin-inline-end: 0px;
   text-align: right;
   letter-spacing: 0.25px;
 }

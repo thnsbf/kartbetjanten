@@ -1,0 +1,43 @@
+.btn-save-my-map {
+  z-index: 11;
+  font-size: 0.825rem;
+  padding: 1em 2em;
+  position: relative;
+}
+
+.btn__dropdown-list {
+  padding-inline: 4px;
+  margin: 0;
+  position: absolute;
+  left: 0;
+  bottom: 42.6px;
+  background: var(--c-success-lighter);
+  list-style: none;
+  min-width: 136px;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.btn__dropdown-list__li-item {
+  padding-block: 12px;
+}
+
+.btn__dropdown-list__li-item > a {
+  color: var(--c-btn-border--primary);
+}
+.btn__dropdown-list__li-item > a:active {
+  opacity: 0.85;
+}
+.btn__dropdown-list__hr {
+  margin: 0;
+
+  border: 1px solid var(--c-btn-border--primary);
+}
+
+@media (min-width: 992px) {
+  .btn__dropdown-list {
+    position: absolute;
+    left: 0;
+
+    bottom: -84.4px;
+  }
+}

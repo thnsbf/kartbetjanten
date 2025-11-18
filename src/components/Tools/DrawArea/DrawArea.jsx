@@ -468,8 +468,8 @@ export default function DrawArea({
         if (hoverOverFirstRef.current) {
           const text =
             pts.length >= 3
-              ? "Finish area"
-              : "A polygon needs at least 3 points";
+              ? "Fastställ area"
+              : "En area måste ha minst 3 punkter";
           upsertFirstHintLabel(v, text);
         } else {
           removeFirstHintLabel(v);

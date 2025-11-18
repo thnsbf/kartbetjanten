@@ -1,5 +1,6 @@
+// src/components/Topbar/Topbar.jsx
 import "./Topbar.css";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import SearchBar from "../SearchBar/SearchBar";
 import DownloadButton from "../DownloadButton/DownloadButton";
 
@@ -10,6 +11,8 @@ export default function Topbar({
   setPickedAddress,
   isMobile,
   setIsUserShowMenu,
+  handleDownloadMap,
+  handleDownloadJson,
 }) {
   const [isUserShowSearchbar, setIsUserShowSearchbar] = useState(false);
 
@@ -53,7 +56,13 @@ export default function Topbar({
             show={!isMobile || isUserShowSearchbar}
             isMobile={isMobile}
           />
-          {!isMobile && <DownloadButton isMobile={true} />}
+          {!isMobile && (
+            <DownloadButton
+              isMobile={true}
+              onClickPdf={handleDownloadMap}
+              onClickJson={handleDownloadJson}
+            />
+          )}
           <div className="topbar__tool-list-wrapper">
             <ul className="topbar__tool-list">
               <li title="Zooma ut" className="topbar-tool">
