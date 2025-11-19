@@ -1,6 +1,9 @@
 .main {
   position: relative;
   overflow: hidden;
+  border: 2px solid var(--kommunfarg);
+  border-left: none;
+  border-right: none;
 }
 
 .heading-address-display {
@@ -16,6 +19,14 @@
   cursor: pointer;
   display: none;
   visibility: hidden;
+}
+
+@media (min-width: 992px) {
+  .main {
+    border-bottom: none;
+    border-left: 2px solid var(--kommunfarg);
+    border-right: 2px solid var(--kommunfarg);
+  }
 }
 
 /* .heading-address-display:hover {

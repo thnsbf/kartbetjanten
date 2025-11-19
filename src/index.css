@@ -36,7 +36,7 @@
   --c-scrollbar-track: var(--white-100);
   --c-scrollbar-hover: var(--blue-300);
 
-  --c-background-bar: var(--kommunfarg);
+  --c-background-bar: var(--white-100);
   --c-background-modal: var(--grey-300);
   --c-background-nav-link: var(--grey-300);
   --c-background-input: var(--grey-300);

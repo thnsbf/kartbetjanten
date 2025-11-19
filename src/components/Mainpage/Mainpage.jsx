@@ -43,7 +43,12 @@ import {
   stopEdit,
 } from "../Tools/EditJunctions/editGeometry";
 
-export default function Mainpage({ pickedAddress, setPickedAddress }) {
+export default function Mainpage({
+  pickedAddress,
+  setPickedAddress,
+  isMobile,
+  setIsMobile,
+}) {
   const [lon, lat] = pickedAddress.geometry.coordinates;
 
   const viewerRef = useRef(null);
@@ -67,7 +72,6 @@ export default function Mainpage({ pickedAddress, setPickedAddress }) {
     [entitiesUpdateUI]
   );
 
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
   const [isUserShowMenu, setIsUserShowMenu] = useState(false);
 
   useEffect(() => {

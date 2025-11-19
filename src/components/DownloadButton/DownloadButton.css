@@ -3,13 +3,14 @@
   font-size: 0.825rem;
   padding: 1em 2em;
   position: relative;
+  border: 2px solid currentColor;
 }
 
 .btn__dropdown-list {
   padding-inline: 4px;
   margin: 0;
   position: absolute;
-  left: 0;
+  left: -25px;
   bottom: 42.6px;
   background: var(--c-success-lighter);
   list-style: none;

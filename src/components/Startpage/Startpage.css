@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0.5rem 1.25rem;
+  padding: 4rem 1.25rem;
   overflow-y: auto;
 }
 
@@ -12,12 +12,12 @@ p + .searchbar-wrapper {
 
 @media (min-height: 600px) {
   .main--start {
-    padding: 1rem 2rem;
+    padding: 2rem 2rem;
   }
 }
 
 @media (min-width: 700px) {
   .main--start {
-    padding: 2rem;
+    padding: 2rem 2rem;
   }
 }

@@ -3,6 +3,8 @@
   justify-content: center;
   gap: 16px;
   padding-inline: var(--topbar-padding);
+  /*   border-bottom: 3px solid var(--kommunfarg);
+ */
 }
 
 .topbar__tool-list-wrapper {
@@ -29,7 +31,7 @@
   margin-bottom: 4px;
 }
 
-.main-logo > a > img {
+.hamburger-a > img {
   max-height: 23px;
 }
 
@@ -40,8 +42,31 @@
   margin-block-end: 5px;
 }
 
+.main-logo--start-mobile {
+  min-width: calc(100vh - (var(--topbar-padding) * 2));
+  background: var(--c-background-white);
+  z-index: 3;
+}
+
+.main-logo--start-mobile:after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 184px;
+  background: var(--c-background-white);
+  width: calc(100vw - (var(--topbar-padding) * 2) - 184px);
+  height: 80px;
+  z-index: 1;
+}
+
+.main-logo--start-mobile > img {
+  margin-top: 49px;
+  background: var(--c-background-white);
+  z-index: 3;
+}
+
 @media (min-height: 600px) and (min-width: 992px) {
-  .main-logo > a > img {
+  .hamburger-a > img {
     max-height: unset;
   }
 }

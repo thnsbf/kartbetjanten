@@ -7,15 +7,19 @@ import Mainpage from "./components/Mainpage/Mainpage";
 
 function App() {
   const [pickedAddress, setPickedAddress] = useState(null);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 992);
+
   return (
     <>
       {pickedAddress ? (
         <Mainpage
           pickedAddress={pickedAddress}
           setPickedAddress={setPickedAddress}
+          isMobile={isMobile}
+          setIsMobile={setIsMobile}
         />
       ) : (
-        <Startpage setPickedAddress={setPickedAddress} />
+        <Startpage setPickedAddress={setPickedAddress} isMobile={isMobile} />
       )}
     </>
   );

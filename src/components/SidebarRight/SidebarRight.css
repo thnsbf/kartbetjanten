@@ -2,9 +2,19 @@
   background: var(--c-background-modal);
   overflow-y: auto;
   min-height: 220px;
+  /*   border-left: none;
+  border-top: 2px solid var(--kommunfarg); */
 }
 
 .pop-up-tool-settings {
   position: absolute;
   right: 0;
 }
+/* 
+@media (min-width: 992px) {
+  .sidebar-right {
+    border-left: 2px solid var(--kommunfarg);
+    border-top: none;
+  }
+}
+ */

@@ -31,21 +31,28 @@ export default function Topbar({
   }
 
   const isMobileAndMain = isMobile && !isStartpage;
-
+  console.log(isMobile);
   return (
     <header className="topbar">
-      <div className="main-logo">
+      <div className={"main-logo"}>
         <a
-          className={isMobileAndMain ? "hamburger-a" : ""}
+          className={
+            isMobileAndMain
+              ? "hamburger-a"
+              : isMobile
+              ? "main-logo--start-mobile"
+              : ""
+          }
           onClick={handleShowMenuClick}
         >
           <img
             src={
               isMobileAndMain
-                ? "icon-hamburger--white.svg"
-                : "thn_logo_liggande_vit_rgb.svg"
+                ? "icon-hamburger--darkpurple.svg"
+                : "thn_logo_liggande_lila_rgb.svg"
             }
             alt="Trollhättans Stads logo"
+            style={{ maxWidth: "184px" }}
           />
         </a>
       </div>
@@ -68,7 +75,7 @@ export default function Topbar({
               <li title="Zooma ut" className="topbar-tool">
                 <i>
                   <img
-                    src="/icon-zoom-out--white.svg"
+                    src="/icon-zoom-out--darkpurple.svg"
                     alt="Icon for zooming out"
                     onClick={() => handleZoomClick(false)}
                   />
@@ -77,7 +84,7 @@ export default function Topbar({
               <li title="Zooma in" className="topbar-tool">
                 <i>
                   <img
-                    src="/icon-zoom-in--white.svg"
+                    src="/icon-zoom-in--darkpurple.svg"
                     alt="Icon for zooming in"
                     onClick={() => handleZoomClick(true)}
                   />
@@ -88,7 +95,7 @@ export default function Topbar({
                   <i>
                     <img
                       style={{ maxHeight: 36 }}
-                      src="/icon-map-position--white.svg"
+                      src="/icon-map-position--darkpurple.svg"
                       alt="Icon showing my position on the map"
                       onClick={handleShowSearchbarClick}
                     />

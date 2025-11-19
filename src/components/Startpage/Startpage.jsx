@@ -1,10 +1,10 @@
 import "./Startpage.css";
 import Topbar from "../Topbar/Topbar";
 import SearchBar from "../SearchBar/SearchBar";
-export default function Startpage({ setPickedAddress }) {
+export default function Startpage({ setPickedAddress, isMobile }) {
   return (
     <>
-      <Topbar isStartpage={true} />
+      <Topbar isStartpage={true} isMobile={isMobile} />
       <main className="main--start">
         <h1 className="heading">Välkommen till Kartbetjänten</h1>
         <p className="text">
