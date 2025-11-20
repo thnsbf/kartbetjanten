@@ -54,6 +54,7 @@ export default function Globe({
   entitiesUpdateUI,
   entitiesRef,
   onRequestPlaceText, // AddText → opens modal in SidebarRight
+  onCancelPlaceText,
   onPickEdit, // NEW: callback to open the right edit modal from a click in the map
 }) {
   const mountRef = useRef(null);
@@ -234,8 +235,16 @@ export default function Globe({
       <AddText
         viewer={viewer}
         active={activeTool === "place-text"}
-        onCancel={() => setActiveTool("no-tool")}
         onRequestPlaceText={onRequestPlaceText}
+        onCancel={() => {
+          // Cancel the whole "place text" flow including SidebarRight
+          if (onCancelPlaceText) {
+            onCancelPlaceText();
+          } else {
+            // Fallback, in case you ever reuse AddText in another context
+            setActiveTool("no-tool");
+          }
+        }}
       />
 
       {/* LINES */}

@@ -17,8 +17,8 @@ export const defaultLineDraft = {
   lineType: "solid", // 'solid' | 'dotted'
   pointColor: "#0066ff",
   pointSize: 8,
-  showValues: true,      // per-segment labels
-  showTotalLabel: true,  // total length label at end
+  showValues: true, // per-segment labels
+  showTotalLabel: true, // total length label at end
   showPoints: true,
 };
 
@@ -105,7 +105,11 @@ export function rebuildSegmentLabels(ent, viewer) {
 
   const ellipsoid = v.scene.globe.ellipsoid;
   for (let i = 0; i < positions.length - 1; i++) {
-    const { meters, mid } = segmentInfo(positions[i], positions[i + 1], ellipsoid);
+    const { meters, mid } = segmentInfo(
+      positions[i],
+      positions[i + 1],
+      ellipsoid
+    );
     const label = v.entities.add({
       position: mid,
       label: {
@@ -141,8 +145,8 @@ export function upsertTotalLengthLabel(ent, viewer) {
   const positions = Array.isArray(posProp)
     ? posProp
     : posProp?.getValue
-      ? posProp.getValue(time) || []
-      : [];
+    ? posProp.getValue(time) || []
+    : [];
 
   if (!Array.isArray(positions) || positions.length < 2) {
     // Nothing to show; hide/remove if it exists
@@ -212,13 +216,11 @@ export function setLineLabelsVisibility(ent, visible, viewer) {
   }
 
   // ensure they exist & are visible
-  rebuildSegmentLabels(ent, viewer);  // will set labels and mark visible
+  rebuildSegmentLabels(ent, viewer); // will set labels and mark visible
   upsertTotalLengthLabel(ent, viewer);
   if (Array.isArray(ch.labels)) for (const l of ch.labels) l.show = true;
   if (ch.totalLabel) ch.totalLabel.show = true;
 }
-
-
 
 // -------------------- Creation-time helpers --------------------
 
@@ -273,8 +275,6 @@ export function applyDraftToLineEntity(ent, draft, viewer) {
   }
   ent.lastUpdated = new Date().toISOString();
   setLineLabelsVisibility(ent, !!draft.showValues, viewer);
-
-
 }
 
 // -------------------- Restore helpers used when toggling show --------------------
@@ -284,17 +284,27 @@ export function applyDraftToLineEntity(ent, draft, viewer) {
  * We prefer ent.__positions saved at creation; otherwise read from polyline.
  */
 function getLinePositions(ent, viewer) {
-  if (Array.isArray(ent.__positions) && ent.__positions.length) return ent.__positions;
-
   const posProp = ent.polyline?.positions;
-  if (!posProp) return null;
-  // Try reading once (most lines are constant after commit)
-  try {
-    const val = posProp.getValue ? posProp.getValue(viewer?.clock?.currentTime) : posProp;
-    if (Array.isArray(val) && val.length) return val;
-  } catch {
-    // ignore
+
+  // 1. Prefer the *live* polyline positions (important during drag-edit)
+  if (posProp) {
+    try {
+      const val = posProp.getValue
+        ? posProp.getValue(viewer?.clock?.currentTime)
+        : posProp;
+      if (Array.isArray(val) && val.length) {
+        return val;
+      }
+    } catch {
+      // ignore and fall back below
+    }
   }
+
+  // 2. Fall back to last confirmed snapshot if needed (for rehydration)
+  if (Array.isArray(ent.__positions) && ent.__positions.length) {
+    return ent.__positions;
+  }
+
   return null;
 }
 
@@ -327,7 +337,6 @@ export function rehydrateLineChildrenIfMissing(ent, viewer) {
   ent.__children = ch;
 }
 
-
 /**
  * Toggle visibility of a line and its child entities according to draft.
  * If making visible, we also rehydrate missing children.
@@ -344,10 +353,10 @@ export function setLineVisibility(ent, show, viewer) {
     rehydrateLineChildrenIfMissing(ent, viewer);
 
     if (Array.isArray(ch.points))
-      for (const p of ch.points) p.show = !!(ent.__draft?.showPoints);
+      for (const p of ch.points) p.show = !!ent.__draft?.showPoints;
     if (Array.isArray(ch.labels))
-      for (const l of ch.labels) l.show = !!(ent.__draft?.showValues);
-    if (ch.totalLabel) ch.totalLabel.show = !!(ent.__draft?.showTotalLabel);
+      for (const l of ch.labels) l.show = !!ent.__draft?.showValues;
+    if (ch.totalLabel) ch.totalLabel.show = !!ent.__draft?.showTotalLabel;
   } else {
     // Just hide – do not remove, so we can re-show later
     if (Array.isArray(ch.points)) for (const p of ch.points) p.show = false;

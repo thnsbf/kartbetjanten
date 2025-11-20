@@ -28,10 +28,15 @@ import {
   draftFromLineEntity,
   applyDraftToLineEntity,
   setLineLabelsVisibility,
+  pointGraphicsFromDraft,
+  rebuildSegmentLabels,
+  upsertTotalLengthLabel,
 } from "../Tools/DrawLines/linesDraft";
 import {
   draftFromAreaEntity,
   applyDraftToAreaEntity,
+  rebuildAreaEdgeLabels,
+  rebuildAreaLabel,
 } from "../Tools/DrawArea/areaDraft";
 import {
   draftFromMarkerEntity,
@@ -337,6 +342,80 @@ export default function Mainpage({
     zoomIn();
   }
 
+  function rebuildLineJunctionPoints(ent, viewer, positions) {
+    if (!ent || !viewer || !Array.isArray(positions)) return;
+
+    const ch = (ent.__children ||= {});
+    // Remove old point entities (from the edited session)
+    if (Array.isArray(ch.points)) {
+      for (const p of ch.points) {
+        try {
+          if (p) viewer.entities.remove(p);
+        } catch {}
+      }
+    }
+    ch.points = [];
+
+    // Recreate from the reverted positions
+    const g = pointGraphicsFromDraft(ent.__draft || {});
+    const showPts = !!ent.__draft?.showPoints;
+
+    for (const pos of positions) {
+      const pointEnt = viewer.entities.add({
+        position: pos,
+        point: g,
+        show: showPts,
+      });
+      pointEnt.__parent = ent;
+      ch.points.push(pointEnt);
+    }
+
+    ent.__children = ch;
+  }
+
+  function rebuildAreaJunctionPoints(ent, viewer, positions, visible) {
+    if (!ent || !viewer || !Array.isArray(positions)) return;
+
+    const ch = (ent.__children ||= {});
+
+    // Remove old point entities
+    if (Array.isArray(ch.points)) {
+      for (const p of ch.points) {
+        try {
+          if (p) viewer.entities.remove(p);
+        } catch {}
+      }
+    }
+    ch.points = [];
+
+    // Styling from draft (fallbacks)
+    const ps = ent.__draft?.pointSize ?? 8;
+    const pc = ent.__draft?.pointColor ?? "#0066ff";
+
+    const pointGraphics = {
+      pixelSize: ps,
+      color: Cesium.Color.fromCssColorString(pc),
+      outlineColor: Cesium.Color.WHITE,
+      outlineWidth: Math.max(1, Math.round(ps / 5)),
+      disableDepthTestDistance: Number.POSITIVE_INFINITY,
+    };
+
+    const showPoints =
+      typeof visible === "boolean" ? visible : !!ent.__draft?.showPoints;
+
+    for (const pos of positions) {
+      const pt = viewer.entities.add({
+        position: pos,
+        point: pointGraphics,
+        show: showPoints,
+      });
+      pt.__parent = ent;
+      ch.points.push(pt);
+    }
+
+    ent.__children = ch;
+  }
+
   // --- Snapshot helpers (static arrays from Cesium properties) ---
   function snapshotPolygonPositions(ent, viewer) {
     const t = viewer?.clock?.currentTime;
@@ -588,11 +667,26 @@ export default function Mainpage({
       if (v && ent?.__edit?.originalPositions) {
         if (rightPane.kind === "edit-line" && ent.polyline) {
           applyPolylinePositions(ent, ent.__edit.originalPositions);
+          rebuildLineJunctionPoints(ent, v, ent.__edit.originalPositions);
+          setLineLabelsVisibility(ent, !!ent.__draft?.showValues, v);
         } else if (rightPane.kind === "edit-area" && ent.polygon) {
           applyPolygonPositions(ent, ent.__edit.originalPositions);
           if (ent.__children?.points?.length) {
             for (const p of ent.__children.points) if (p) p.show = false;
           }
+          rebuildAreaJunctionPoints(
+            ent,
+            v,
+            ent.__edit.originalPositions,
+            ent.__draft?.showPoints
+          );
+
+          try {
+            rebuildAreaEdgeLabels(ent, v);
+          } catch {}
+          try {
+            rebuildAreaLabel(ent, v);
+          } catch {}
         }
         ent.lastUpdated = new Date().toISOString();
       }
@@ -841,6 +935,7 @@ export default function Mainpage({
           entitiesUpdateUI={entitiesUpdateUI}
           entitiesRef={entitiesRef}
           onRequestPlaceText={onRequestPlaceText}
+          onCancelPlaceText={cancelPlaceText}
           onPickEdit={openEditForUuid}
         />
       </main>

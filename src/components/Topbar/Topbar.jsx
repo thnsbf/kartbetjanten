@@ -35,7 +35,7 @@ export default function Topbar({
   return (
     <header className="topbar">
       <div className={"main-logo"}>
-        <a
+        <div
           className={
             isMobileAndMain
               ? "hamburger-a"
@@ -54,7 +54,7 @@ export default function Topbar({
             alt="Trollhättans Stads logo"
             style={{ maxWidth: "184px" }}
           />
-        </a>
+        </div>
       </div>
       {!isStartpage && (
         <>
