@@ -3,7 +3,6 @@ import {
   ScreenSpaceEventHandler,
   ScreenSpaceEventType,
   PolygonHierarchy,
-  Color,
 } from "cesium";
 import { rebuildAreaLabel, rebuildAreaEdgeLabels } from "../DrawArea/areaDraft";
 import {
@@ -21,74 +20,126 @@ let _state = {
   cameraSaved: null,
 };
 
-function _restoreCamera(scene) {
-  const ssc = scene?.screenSpaceCameraController;
-  if (!ssc || !_state.cameraSaved) return;
-  ssc.enableRotate = _state.cameraSaved.enableRotate;
-  ssc.enableTranslate = _state.cameraSaved.enableTranslate;
-  ssc.enableZoom = _state.cameraSaved.enableZoom;
-  ssc.enableTilt = _state.cameraSaved.enableTilt;
-  ssc.enableLook = _state.cameraSaved.enableLook;
-  _state.cameraSaved = null;
-}
+/**
+ * Disable user camera controls while dragging edit junctions.
+ */
 function _disableCamera(scene) {
-  const ssc = scene?.screenSpaceCameraController;
-  if (!ssc) return;
+  if (!scene || !scene.screenSpaceCameraController) return;
+  const ssc = scene.screenSpaceCameraController;
+
   _state.cameraSaved = {
-    enableRotate: ssc.enableRotate,
     enableTranslate: ssc.enableTranslate,
     enableZoom: ssc.enableZoom,
     enableTilt: ssc.enableTilt,
-    enableLook: ssc.enableLook,
+    enableRotate: ssc.enableRotate,
   };
-  ssc.enableRotate = false;
+
   ssc.enableTranslate = false;
   ssc.enableZoom = false;
   ssc.enableTilt = false;
-  ssc.enableLook = false;
+  ssc.enableRotate = false;
 }
 
-function _positionsForArea(ent, viewer) {
-  const t = viewer.clock.currentTime;
-  const h = ent?.polygon?.hierarchy;
-  const val = h?.getValue ? h.getValue(t) : h;
+/**
+ * Restore camera controller flags after editing finishes.
+ */
+function _restoreCamera(scene) {
+  if (!scene || !scene.screenSpaceCameraController || !_state.cameraSaved)
+    return;
+
+  const ssc = scene.screenSpaceCameraController;
+  ssc.enableTranslate = _state.cameraSaved.enableTranslate;
+  ssc.enableZoom = _state.cameraSaved.enableZoom;
+  ssc.enableTilt = _state.cameraSaved.enableTilt;
+  ssc.enableRotate = _state.cameraSaved.enableRotate;
+}
+
+/**
+ * Read polygon positions in world coordinates.
+ */
+function _positionsForPolygon(ent, viewer) {
+  if (!ent?.polygon) return [];
+  const hierarchyProp = ent.polygon.hierarchy;
+  if (!hierarchyProp) return [];
+
+  let val = hierarchyProp;
+  try {
+    if (hierarchyProp.getValue && viewer?.clock?.currentTime) {
+      val = hierarchyProp.getValue(viewer.clock.currentTime);
+    }
+  } catch {
+    // ignore
+  }
+
   if (!val) return [];
   if (val instanceof PolygonHierarchy) return val.positions || [];
   if (Array.isArray(val)) return val;
+
   return [];
 }
-function _writePositionsForArea(ent, positions) {
+
+/**
+ * Write polygon positions back to the entity.
+ */
+function _writePositionsForPolygon(ent, positions) {
   if (!ent?.polygon) return;
   ent.polygon.hierarchy = new PolygonHierarchy(positions.slice());
 }
 
+/**
+ * Read polyline positions in world coordinates.
+ * Prefer the live polyline positions (ent.polyline.positions).
+ */
 function _positionsForLine(ent, viewer) {
-  const p = ent?.polyline?.positions;
-  if (!p) return [];
-  if (Array.isArray(p)) return p;
+  if (!ent?.polyline) return [];
+  const posProp = ent.polyline.positions;
+  if (!posProp) return [];
+
+  let val = posProp;
   try {
-    const val = p.getValue ? p.getValue(viewer.clock.currentTime) : p;
-    return Array.isArray(val) ? val : [];
+    if (posProp.getValue && viewer?.clock?.currentTime) {
+      val = posProp.getValue(viewer.clock.currentTime);
+    }
   } catch {
-    return [];
+    // ignore
   }
+
+  if (!val) return [];
+  if (Array.isArray(val)) return val;
+
+  return [];
 }
+
+/**
+ * Write polyline positions back to the entity.
+ */
 function _writePositionsForLine(ent, positions) {
   if (!ent?.polyline) return;
   ent.polyline.positions = positions.slice();
 }
 
+/**
+ * Find the index of a child point entity inside ent.__children.points.
+ */
 function _indexOfPoint(ent, pointEntity) {
-  const pts = ent?.__children?.points || [];
+  if (!ent?.__children || !Array.isArray(ent.__children.points)) return -1;
+  const pts = ent.__children.points;
   return pts.findIndex((p) => p === pointEntity);
 }
 
+/**
+ * Set the cursor for the Cesium canvas.
+ */
 function _setCursor(canvas, val) {
   if (canvas) canvas.style.cursor = val;
 }
 
+/**
+ * Rebuild labels / measurements after geometry mutates.
+ */
 function _liveRefresh(ent, viewer) {
   if (!ent || !viewer) return;
+
   if (ent.polygon) {
     rebuildAreaLabel(ent, viewer);
     rebuildAreaEdgeLabels(ent, viewer);
@@ -96,40 +147,65 @@ function _liveRefresh(ent, viewer) {
     rebuildSegmentLabels(ent, viewer);
     upsertTotalLengthLabel(ent, viewer);
   }
-  viewer.scene.requestRender?.();
 }
 
-// ---------- PUBLIC API (start/stop) ----------
-
+/**
+ * Begin interactive edit of a polygon's junctions.
+ */
 export function startAreaEdit(viewer, ent, { onAfterMutate } = {}) {
-  stopEdit(); // clear any previous
+  // Clear any existing edit state first
+  stopEdit();
   if (!viewer || !ent?.polygon) return;
 
   _state.viewer = viewer;
   _state.ent = ent;
   _state.kind = "area";
+  _state.dragging = false;
+  _state.dragIdx = -1;
 
-  // Ensure points are visible (caller usually rehydrates; still force show)
   const ch = (ent.__children ||= {});
   const pts = ch.points || [];
   for (const p of pts) if (p) p.show = true;
 
-  // input handler
   const handler = new ScreenSpaceEventHandler(viewer.scene.canvas);
   _state.handler = handler;
 
+  // SINGLE MOUSE_MOVE handler for both hover *and* drag
   handler.setInputAction((movement) => {
-    // Hover → show grab if over a junction point
-    if (_state.dragging) return; // dragging decides its own cursor
-    const pick = viewer.scene.pick(movement.endPosition);
-    const overPoint =
-      pick &&
-      pick.id &&
-      Array.isArray(ch.points) &&
-      ch.points.includes(pick.id);
-    _setCursor(viewer.scene.canvas, overPoint ? "grab" : "default");
+    const canvas = viewer.scene.canvas;
+
+    if (_state.dragging) {
+      // Dragging mode: move the current vertex
+      const ellipsoid = viewer.scene.globe.ellipsoid;
+      const cart = viewer.camera.pickEllipsoid(movement.endPosition, ellipsoid);
+      if (!cart) return;
+
+      const idx = _state.dragIdx;
+      if (idx < 0) return;
+
+      const childPoint = ent.__children.points[idx];
+      if (childPoint) childPoint.position = cart;
+
+      const cur = _positionsForPolygon(ent, viewer).slice();
+      if (idx >= cur.length) return;
+      cur[idx] = cart;
+      _writePositionsForPolygon(ent, cur);
+
+      _liveRefresh(ent, viewer);
+      onAfterMutate?.();
+    } else {
+      // Hover mode: show grab only when over a junction point
+      const pick = viewer.scene.pick(movement.endPosition);
+      const overPoint =
+        pick &&
+        pick.id &&
+        Array.isArray(ch.points) &&
+        ch.points.includes(pick.id);
+      _setCursor(canvas, overPoint ? "grab" : "default");
+    }
   }, ScreenSpaceEventType.MOUSE_MOVE);
 
+  // Mouse down on a junction -> start dragging that junction.
   handler.setInputAction((down) => {
     const pick = viewer.scene.pick(down.position);
     if (!(pick && pick.id)) return;
@@ -142,46 +218,41 @@ export function startAreaEdit(viewer, ent, { onAfterMutate } = {}) {
     _setCursor(viewer.scene.canvas, "grabbing");
   }, ScreenSpaceEventType.LEFT_DOWN);
 
-  handler.setInputAction((move) => {
-    if (!_state.dragging) return;
-
-    const ellipsoid = viewer.scene.globe.ellipsoid;
-    const cart = viewer.camera.pickEllipsoid(move.endPosition, ellipsoid);
-    if (!cart) return;
-
-    // move the point entity
-    const idx = _state.dragIdx;
-    const childPoint = ent.__children.points[idx];
-    if (childPoint) childPoint.position = cart;
-
-    // update polygon positions array
-    const cur = _positionsForArea(ent, viewer).slice();
-    cur[idx] = cart;
-    _writePositionsForArea(ent, cur);
-
-    // live labels refresh
-    _liveRefresh(ent, viewer);
-    onAfterMutate?.();
-  }, ScreenSpaceEventType.MOUSE_MOVE);
-
-  handler.setInputAction(() => {
+  // Mouse up: stop dragging and restore hover-based cursor.
+  handler.setInputAction((up) => {
     if (!_state.dragging) return;
     _state.dragging = false;
     _state.dragIdx = -1;
     _restoreCamera(viewer.scene);
-    _setCursor(viewer.scene.canvas, "grab"); // still hovering most likely
+
+    const canvas = viewer.scene.canvas;
+    const pick = viewer.scene.pick(up.position);
+    const overPoint =
+      pick &&
+      pick.id &&
+      Array.isArray(ch.points) &&
+      ch.points.includes(pick.id);
+
+    _setCursor(canvas, overPoint ? "grab" : "default");
+
     _liveRefresh(ent, viewer);
     onAfterMutate?.();
   }, ScreenSpaceEventType.LEFT_UP);
 }
 
+/**
+ * Begin interactive edit of a polyline's junctions.
+ */
 export function startLineEdit(viewer, ent, { onAfterMutate } = {}) {
-  stopEdit(); // clear any previous
+  // Clear any existing edit state first
+  stopEdit();
   if (!viewer || !ent?.polyline) return;
 
   _state.viewer = viewer;
   _state.ent = ent;
   _state.kind = "line";
+  _state.dragging = false;
+  _state.dragIdx = -1;
 
   const ch = (ent.__children ||= {});
   const pts = ch.points || [];
@@ -190,17 +261,42 @@ export function startLineEdit(viewer, ent, { onAfterMutate } = {}) {
   const handler = new ScreenSpaceEventHandler(viewer.scene.canvas);
   _state.handler = handler;
 
+  // SINGLE MOUSE_MOVE handler for both hover *and* drag
   handler.setInputAction((movement) => {
-    if (_state.dragging) return;
-    const pick = viewer.scene.pick(movement.endPosition);
-    const overPoint =
-      pick &&
-      pick.id &&
-      Array.isArray(ch.points) &&
-      ch.points.includes(pick.id);
-    _setCursor(viewer.scene.canvas, overPoint ? "grab" : "default");
+    const canvas = viewer.scene.canvas;
+
+    if (_state.dragging) {
+      // Dragging mode: move the current vertex
+      const ellipsoid = viewer.scene.globe.ellipsoid;
+      const cart = viewer.camera.pickEllipsoid(movement.endPosition, ellipsoid);
+      if (!cart) return;
+
+      const idx = _state.dragIdx;
+      if (idx < 0) return;
+
+      const childPoint = ent.__children.points[idx];
+      if (childPoint) childPoint.position = cart;
+
+      const cur = _positionsForLine(ent, viewer).slice();
+      if (idx >= cur.length) return;
+      cur[idx] = cart;
+      _writePositionsForLine(ent, cur);
+
+      _liveRefresh(ent, viewer);
+      onAfterMutate?.();
+    } else {
+      // Hover mode: show grab only when over a junction point
+      const pick = viewer.scene.pick(movement.endPosition);
+      const overPoint =
+        pick &&
+        pick.id &&
+        Array.isArray(ch.points) &&
+        ch.points.includes(pick.id);
+      _setCursor(canvas, overPoint ? "grab" : "default");
+    }
   }, ScreenSpaceEventType.MOUSE_MOVE);
 
+  // Mouse down on a junction -> start dragging that junction.
   handler.setInputAction((down) => {
     const pick = viewer.scene.pick(down.position);
     if (!(pick && pick.id)) return;
@@ -213,49 +309,50 @@ export function startLineEdit(viewer, ent, { onAfterMutate } = {}) {
     _setCursor(viewer.scene.canvas, "grabbing");
   }, ScreenSpaceEventType.LEFT_DOWN);
 
-  handler.setInputAction((move) => {
-    if (!_state.dragging) return;
-
-    const ellipsoid = viewer.scene.globe.ellipsoid;
-    const cart = viewer.camera.pickEllipsoid(move.endPosition, ellipsoid);
-    if (!cart) return;
-
-    const idx = _state.dragIdx;
-
-    const childPoint = ent.__children.points[idx];
-    if (childPoint) childPoint.position = cart;
-
-    const cur = _positionsForLine(ent, viewer).slice();
-    cur[idx] = cart;
-    _writePositionsForLine(ent, cur);
-
-    _liveRefresh(ent, viewer);
-    onAfterMutate?.();
-  }, ScreenSpaceEventType.MOUSE_MOVE);
-
-  handler.setInputAction(() => {
+  // Mouse up: stop dragging and restore hover-based cursor.
+  handler.setInputAction((up) => {
     if (!_state.dragging) return;
     _state.dragging = false;
     _state.dragIdx = -1;
     _restoreCamera(viewer.scene);
-    _setCursor(viewer.scene.canvas, "grab");
+
+    const canvas = viewer.scene.canvas;
+    const pick = viewer.scene.pick(up.position);
+    const overPoint =
+      pick &&
+      pick.id &&
+      Array.isArray(ch.points) &&
+      ch.points.includes(pick.id);
+
+    _setCursor(canvas, overPoint ? "grab" : "default");
+
     _liveRefresh(ent, viewer);
     onAfterMutate?.();
   }, ScreenSpaceEventType.LEFT_UP);
 }
 
+/**
+ * Stop any active junction editing session and clean up handlers / cursor.
+ */
 export function stopEdit() {
   const v = _state.viewer;
+
   if (_state.handler) {
-    try {
-      _state.handler.destroy();
-    } catch {}
-    _state.handler = null;
+    _state.handler.destroy();
   }
+
+  // Hide edit junction points again
+  if (_state.ent?.__children?.points) {
+    for (const p of _state.ent.__children.points) {
+      if (p) p.show = false;
+    }
+  }
+
   if (v?.scene) {
     _restoreCamera(v.scene);
     _setCursor(v.scene.canvas, "default");
   }
+
   _state = {
     viewer: null,
     ent: null,
