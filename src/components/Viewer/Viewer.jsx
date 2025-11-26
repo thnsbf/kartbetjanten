@@ -64,7 +64,6 @@ export default function Globe({
   useEffect(() => {
     const v = new Viewer(mountRef.current, {
       terrainProvider: new EllipsoidTerrainProvider(),
-
       animation: false,
       baseLayerPicker: false,
       fullscreenButton: false,
@@ -81,6 +80,12 @@ export default function Globe({
     });
     v.scene.globe.baseColor = Color.fromCssColorString("rgb(236, 236, 236)");
 
+    // Remove default imagery layer
+    const imageryLayerDefault = v.imageryLayers;
+    if (imageryLayerDefault.length) {
+      v.imageryLayers.remove(imageryLayerDefault._layers[0]);
+    }
+
     // Basemap
     v.imageryLayers.addImageryProvider(
       new WebMapServiceImageryProvider({
@@ -89,6 +94,8 @@ export default function Globe({
         parameters: { transparent: true, format: "image/png" },
       })
     );
+
+    console.log(v.imageryLayers);
 
     // Camera feel/setup
     const ssc = v.scene.screenSpaceCameraController;

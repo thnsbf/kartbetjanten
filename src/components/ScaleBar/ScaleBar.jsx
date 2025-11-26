@@ -1,6 +1,6 @@
+// src/components/ScaleBar/ScaleBar.jsx
 import "./ScaleBar.css";
 
-// ScaleBar.jsx
 import { useEffect, useRef, useState } from "react";
 import { Cartographic, EllipsoidGeodesic } from "cesium";
 
@@ -14,32 +14,60 @@ function fmtMetersExact(m) {
 }
 
 // Approx physical size of 1 CSS pixel at 96 DPI (in meters)
+// MUST match the constant in zoom-to-scale.js
 const METERS_PER_CSS_PIXEL = 0.0254 / 96; // ≈ 0.0002645833 m
 
-function fmtScaleRatioExact(distMeters, widthPx) {
-  if (!widthPx || !isFinite(distMeters) || distMeters <= 0) return "";
+function fmtScaleRatioFromMetersPerPixel(metersPerPixelGround) {
+  if (!isFinite(metersPerPixelGround) || metersPerPixelGround <= 0) return "";
 
-  // Ground meters per *screen* pixel
-  const metersPerPixelGround = distMeters / widthPx;
-
-  // How many screen pixels would correspond to 1 meter at that DPI
-  // => 1 : denom
+  // 1 CSS px = METERS_PER_CSS_PIXEL meters at 1:1
+  // So at this zoom: metersPerPixelGround / METERS_PER_CSS_PIXEL = scale denominator
   const denom = metersPerPixelGround / METERS_PER_CSS_PIXEL;
-
   if (!isFinite(denom) || denom <= 0) return "";
 
-  // Round to nearest integer – keeps it “exact” enough and updates on every change
   const rounded = Math.round(denom);
-
   return `1:${rounded.toLocaleString("sv-SE")}`;
 }
+
+/**
+ * Pick a "nice" distance (in meters) near a given value.
+ * Uses multipliers like 1, 1.5, 2, 3, 5, 7.5, 10 × 10^n.
+ * Example: 14.8 → 15, 63 → 60, 270 → 300, etc.
+ */
+function chooseNiceMeters(rawMeters) {
+  if (!isFinite(rawMeters) || rawMeters <= 0) return 0;
+
+  const mag = Math.pow(10, Math.floor(Math.log10(rawMeters)));
+  const norm = rawMeters / mag; // between ~1 and 10
+
+  const candidatesNorm = [1, 1.5, 2, 3, 5, 7.5, 10];
+  let best = candidatesNorm[0] * mag;
+  let bestDiff = Math.abs(best - rawMeters);
+
+  for (let i = 1; i < candidatesNorm.length; i++) {
+    const v = candidatesNorm[i] * mag;
+    const d = Math.abs(v - rawMeters);
+    if (d < bestDiff) {
+      bestDiff = d;
+      best = v;
+    }
+  }
+
+  return best;
+}
+
 export default function ScaleBar({
   viewer,
+  // widthPx is the *reference* sample width used to measure scale
   widthPx = 140,
   updateEveryFrame = false,
+  minBarPx = 100, // minimum visible width for the bar
+  maxBarPx = 260, // optional max, can tweak or ignore
 }) {
   const [label, setLabel] = useState("");
   const [scaleLabel, setScaleLabel] = useState("");
+  const [barWidthPx, setBarWidthPx] = useState(widthPx);
+
   const rafRef = useRef(null);
   const geodesicRef = useRef(new EllipsoidGeodesic());
 
@@ -76,13 +104,30 @@ export default function ScaleBar({
       geodesic.setEndPoints(c0, c1);
       const dist = geodesic.surfaceDistance; // meters across widthPx pixels
 
-      if (isFinite(dist) && dist > 0) {
-        setLabel(fmtMetersExact(dist));
-        setScaleLabel(fmtScaleRatioExact(dist, widthPx));
-      } else {
+      if (!isFinite(dist) || dist <= 0) {
         setLabel("");
         setScaleLabel("");
+        return;
       }
+
+      // Ground meters per *screen* pixel at this zoom:
+      const metersPerPixelGround = dist / widthPx;
+
+      // Pick a nice ground distance near the measured one
+      const niceMeters = chooseNiceMeters(dist);
+
+      // Corresponding bar width in pixels
+      let pixels = niceMeters / metersPerPixelGround;
+      if (isFinite(pixels) && pixels > 0) {
+        if (minBarPx != null) pixels = Math.max(minBarPx, pixels);
+        if (maxBarPx != null) pixels = Math.min(maxBarPx, pixels);
+      } else {
+        pixels = widthPx;
+      }
+
+      setBarWidthPx(pixels);
+      setLabel(fmtMetersExact(niceMeters));
+      setScaleLabel(fmtScaleRatioFromMetersPerPixel(metersPerPixelGround));
     };
 
     const schedule = () => {
@@ -106,13 +151,13 @@ export default function ScaleBar({
       if (removeChanged) removeChanged();
       if (updateEveryFrame) scene.postRender.removeEventListener(postRenderCb);
     };
-  }, [viewer, widthPx, updateEveryFrame]);
+  }, [viewer, widthPx, updateEveryFrame, minBarPx, maxBarPx]);
 
   if (!label) return null;
 
   return (
     <div className="scale-bar">
-      <div className="scale-bar__bar" style={{ width: widthPx }} />
+      <div className="scale-bar__bar" style={{ width: barWidthPx }} />
       <div className="scale-bar__label-row">
         <span className="scale-bar__label">{label}</span>
         {scaleLabel && (
