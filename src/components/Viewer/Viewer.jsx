@@ -79,6 +79,7 @@ export default function Globe({
       },
     });
     v.scene.globe.baseColor = Color.fromCssColorString("rgb(236, 236, 236)");
+    v.scene.screenSpaceCameraController.minimumZoomDistance = 0.2;
 
     // Remove default imagery layer
     const imageryLayerDefault = v.imageryLayers;
@@ -104,8 +105,11 @@ export default function Globe({
     ssc.tiltEventTypes = [];
     ssc.lookEventTypes = [];
     ssc.enableZoom = false;
-    ssc.minimumZoomDistance = 20;
+
+    // use a small min distance – this is what actually limits how close we can get
+    ssc.minimumZoomDistance = 0.2; // or 0.5, tweak to taste
     ssc.maximumZoomDistance = 1e7;
+
     ssc.inertiaSpin = 0;
     ssc.inertiaZoom = 0;
     ssc.inertiaTranslate = 0;

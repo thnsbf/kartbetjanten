@@ -48,14 +48,21 @@ export function measureScaleMeters(viewer, widthPx = 140) {
 }
 
 // Set camera height (keeping lon/lat and orientation)
+// zoom-to-scale.js
 function setHeight(viewer, heightMeters) {
   const cam = viewer.camera;
   const carto = Cartographic.fromCartesian(cam.position);
+
+  const ssc = viewer.scene.screenSpaceCameraController;
+  const minZoom =
+    ssc && ssc.minimumZoomDistance != null ? ssc.minimumZoomDistance : 0.1; // sensible fallback
+
   const destination = Cartesian3.fromRadians(
     carto.longitude,
     carto.latitude,
-    Math.max(1, heightMeters)
+    Math.max(minZoom * 1.01, heightMeters) // tiny margin above min
   );
+
   cam.setView({
     destination,
     orientation: {
