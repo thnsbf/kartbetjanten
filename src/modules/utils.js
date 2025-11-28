@@ -43,14 +43,14 @@ export function moveCameraHeight(viewer, delta = 100) {
 }
 
 export function zoomTo(viewer, lon, lat) {
-  const { camera } = viewer
+  const { camera } = viewer;
   camera.setView({
     orientation: {
-      heading: camera.heading,        // keep current heading
-      pitch: -CesiumMath.PI_OVER_TWO,        // -90° (top-down)
-      roll: 0
+      heading: camera.heading, // keep current heading
+      pitch: -CesiumMath.PI_OVER_TWO, // -90° (top-down)
+      roll: 0,
     },
-    destination: Cartesian3.fromDegrees(lon, lat, 327)
+    destination: Cartesian3.fromDegrees(lon, lat, 327),
   });
 }
 
@@ -136,9 +136,13 @@ export function setEntityGroupVisibility(ent, visible) {
 
   // AREA entity: control points/center label/edge labels via three flags
   if (ent.polygon) {
-    const showCenter = hasOwn(draft, "showAreaLabel") ? !!draft.showAreaLabel : false;
-    const showEdges  = hasOwn(draft, "showEdgeValues") ? !!draft.showEdgeValues : false;
-    const showPoints = hasOwn(draft, "showPoints")     ? !!draft.showPoints     : false;
+    const showCenter = hasOwn(draft, "showAreaLabel")
+      ? !!draft.showAreaLabel
+      : false;
+    const showEdges = hasOwn(draft, "showEdgeValues")
+      ? !!draft.showEdgeValues
+      : false;
+    const showPoints = hasOwn(draft, "showPoints") ? !!draft.showPoints : false;
 
     setOneShow(ch.label, showCenter);
     setArrayShow(ch.edgeLabels, showEdges);
@@ -159,7 +163,9 @@ export function removeEntityGroup(ent, viewer) {
     if (!Array.isArray(arr)) return;
     for (const e of arr) if (e) viewer.entities.remove(e);
   };
-  const removeOne = (e) => { if (e) viewer.entities.remove(e); };
+  const removeOne = (e) => {
+    if (e) viewer.entities.remove(e);
+  };
 
   removeArray(ch.points);
   removeArray(ch.labels);
@@ -185,4 +191,10 @@ export function removeEntityGroup(ent, viewer) {
     ent.__children.totalLabel = null;
     ent.__children.label = null;
   }
+}
+
+export function lift(cartesian, offsetMeters = 0.1) {
+  const carto = Cartographic.fromCartesian(cartesian);
+  carto.height += offsetMeters;
+  return Cartesian3.fromRadians(carto.longitude, carto.latitude, carto.height);
 }

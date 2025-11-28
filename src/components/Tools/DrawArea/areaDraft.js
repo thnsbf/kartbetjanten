@@ -8,14 +8,15 @@ import {
   Cartesian2,
   Matrix4,
   Transforms,
+  HeightReference,
 } from "cesium";
 
 export const defaultAreaDraft = {
   pointColor: "#0066ff",
   pointSize: 8,
   // old: fillColor: "rgba(255, 59, 48, 0.25)",
-  fillHex: "#ff3b30",        // NEW: pure color
-  fillOpacity: 0.25,         // NEW: opacity 0..1
+  fillHex: "#ff3b30", // NEW: pure color
+  fillOpacity: 0.25, // NEW: opacity 0..1
   outlineColor: "#ff3b30",
   outlineWidth: 2,
   showAreaLabel: true,
@@ -56,7 +57,9 @@ function _forceRebuildCenterLabel(ent, viewer, visible) {
 
   // Always remove any existing center label references
   if (ch.label && viewer?.entities) {
-    try { viewer.entities.remove(ch.label); } catch {}
+    try {
+      viewer.entities.remove(ch.label);
+    } catch {}
   }
   ch.label = null;
 
@@ -104,7 +107,9 @@ function _forceRebuildEdgeLabels(ent, viewer, visible) {
   // Always remove any existing edge labels we know about
   if (Array.isArray(ch.edgeLabels) && viewer?.entities) {
     for (const l of ch.edgeLabels) {
-      try { viewer.entities.remove(l); } catch {}
+      try {
+        viewer.entities.remove(l);
+      } catch {}
     }
   }
   ch.edgeLabels = [];
@@ -137,6 +142,7 @@ function _forceRebuildEdgeLabels(ent, viewer, visible) {
         backgroundColor: Color.fromAlpha(Color.BLACK, 0.6),
         pixelOffset: new Cartesian2(0, -8),
         disableDepthTestDistance: Number.POSITIVE_INFINITY,
+        heightReference: HeightReference.NONE,
       },
       show: true,
     });
@@ -186,7 +192,7 @@ export function ensureAreaDraftShape(d) {
     if (out.fillColor && typeof out.fillColor === "string") {
       const m = out.fillColor.match(/rgba?\(([^)]+)\)/i);
       if (m) {
-        const parts = m[1].split(",").map(x => x.trim());
+        const parts = m[1].split(",").map((x) => x.trim());
         const [r, g, b, a = "1"] = parts;
         const toHex = (n) => {
           const v = Math.max(0, Math.min(255, Number(n)));
@@ -215,7 +221,6 @@ export function cesiumFillFromDraft(d) {
   return Color.fromAlpha(base, a);
 }
 
-
 function _ensureChildren(ent) {
   if (!ent.__children) ent.__children = {};
   const ch = ent.__children;
@@ -229,10 +234,14 @@ function _ensureChildren(ent) {
 function _safeRemove(viewer, entity) {
   if (!entity) return;
   if (viewer && viewer.entities) {
-    try { viewer.entities.remove(entity); } catch {}
+    try {
+      viewer.entities.remove(entity);
+    } catch {}
   } else {
     // Fallback if no viewer: just hide, so we don't throw
-    try { entity.show = false; } catch {}
+    try {
+      entity.show = false;
+    } catch {}
   }
 }
 
@@ -252,7 +261,9 @@ export function formatSquareMeters(m2) {
 
 function parseCssAlpha(css) {
   // returns alpha if rgba(..., a) else undefined
-  const m = /^rgba?\(\s*\d+,\s*\d+,\s*\d+(?:,\s*([0-9.]+))?\s*\)$/.exec(css || "");
+  const m = /^rgba?\(\s*\d+,\s*\d+,\s*\d+(?:,\s*([0-9.]+))?\s*\)$/.exec(
+    css || ""
+  );
   if (m && m[1] != null) {
     const a = parseFloat(m[1]);
     if (isFinite(a)) return Math.max(0, Math.min(1, a));
@@ -288,6 +299,7 @@ export function pointGraphicsFromDraft(draft) {
     outlineColor: Color.WHITE,
     outlineWidth: Math.max(1, Math.round((draft.pointSize ?? 8) / 5)),
     disableDepthTestDistance: Number.POSITIVE_INFINITY,
+    heightReference: HeightReference.NONE,
   };
 }
 
@@ -320,7 +332,7 @@ export function polygonAreaMeters2(positions, ellipsoid) {
   // Shoelace area
   let area2 = 0;
   for (let i = 0, j = n - 1; i < n; j = i++) {
-    area2 += (xy[j].x * xy[i].y) - (xy[i].x * xy[j].y);
+    area2 += xy[j].x * xy[i].y - xy[i].x * xy[j].y;
   }
   return Math.abs(area2) * 0.5;
 }
@@ -349,9 +361,11 @@ export function polygonCentroid(positions, ellipsoid) {
   });
 
   // Shoelace centroid (2D)
-  let a = 0, cx = 0, cy = 0;
+  let a = 0,
+    cx = 0,
+    cy = 0;
   for (let i = 0, j = n - 1; i < n; j = i++) {
-    const cross = (xy[j].x * xy[i].y) - (xy[i].x * xy[j].y);
+    const cross = xy[j].x * xy[i].y - xy[i].x * xy[j].y;
     a += cross;
     cx += (xy[j].x + xy[i].x) * cross;
     cy += (xy[j].y + xy[i].y) * cross;
@@ -361,8 +375,8 @@ export function polygonCentroid(positions, ellipsoid) {
     // Degenerate; return average
     return avg;
   }
-  cx /= (6 * a);
-  cy /= (6 * a);
+  cx /= 6 * a;
+  cy /= 6 * a;
 
   // Back to world space (z=0 in local plane)
   const localCentroid = new Cartesian3(cx, cy, 0);
@@ -384,8 +398,11 @@ export function rebuildAreaLabel(ent, viewer) {
   const h = ent.polygon.hierarchy;
   const val = h?.getValue ? h.getValue(time) : h;
   const positions =
-    val instanceof PolygonHierarchy ? (val.positions ?? []) :
-    Array.isArray(val) ? val : [];
+    val instanceof PolygonHierarchy
+      ? val.positions ?? []
+      : Array.isArray(val)
+      ? val
+      : [];
 
   const ch = (ent.__children ||= {});
   // remove old
@@ -413,6 +430,7 @@ export function rebuildAreaLabel(ent, viewer) {
       backgroundColor: Color.fromAlpha(Color.BLACK, 0.6),
       pixelOffset: new Cartesian2(0, -12),
       disableDepthTestDistance: Number.POSITIVE_INFINITY,
+      heightReference: HeightReference.NONE,
     },
     show: true,
   });
@@ -450,8 +468,11 @@ export function rebuildAreaEdgeLabels(ent, viewer) {
   const h = ent.polygon.hierarchy;
   const val = h?.getValue ? h.getValue(time) : h;
   const positions =
-    val instanceof PolygonHierarchy ? (val.positions ?? []) :
-    Array.isArray(val) ? val : [];
+    val instanceof PolygonHierarchy
+      ? val.positions ?? []
+      : Array.isArray(val)
+      ? val
+      : [];
 
   if (positions.length < 2) {
     ent.__children = ch;
@@ -476,6 +497,7 @@ export function rebuildAreaEdgeLabels(ent, viewer) {
         backgroundColor: Color.fromAlpha(Color.BLACK, 0.6),
         pixelOffset: new Cartesian2(0, -8), // small “above” offset
         disableDepthTestDistance: Number.POSITIVE_INFINITY,
+        heightReference: HeightReference.NONE,
       },
       show: true,
     });
@@ -510,10 +532,13 @@ export function draftFromAreaEntity(ent) {
 
   // Fallback: infer from current entity graphics
   const ch = ent.__children || {};
-  const samplePoint = Array.isArray(ch.points) && ch.points.length ? ch.points[0].point : null;
+  const samplePoint =
+    Array.isArray(ch.points) && ch.points.length ? ch.points[0].point : null;
 
   const pointSize =
-    (samplePoint && typeof samplePoint.pixelSize === "number" && samplePoint.pixelSize) ??
+    (samplePoint &&
+      typeof samplePoint.pixelSize === "number" &&
+      samplePoint.pixelSize) ??
     defaultAreaDraft.pointSize;
 
   const pointColor =
@@ -532,13 +557,19 @@ export function draftFromAreaEntity(ent) {
     defaultAreaDraft.outlineColor;
 
   const outlineWidth =
-    (ent.polygon && typeof ent.polygon.outlineWidth === "number" && ent.polygon.outlineWidth) ??
+    (ent.polygon &&
+      typeof ent.polygon.outlineWidth === "number" &&
+      ent.polygon.outlineWidth) ??
     defaultAreaDraft.outlineWidth;
 
   // Visibility flags
   const showAreaLabel = !!ch.label;
-  const showEdgeValues = !!(Array.isArray(ch.edgeLabels) && ch.edgeLabels.length);
-  const showPoints = !!(Array.isArray(ch.points) && ch.points.some((p) => p.show));
+  const showEdgeValues = !!(
+    Array.isArray(ch.edgeLabels) && ch.edgeLabels.length
+  );
+  const showPoints = !!(
+    Array.isArray(ch.points) && ch.points.some((p) => p.show)
+  );
 
   // NOTE: inferring fillColor reliably requires evaluating the material property at a time,
   // which we avoid here to keep this util pure. We fall back to the default unless it was saved in __draft.
@@ -606,6 +637,7 @@ export function applyDraftToAreaEntity(ent, draft, viewer) {
         p.point.outlineColor = g.outlineColor;
         p.point.outlineWidth = g.outlineWidth;
         p.point.disableDepthTestDistance = g.disableDepthTestDistance;
+        p.point.heightReference = HeightReference.NONE;
         p.show = !!draft.showPoints;
       } catch {}
     }
@@ -619,7 +651,9 @@ export function applyDraftToAreaEntity(ent, draft, viewer) {
     } else {
       // Rebuild for correctness when we have a viewer; otherwise just show it
       if (entities?.contains?.(ch.label)) {
-        try { entities.remove(ch.label); } catch {}
+        try {
+          entities.remove(ch.label);
+        } catch {}
         _forceRebuildCenterLabel(ent, viewer, true);
       } else {
         ch.label.show = true; // fallback if no viewer
@@ -642,7 +676,9 @@ export function applyDraftToAreaEntity(ent, draft, viewer) {
       if (entities) {
         for (const l of ch.edgeLabels) {
           if (entities.contains?.(l)) {
-            try { entities.remove(l); } catch {}
+            try {
+              entities.remove(l);
+            } catch {}
           }
         }
         _forceRebuildEdgeLabels(ent, viewer, true);
@@ -659,4 +695,3 @@ export function applyDraftToAreaEntity(ent, draft, viewer) {
   ent.lastUpdated = new Date().toISOString();
   ent.isActive = true;
 }
-

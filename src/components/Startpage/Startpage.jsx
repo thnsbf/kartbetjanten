@@ -13,7 +13,8 @@ export default function Startpage({ setPickedAddress, isMobile }) {
           <br />
           <br />
           Börja med att söka på den adress eller fastighet som ärendet gäller i
-          sökrutan här nedan.
+          sökrutan här nedan. Om ärendet inte gäller en specifik adress kan du
+          välja valfri adress som ingår i fastigheten.
         </p>
         <SearchBar setPickedAddress={setPickedAddress} show={true} />
         <p className="text">

@@ -1,7 +1,8 @@
 import "./SearchBar.css";
 import { readJson } from "../../modules/utils";
 
-const ADRESSER = await readJson("/json/adresser.json");
+const ADRESSER = await readJson("/json/ADRESSER_251127.json");
+console.log(ADRESSER.features[0]);
 
 export default function DropdownMenu({
   searchTerm,
@@ -9,26 +10,31 @@ export default function DropdownMenu({
   setSearchTerm,
 }) {
   const searchResults = ADRESSER.features.filter((address) => {
-    const addr = address.properties.td_adress.toLowerCase();
-    return addr.toLowerCase().includes(searchTerm);
+    const addr = address.properties.ADRESS.toLowerCase();
+    const fast = address.properties.FASTIGHET.toLowerCase();
+    return (
+      addr.toLowerCase().includes(searchTerm) ||
+      fast.toLowerCase().includes(searchTerm)
+    );
   });
 
   const liItems = searchResults.map((address, index) => {
-    const addr = address.properties.td_adress;
+    const addr = address.properties.ADRESS.toLowerCase();
+    const fastighet = address.properties.FASTIGHET.toLowerCase();
     return (
       <li
         className="search-result-li-item"
         key={index}
         onClick={() => handleClickAddressItem(addr)}
       >
-        {addr}
+        {`${addr} / ${fastighet}`}
       </li>
     );
   });
 
   function handleClickAddressItem(address) {
     const addressItem = ADRESSER.features.find((addre) => {
-      const addr = addre.properties.td_adress.toLowerCase();
+      const addr = addre.properties.ADRESS.toLowerCase();
       return addr === address.toLowerCase();
     });
     setSearchTerm("");

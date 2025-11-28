@@ -3,7 +3,6 @@
   min-width: 280px;
   max-height: calc((100vh - var(--header-height)) / 2);
   min-height: 180px;
-  overflow-y: auto;
 }
 
 .my-objects img {
@@ -204,9 +203,16 @@
     padding-inline-end: 4px;
     border-radius: 4px;
     min-height: 50px;
+    cursor: default;
   }
   .my-objects__btn-clear {
     position: unset;
+  }
+  .my-objects__inner {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-block-end: 2rem;
   }
 }
 

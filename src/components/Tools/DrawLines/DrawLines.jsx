@@ -20,6 +20,7 @@ import {
   materialFromDraft,
   formatMeters,
 } from "./linesDraft";
+import { lift } from "../../../modules/utils";
 
 export default function DrawLines({
   viewer,

@@ -9,6 +9,7 @@ import {
   rebuildSegmentLabels,
   upsertTotalLengthLabel,
 } from "../DrawLines/linesDraft";
+import { lift } from "../../../modules/utils";
 
 let _state = {
   viewer: null,

@@ -41,7 +41,7 @@
 .searchbar__dropdown {
   position: absolute;
   top: 58px;
-  min-width: 275px;
+  min-width: 300px;
   max-height: 40vh;
   overflow-y: auto;
   background: var(--c-background-white);
@@ -58,6 +58,7 @@
   background: var(--c-white);
   padding-inline: 8px;
   padding-block: 2px;
+  text-transform: capitalize;
 }
 
 .search-result-li-item:hover {

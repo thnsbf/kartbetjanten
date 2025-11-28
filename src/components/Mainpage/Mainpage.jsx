@@ -55,12 +55,16 @@ export default function Mainpage({
   setIsMobile,
 }) {
   const [lon, lat] = pickedAddress.geometry.coordinates;
+  console.log(pickedAddress);
 
   const viewerRef = useRef(null);
   const entitiesRef = useRef(new Map());
 
   // Active in-map edit sessions (drag junctions)
   const editSessionsRef = useRef(new Map());
+
+  // Snapshot of positions during MoveTool session
+  const moveSnapshotRef = useRef(null);
 
   const [activeTool, setActiveTool] = useState("no-tool");
 
@@ -84,6 +88,38 @@ export default function Mainpage({
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  // --- Snapshot all entity positions when MoveTool is activated ---
+  useEffect(() => {
+    const v = viewerRef.current;
+    if (!v) return;
+
+    if (activeTool === "move-object") {
+      const snap = new Map();
+      const time = v.clock.currentTime;
+
+      for (const [uuid, ent] of entitiesRef.current.entries()) {
+        if (!ent) continue;
+
+        if (ent.polyline) {
+          const positions = snapshotPolylinePositions(ent, v);
+          snap.set(uuid, { kind: "line", positions });
+        } else if (ent.polygon) {
+          const positions = snapshotPolygonPositions(ent, v);
+          snap.set(uuid, { kind: "area", positions });
+        } else if (
+          (ent.point || ent.billboard || ent.label) &&
+          !ent.polyline &&
+          !ent.polygon
+        ) {
+          const pos = readPosition(ent, time);
+          if (pos) snap.set(uuid, { kind: "point", position: pos });
+        }
+      }
+
+      moveSnapshotRef.current = snap;
+    }
+  }, [activeTool]);
 
   // Fly to new picked address on change
   useEffect(() => {
@@ -199,7 +235,8 @@ export default function Mainpage({
     await exportMainViewportToPdf(v, mainEl, {
       filename: "min-karta.pdf",
       resolutionScale: Math.max(2, Math.floor(window.devicePixelRatio || 2)),
-      margin: 0,
+      margin: 2,
+      headerText: `${pickedAddress.properties.ADRESS} / ${pickedAddress.properties.FASTIGHET}`,
     });
   }, []);
 
@@ -398,6 +435,7 @@ export default function Mainpage({
       outlineColor: Cesium.Color.WHITE,
       outlineWidth: Math.max(1, Math.round(ps / 5)),
       disableDepthTestDistance: Number.POSITIVE_INFINITY,
+      heightReference: Cesium.HeightReference.NONE,
     };
 
     const showPoints =
@@ -481,6 +519,49 @@ export default function Mainpage({
     if (!ent?.polyline) return;
     ent.polyline.positions = positions.slice();
   }
+
+  // --- Revert helper for MoveTool (restore from snapshot) ---
+  const revertMoveToolChanges = useCallback(() => {
+    const v = viewerRef.current;
+    const snap = moveSnapshotRef.current;
+    if (!v || !snap) return;
+
+    for (const [uuid, saved] of snap.entries()) {
+      const ent = entitiesRef.current.get(uuid);
+      if (!ent) continue;
+
+      if (saved.kind === "line" && ent.polyline) {
+        applyPolylinePositions(ent, saved.positions);
+        rebuildLineJunctionPoints(ent, v, saved.positions);
+        try {
+          rebuildSegmentLabels(ent, v);
+          upsertTotalLengthLabel(ent, v);
+        } catch {}
+      } else if (saved.kind === "area" && ent.polygon) {
+        applyPolygonPositions(ent, saved.positions);
+        rebuildAreaJunctionPoints(
+          ent,
+          v,
+          saved.positions,
+          ent.__draft?.showPoints
+        );
+        try {
+          rebuildAreaEdgeLabels(ent, v);
+        } catch {}
+        try {
+          rebuildAreaLabel(ent, v);
+        } catch {}
+      } else if (saved.kind === "point") {
+        if (ent.position) {
+          ent.position = saved.position;
+        }
+      }
+    }
+
+    moveSnapshotRef.current = null;
+    entitiesUpdateUI();
+    v.scene.requestRender();
+  }, [entitiesUpdateUI]);
 
   // ---------------- Right Pane routing (edits in SidebarRight) ----------------
   const [rightPane, setRightPane] = useState({ kind: "list" });
@@ -806,12 +887,26 @@ export default function Mainpage({
   // ---------------- SidebarRight content (NO useMemo: depend on uiTick) -------
   function renderRightPane() {
     if (activeTool !== "no-tool" && !placeTextState.open) {
+      const isMoveTool = activeTool === "move-object";
+
       return (
         <ActiveToolModal
           open
           activeTool={activeTool}
-          onConfirmExit={() => setActiveTool("no-tool")}
-          onCancelExit={() => setActiveTool("no-tool")}
+          onConfirmExit={() => {
+            // Confirm → keep changes; for move tool, discard snapshot
+            if (isMoveTool) {
+              moveSnapshotRef.current = null;
+            }
+            setActiveTool("no-tool");
+          }}
+          onCancelExit={() => {
+            // Cancel → if move tool, revert all moved entities
+            if (isMoveTool) {
+              revertMoveToolChanges();
+            }
+            setActiveTool("no-tool");
+          }}
           isMobile={isMobile}
         />
       );
@@ -913,6 +1008,7 @@ export default function Mainpage({
           activeTool={activeTool}
           setActiveTool={setActiveTool}
           setIsUserShowMenu={setIsUserShowMenu}
+          isMobile={isMobile}
         />
       )}
 
@@ -937,6 +1033,7 @@ export default function Mainpage({
           onRequestPlaceText={onRequestPlaceText}
           onCancelPlaceText={cancelPlaceText}
           onPickEdit={openEditForUuid}
+          revertMoveToolChanges={revertMoveToolChanges}
         />
       </main>
     </>

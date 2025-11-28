@@ -7,6 +7,7 @@ import {
   Cartesian2,
   PolylineDashMaterialProperty,
   PolylineOutlineMaterialProperty,
+  HeightReference,
 } from "cesium";
 
 // -------------------- Draft + styling helpers --------------------
@@ -46,6 +47,7 @@ export function pointGraphicsFromDraft(draft) {
     outlineColor: Color.WHITE,
     outlineWidth: Math.max(1, Math.round(draft.pointSize / 5)),
     disableDepthTestDistance: Number.POSITIVE_INFINITY,
+    heightReference: HeightReference.NONE,
   };
 }
 
@@ -253,6 +255,7 @@ export function applyDraftToLineEntity(ent, draft, viewer) {
     p.point.outlineColor = g.outlineColor;
     p.point.outlineWidth = g.outlineWidth;
     p.point.disableDepthTestDistance = g.disableDepthTestDistance;
+    p.point.heightReference = HeightReference.NONE;
     p.show = !!draft.showPoints;
   }
 

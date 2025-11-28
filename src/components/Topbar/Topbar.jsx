@@ -31,7 +31,6 @@ export default function Topbar({
   }
 
   const isMobileAndMain = isMobile && !isStartpage;
-  console.log(isMobile);
   return (
     <header className="topbar">
       <div className={"main-logo"}>

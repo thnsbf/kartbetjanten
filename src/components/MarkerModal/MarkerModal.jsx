@@ -10,7 +10,6 @@ const ICON_OPTIONS = [
   { value: "outlet", label: "Eluttag" },
   { value: "borehole", label: "Borrhål" },
   { value: "water", label: "Dricksvatten" },
-  { value: "sewage", label: "Avloppsanläggning" },
 ];
 
 export default function MarkerModal({

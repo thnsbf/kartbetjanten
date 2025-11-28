@@ -5,6 +5,7 @@ import {
   HorizontalOrigin,
   VerticalOrigin,
   PointGraphics,
+  HeightReference,
 } from "cesium";
 
 export const defaultMarkerDraft = {
@@ -128,12 +129,12 @@ const SVG_TEMPLATES = {
   <path fill="${hex}" d="M17.5 6.5h1.5v1.5h-1.5zM18.8 4.2l1.1-1.1l1.1 1.1l-1.1 1.1zM19.5 8.8l.9.9l-.9.9l-.9-.9z"/>
 </svg>`.trim(),
 
-  sewage: (hex) =>
+  /*  sewage: (hex) =>
     `
 <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24">
   <path fill="${hex}" d="M4 7h8a3 3 0 0 1 3 3v2h3a2 2 0 0 1 2 2v4h-3v-3h-5a3 3 0 0 1-3-3V10H4z"/>
   <rect x="9.5" y="5" width="5" height="2" rx="1" fill="${hex}"/>
-</svg>`.trim(),
+</svg>`.trim(), */
 };
 
 /**
@@ -229,6 +230,7 @@ export function applyDraftToMarkerEntity(ent, draft) {
     ent.point.outlineColor = toCesiumColor(d.outlineColor);
     ent.point.outlineWidth = d.outlineWidth;
     ent.point.disableDepthTestDistance = Number.POSITIVE_INFINITY;
+    ent.point.heightReference = HeightReference.NONE;
     ent.point.show = true;
   } else {
     // Hide/remove point branch
@@ -264,6 +266,7 @@ export function applyDraftToMarkerEntity(ent, draft) {
     ent.billboard.height = height;
 
     ent.billboard.disableDepthTestDistance = Number.POSITIVE_INFINITY;
+    ent.billboard.heightReference = HeightReference.NONE;
     ent.billboard.show = true;
   }
 

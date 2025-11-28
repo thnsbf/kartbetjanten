@@ -1,4 +1,3 @@
-// src/modules/export-pdf.js
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 
@@ -31,6 +30,9 @@ async function drawDomOverlayToCanvas(ctx, el, mainEl, outScale = 2) {
 /**
  * Export ONLY the visible area inside <main class="main"> to a PDF.
  * Crops the Cesium canvas to <main> and composites overlays (ScaleBar, etc.).
+ *
+ * NEW: optional `headerText` is rendered above the map in the PDF only
+ * (not visible in the browser UI).
  */
 export async function exportMainViewportToPdf(
   viewer,
@@ -40,6 +42,7 @@ export async function exportMainViewportToPdf(
     resolutionScale = Math.max(2, Math.floor(window.devicePixelRatio || 2)),
     margin = 0,
     extraOverlaySelectors = [],
+    headerText = null, // 👈 NEW: string shown only in the PDF
   } = {}
 ) {
   if (!viewer || !mainEl) return;
@@ -50,7 +53,6 @@ export async function exportMainViewportToPdf(
   // Force a render right before we sample pixels
   try {
     viewer.scene.requestRender();
-    // Small rAF helps ensure the new frame is presented before we copy it
     await new Promise((r) => requestAnimationFrame(r));
   } catch {}
 
@@ -118,16 +120,31 @@ export async function exportMainViewportToPdf(
   const pageH = doc.internal.pageSize.getHeight();
 
   const marginMm = margin * mmPerPx;
+
+  // Reserve some vertical space for the header if provided
+  const headerBlockMm = headerText ? 12 : 0; // total space reserved for text + gap
+
   const availW = pageW - marginMm * 2;
-  const availH = pageH - marginMm * 2;
+  const availH = pageH - marginMm * 2 - headerBlockMm;
   const scale = Math.min(availW / imgWmm, availH / imgHmm);
 
   const drawW = imgWmm * scale;
   const drawH = imgHmm * scale;
   const dx = (pageW - drawW) / 2;
-  const dy = (pageH - drawH) / 2;
+  const dy = marginMm + headerBlockMm; // map starts below header
 
   const dataUrl = outCanvas.toDataURL("image/png");
+
+  // Optional header text (title/address) – PDF only
+  if (headerText) {
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(12);
+
+    // Position: inside top margin, centered
+    const textY = marginMm + 6; // 6 mm down from top margin
+    doc.text(headerText, pageW / 2, textY, { align: "center" });
+  }
+
   doc.addImage(dataUrl, "PNG", dx, dy, drawW, drawH);
   doc.save(filename);
 }

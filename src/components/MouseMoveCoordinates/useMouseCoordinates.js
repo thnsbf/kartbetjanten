@@ -6,6 +6,7 @@ import {
   Cartographic,
   Math as CesiumMath,
 } from "cesium";
+import { lift } from "../../modules/utils";
 
 // Define the CRSs once
 proj4.defs("EPSG:4326", "+proj=longlat +datum=WGS84 +no_defs +type=crs");
@@ -39,11 +40,10 @@ export function useMouseCoordinates(viewer) {
         const { scene, camera } = viewer;
 
         // Ellipsoid-only (no terrain)
-        let cartesian = camera.pickEllipsoid(
+        const cartesian = camera.pickEllipsoid(
           movement.endPosition,
           scene.globe.ellipsoid
         );
-
         // If you enable terrain later, use pickPosition (keep ellipsoid fallback):
         // if (scene.pickPositionSupported) {
         //   cartesian = scene.pickPosition(movement.endPosition) || cartesian;

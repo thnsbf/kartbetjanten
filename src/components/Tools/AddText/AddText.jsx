@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { ScreenSpaceEventHandler, ScreenSpaceEventType } from "cesium";
+import { lift } from "../../../modules/utils";
 
 /**
  * AddText only captures a map click and notifies parent to open the TextModal in SidebarRight.

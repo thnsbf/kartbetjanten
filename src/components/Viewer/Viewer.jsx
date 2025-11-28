@@ -56,6 +56,7 @@ export default function Globe({
   onRequestPlaceText, // AddText → opens modal in SidebarRight
   onCancelPlaceText,
   onPickEdit, // NEW: callback to open the right edit modal from a click in the map
+  revertMoveToolChanges,
 }) {
   const mountRef = useRef(null);
   const [viewer, setViewer] = useState(null);
@@ -80,6 +81,8 @@ export default function Globe({
     });
     v.scene.globe.baseColor = Color.fromCssColorString("rgb(236, 236, 236)");
     v.scene.screenSpaceCameraController.minimumZoomDistance = 0.2;
+    v.scene.globe.depthTestAgainstTerrain = false; // don’t hide things behind ellipsoid
+    v.scene.logarithmicDepthBuffer = false;
 
     // Remove default imagery layer
     const imageryLayerDefault = v.imageryLayers;
@@ -96,8 +99,6 @@ export default function Globe({
       })
     );
 
-    console.log(v.imageryLayers);
-
     // Camera feel/setup
     const ssc = v.scene.screenSpaceCameraController;
     ssc.enableTilt = false;
@@ -107,7 +108,7 @@ export default function Globe({
     ssc.enableZoom = false;
 
     // use a small min distance – this is what actually limits how close we can get
-    ssc.minimumZoomDistance = 0.2; // or 0.5, tweak to taste
+    ssc.minimumZoomDistance = 1; // or 0.5, tweak to taste
     ssc.maximumZoomDistance = 1e7;
 
     ssc.inertiaSpin = 0;
@@ -282,7 +283,10 @@ export default function Globe({
       <MoveTool
         viewer={viewer}
         active={activeTool === "move-object"}
-        onCancel={() => setActiveTool("no-tool")}
+        onCancel={() => {
+          revertMoveToolChanges();
+          setActiveTool("no-tool");
+        }}
         entitiesRef={entitiesRef}
         entitiesUpdateUI={entitiesUpdateUI}
         lineHelpers={{ segmentInfo, formatMeters }}

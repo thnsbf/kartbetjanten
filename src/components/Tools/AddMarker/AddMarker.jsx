@@ -6,6 +6,7 @@ import {
   defaultMarkerDraft,
   applyDraftToMarkerEntity,
 } from "./markersDraft.js";
+import { lift } from "../../../modules/utils.js";
 
 export default function AddMarker({
   viewer,

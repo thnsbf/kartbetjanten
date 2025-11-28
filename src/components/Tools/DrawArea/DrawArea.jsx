@@ -22,6 +22,7 @@ import {
   cesiumFillFromDraft,
   ensureAreaDraftShape,
 } from "./areaDraft";
+import { lift } from "../../../modules/utils";
 
 function firstPointHitTest(scene, firstCartesian, mousePosPx, radiusPx = 14) {
   if (!scene || !firstCartesian || !mousePosPx)

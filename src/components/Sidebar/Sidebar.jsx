@@ -38,6 +38,7 @@ export default function Sidebar({
   activeTool,
   setActiveTool,
   setIsUserShowMenu,
+  isMobile,
 }) {
   const linesBtnRef = useRef(null);
 
@@ -78,7 +79,7 @@ export default function Sidebar({
       <form onChange={(e) => handleRadioChange(e)}>
         <ul>{toolLiItems}</ul>
       </form>
-      <hr className="sidebar-hr" />
+      {!isMobile && <hr className="sidebar-hr" />}
     </aside>
   );
 }

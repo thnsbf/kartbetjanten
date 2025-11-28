@@ -9,6 +9,7 @@ import {
   Color,
 } from "cesium";
 import { rebuildAreaEdgeLabels } from "../DrawArea/areaDraft";
+import { lift } from "../../../modules/utils";
 
 function nowIso() {
   return new Date().toISOString();

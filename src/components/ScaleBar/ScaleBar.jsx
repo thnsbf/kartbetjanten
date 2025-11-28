@@ -3,6 +3,7 @@ import "./ScaleBar.css";
 
 import { useEffect, useRef, useState } from "react";
 import { Cartographic, EllipsoidGeodesic } from "cesium";
+import { DEFAULT_SCALE_STEPS } from "../../modules/zoom-to-scale";
 
 function fmtMetersExact(m) {
   if (m >= 1000) {
@@ -16,18 +17,6 @@ function fmtMetersExact(m) {
 // Approx physical size of 1 CSS pixel at 96 DPI (in meters)
 // MUST match the constant in zoom-to-scale.js
 const METERS_PER_CSS_PIXEL = 0.0254 / 96; // ≈ 0.0002645833 m
-
-function fmtScaleRatioFromMetersPerPixel(metersPerPixelGround) {
-  if (!isFinite(metersPerPixelGround) || metersPerPixelGround <= 0) return "";
-
-  // 1 CSS px = METERS_PER_CSS_PIXEL meters at 1:1
-  // So at this zoom: metersPerPixelGround / METERS_PER_CSS_PIXEL = scale denominator
-  const denom = metersPerPixelGround / METERS_PER_CSS_PIXEL;
-  if (!isFinite(denom) || denom <= 0) return "";
-
-  const rounded = Math.round(denom);
-  return `1:${rounded.toLocaleString("sv-SE")}`;
-}
 
 /**
  * Pick a "nice" distance (in meters) near a given value.
@@ -53,6 +42,26 @@ function chooseNiceMeters(rawMeters) {
     }
   }
 
+  return best;
+}
+
+/**
+ * Snap a raw scale denominator to the nearest defined scale step
+ * so the label doesn't jitter while panning.
+ */
+function snapScaleDenominator(rawDenom, steps = DEFAULT_SCALE_STEPS) {
+  if (!isFinite(rawDenom) || rawDenom <= 0 || !steps.length) return null;
+
+  let best = steps[0];
+  let bestDiff = Math.abs(steps[0] - rawDenom);
+
+  for (let i = 1; i < steps.length; i++) {
+    const d = Math.abs(steps[i] - rawDenom);
+    if (d < bestDiff) {
+      bestDiff = d;
+      best = steps[i];
+    }
+  }
   return best;
 }
 
@@ -113,7 +122,7 @@ export default function ScaleBar({
       // Ground meters per *screen* pixel at this zoom:
       const metersPerPixelGround = dist / widthPx;
 
-      // Pick a nice ground distance near the measured one
+      // --- 1) Snap the bar length to a "nice" meter value ---
       const niceMeters = chooseNiceMeters(dist);
 
       // Corresponding bar width in pixels
@@ -127,7 +136,16 @@ export default function ScaleBar({
 
       setBarWidthPx(pixels);
       setLabel(fmtMetersExact(niceMeters));
-      setScaleLabel(fmtScaleRatioFromMetersPerPixel(metersPerPixelGround));
+
+      // --- 2) Snap the scale denominator to your step list ---
+      const rawDenom = metersPerPixelGround / METERS_PER_CSS_PIXEL;
+      const snappedDenom = snapScaleDenominator(rawDenom, DEFAULT_SCALE_STEPS);
+
+      if (snappedDenom) {
+        setScaleLabel(`1:${snappedDenom.toLocaleString("sv-SE")}`);
+      } else {
+        setScaleLabel("");
+      }
     };
 
     const schedule = () => {
