@@ -55,7 +55,6 @@ export default function Mainpage({
   setIsMobile,
 }) {
   const [lon, lat] = pickedAddress.geometry.coordinates;
-  console.log(pickedAddress);
 
   const viewerRef = useRef(null);
   const entitiesRef = useRef(new Map());
