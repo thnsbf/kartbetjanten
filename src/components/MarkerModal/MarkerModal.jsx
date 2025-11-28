@@ -9,7 +9,8 @@ const ICON_OPTIONS = [
   { value: "toilet", label: "Toalett" },
   { value: "outlet", label: "Eluttag" },
   { value: "borehole", label: "Borrhål" },
-  { value: "water", label: "Dricksvatten" },
+  { value: "geothermal", label: "Borrhål för bergvärme" },
+  { value: "water", label: "Dricksvattenbrunn" },
 ];
 
 export default function MarkerModal({

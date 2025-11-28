@@ -46,6 +46,7 @@ const ICON_META = {
   toilet: 2,
   outlet: 2,
   borehole: 2,
+  geothermal: 2,
   water: 2,
   sewage: 2,
 };
@@ -120,6 +121,21 @@ const SVG_TEMPLATES = {
   <path fill="${hex}" fill-rule="evenodd" d="M12 3a9 9 0 1 1 0 18a9 9 0 0 1 0-18Zm0 3.8a5.2 5.2 0 1 0 0 10.4a5.2 5.2 0 0 0 0-10.4Z"/>
   <rect x="11" y="2" width="2" height="6" fill="${hex}"/>
   <path fill="${hex}" d="M12 8l2 2l-2 2l-2-2z"/>
+</svg>`.trim(),
+
+  geothermal: (hex) =>
+    `
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24">
+  <!-- outer disk / well -->
+  <circle cx="12" cy="12" r="9" fill="${hex}"/>
+  <!-- top casing -->
+  <rect x="11" y="2" width="2" height="3" fill="${hex}"/>
+  <!-- inner pipe -->
+  <rect x="10.75" y="5.5" width="2.5" height="8" rx="1.1" fill="#ffffff"/>
+  <!-- "heat" / energy exchange at the bottom: staggered white bars -->
+  <rect x="7.5" y="14.8" width="2.1" height="1.4" rx="0.7" fill="#ffffff"/>
+  <rect x="10.2" y="16" width="2.1" height="1.4" rx="0.7" fill="#ffffff"/>
+  <rect x="12.9" y="14.8" width="2.1" height="1.4" rx="0.7" fill="#ffffff"/>
 </svg>`.trim(),
 
   water: (hex) =>
