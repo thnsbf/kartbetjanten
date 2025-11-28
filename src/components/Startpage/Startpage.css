@@ -1,18 +1,38 @@
 .main--start {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   padding: 4rem 1.25rem;
-  overflow-y: auto;
 }
 
 p + .searchbar-wrapper {
   margin-block: 32px;
 }
 
+.main-start__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto;
+}
+
+.main-start__footer {
+  background: var(--c-info);
+  color: var(--c-text-black);
+  border: 1.5px solid var(--c-text-black);
+  padding-inline: 0.25rem;
+  margin-block-start: 1rem;
+  margin-block-end: 2rem;
+  width: calc(100% - 8px);
+  text-align: center;
+  font-size: 0.875rem;
+  box-sizing: border-box;
+}
+
+.main-start__footer > p > a {
+  color: var(--c-text-black);
+}
+
 @media (min-height: 600px) {
   .main--start {
-    padding: 2rem 2rem;
+    padding: 2rem 1rem;
   }
 }
 

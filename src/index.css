@@ -50,6 +50,9 @@
   --c-success: var(--green-700);
   --c-success-lighter: var(--green-500);
   --c-danger: var(--red-500);
+  --c-danger-lighter: var(--red-300);
+
+  --c-info: var(--yellow-300);
 
   --black-700: rgba(41, 41, 41, 1);
   --white-100: rgba(255, 255, 255, 1);
@@ -70,7 +73,7 @@
   --yellow-300: rgba(255, 250, 190, 1);
 
   --red-500: rgba(235, 95, 95, 1);
-  --red-300: rgba(255, 250, 190, 1);
+  --red-300: rgba(255, 180, 210, 1);
 }
 
 @media (prefers-color-scheme: light) {

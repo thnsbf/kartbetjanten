@@ -43,7 +43,8 @@
 }
 
 .main-logo--start-mobile {
-  min-width: calc(100vh - (var(--topbar-padding) * 2));
+  min-width: calc(100vw - (var(--topbar-padding) * 2));
+  max-width: 280px;
   background: var(--c-background-white);
   z-index: 3;
 }

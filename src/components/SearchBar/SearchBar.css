@@ -21,7 +21,7 @@
   padding-inline: 2em 2em;
   padding-block: 1em;
   letter-spacing: 0.25px;
-  font-size: 1rem;
+  font-size: 0.875rem;
   max-width: 90vw;
 }
 
@@ -71,7 +71,7 @@
   font-weight: 600;
 }
 
-@media (min-width: 310px) {
+@media (min-width: 350px) {
   .icon--searchbar {
     display: block;
     visibility: visible;
@@ -79,6 +79,7 @@
 
   .searchbar {
     padding-inline: 4em 2em;
+    font-size: 1rem;
   }
 }
 
