@@ -29,7 +29,7 @@ function chooseNiceMeters(rawMeters) {
   const mag = Math.pow(10, Math.floor(Math.log10(rawMeters)));
   const norm = rawMeters / mag; // between ~1 and 10
 
-  const candidatesNorm = [1, 1.5, 2, 3, 5, 7.5, 10];
+  const candidatesNorm = [1, 1.5, 2, 3, 5, 10];
   let best = candidatesNorm[0] * mag;
   let bestDiff = Math.abs(best - rawMeters);
 
