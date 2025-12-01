@@ -25,7 +25,6 @@ export default function AreaModal({
       aria-modal="true"
       onMouseDown={(e) => e.stopPropagation()}
       style={{
-        maxWidth: "300px",
         background: "var(--c-background-modal)",
         color: "var(--c-text-black)",
         borderRadius: 10,
@@ -131,7 +130,12 @@ export default function AreaModal({
       {/* Footer */}
       <div
         className="modal__btn-container"
-        style={{ display: "flex", justifyContent: "space-between", gap: 10 }}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          gap: 10,
+        }}
       >
         <button
           onClick={onClose}

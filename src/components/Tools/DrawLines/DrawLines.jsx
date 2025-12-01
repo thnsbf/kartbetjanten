@@ -20,7 +20,6 @@ import {
   materialFromDraft,
   formatMeters,
 } from "./linesDraft";
-import { lift } from "../../../modules/utils";
 
 export default function DrawLines({
   viewer,
@@ -217,12 +216,31 @@ export default function DrawLines({
     onCancel?.();
   }
 
+  // Tiny helper so we don't forget to reset cursor
+  function setCursor(canvas, value) {
+    if (canvas) canvas.style.cursor = value;
+  }
+
+  // Ensure crosshair while the tool is active, and default otherwise
+  useEffect(() => {
+    if (!viewer) return;
+    const canvas = viewer.scene?.canvas;
+    if (!canvas) return;
+
+    setCursor(canvas, active ? "crosshair" : "default");
+
+    return () => {
+      // On unmount / viewer change, always fall back to default
+      setCursor(canvas, "default");
+    };
+  }, [viewer, active]);
+
   useEffect(() => {
     if (!viewer || !active) return;
 
     const v = viewer;
     const canvas = v.scene.canvas;
-    canvas.style.cursor = "crosshair";
+    setCursor(canvas, "crosshair");
 
     const handler = new ScreenSpaceEventHandler(canvas);
     handlerRef.current = handler;
@@ -277,7 +295,7 @@ export default function DrawLines({
         for (const p of pointEntsRef.current) v.entities.remove(p);
         pointEntsRef.current = [];
         committedPositionsRef.current = [];
-        canvas.style.cursor = "default";
+        setCursor(canvas, "default");
         onCancel?.();
         return;
       }
@@ -290,7 +308,7 @@ export default function DrawLines({
       if (pts.length === 0) {
         clearTemps(v);
         removeCommittedLine(v);
-        canvas.style.cursor = "default";
+        setCursor(canvas, "default");
         onCancel?.();
       }
     }, ScreenSpaceEventType.RIGHT_CLICK);
@@ -320,7 +338,7 @@ export default function DrawLines({
         for (const p of pointEntsRef.current) v.entities.remove(p);
         pointEntsRef.current = [];
         committedPositionsRef.current = [];
-        canvas.style.cursor = "default";
+        setCursor(canvas, "default");
         onCancel?.();
       }
     };
@@ -329,12 +347,13 @@ export default function DrawLines({
     return () => {
       try {
         window.removeEventListener("kb:finish-active-tool", onFinish);
+        window.removeEventListener("keydown", onKey);
         clearTemps(v);
         removeCommittedLine(v);
         for (const p of pointEntsRef.current) v.entities.remove(p);
         pointEntsRef.current = [];
       } finally {
-        canvas.style.cursor = "default";
+        setCursor(canvas, "default");
         handlerRef.current?.destroy?.();
         handlerRef.current = null;
       }

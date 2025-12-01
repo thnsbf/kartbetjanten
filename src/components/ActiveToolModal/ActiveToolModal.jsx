@@ -54,7 +54,7 @@ export default function ActiveToolModal({
         Ett verktyg är aktivt. Du kan bekräfta eller avbryta. <br />
         {!isMobile
           ? "Du kan när som helst lämna verktyget genom att högerklicka eller trycka på ESC-knappen på ditt tangentbord."
-          : 'Du kan när som helst lämna verktyget genom att trycka på "Avbryt"'}
+          : 'Du kan när som helst lämna verktyget genom att trycka på "Avbryt".'}
         <br />
         {!isMobile && <br />}
         {activeTool === "draw-lines" ? (
@@ -70,7 +70,7 @@ export default function ActiveToolModal({
             Klicka i kartan för att sätta ut areapunkter.{" "}
             {!isMobile
               ? 'Högerklicka för att ångra senaste punkten. Dubbelklicka, klicka på "Bekräfta", eller klicka på den första punkten en gång till för att fastställa arean (gummisnodden tas inte med)'
-              : 'Tryck på "Bekräfta "för att fastställa arean.'}
+              : 'Tryck på "Bekräfta "för att fastställa arean'}
             .
           </span>
         ) : activeTool === "place-text" ? (
@@ -96,7 +96,12 @@ export default function ActiveToolModal({
 
       <div
         className="modal__btn-container"
-        style={{ display: "flex", justifyContent: "space-between", gap: 10 }}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          gap: 10,
+        }}
       >
         <button
           onClick={handleCancel}

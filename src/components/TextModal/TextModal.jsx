@@ -167,6 +167,7 @@ export default function TextModal({
         className="modal__btn-container"
         style={{
           display: "flex",
+          flexDirection: "column",
           justifyContent: "space-between",
           gap: 10,
         }}

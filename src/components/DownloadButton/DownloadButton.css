@@ -4,13 +4,13 @@
   padding: 1em 2em;
   position: relative;
   border: 2px solid currentColor;
+  justify-content: center;
 }
 
 .btn__dropdown-list {
   padding-inline: 4px;
   margin: 0;
   position: absolute;
-  left: -25px;
   bottom: 42.6px;
   background: var(--c-success-lighter);
   list-style: none;

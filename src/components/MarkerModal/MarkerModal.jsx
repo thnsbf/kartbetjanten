@@ -207,7 +207,12 @@ export default function MarkerModal({
       </div>
 
       <div
-        style={{ display: "flex", justifyContent: "space-between", gap: 10 }}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          gap: 10,
+        }}
         className="modal__btn-container"
       >
         <button

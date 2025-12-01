@@ -236,7 +236,12 @@ export default function LinesModal({
       {/* Footer buttons */}
       <div
         className="modal__btn-container"
-        style={{ display: "flex", justifyContent: "space-between", gap: 10 }}
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          gap: 10,
+        }}
       >
         <button
           onClick={onClose}
