@@ -1,5 +1,5 @@
 // src/components/ActiveToolModal/ActiveToolModal.jsx
-import React from "react";
+import React, { useEffect, useState } from "react";
 import "./ActiveToolModal.css"; // optional; uses your existing modal classes too
 
 export default function ActiveToolModal({
@@ -11,6 +11,10 @@ export default function ActiveToolModal({
 }) {
   if (!open) return null;
 
+  const isDrawingLine = activeTool === "draw-lines";
+  const isDrawingArea = activeTool === "draw-area";
+  const showUndo = isDrawingLine || isDrawingArea;
+
   // Short label for the tool
   const toolName =
     activeTool === "draw-lines"
@@ -20,14 +24,34 @@ export default function ActiveToolModal({
       : activeTool === "place-dot"
       ? "Placera punkt"
       : activeTool === "place-text"
-      ? "Placera text"
+      ? "Placsera text"
       : activeTool === "move-object"
       ? "Flytta objekt"
       : "Verktyg";
 
+  // Is there at least one placed point in the current drawing?
+  const [canUndo, setCanUndo] = useState(false);
+
+  // Listen for drawing-state updates from DrawLines / DrawArea
+  useEffect(() => {
+    if (!showUndo) {
+      setCanUndo(false);
+      return;
+    }
+
+    const handler = (ev) => {
+      const detail = ev?.detail || {};
+      // detail: { tool: "draw-lines" | "draw-area", hasPoints: boolean }
+      setCanUndo(!!detail.hasPoints);
+    };
+
+    window.addEventListener("kb:drawing-state", handler);
+    return () => window.removeEventListener("kb:drawing-state", handler);
+  }, [showUndo]);
+
   const handleConfirm = () => {
     // For lines / area we signal “finish” to the tool (it will finalize if valid).
-    if (activeTool === "draw-lines" || activeTool === "draw-area") {
+    if (isDrawingLine || isDrawingArea) {
       window.dispatchEvent(new CustomEvent("kb:finish-active-tool"));
     }
     // For markers and text, “confirm” behaves like cancel (just exit the tool).
@@ -36,6 +60,11 @@ export default function ActiveToolModal({
 
   const handleCancel = () => {
     onCancelExit?.();
+  };
+
+  const handleUndo = () => {
+    if (!showUndo || !canUndo) return;
+    window.dispatchEvent(new CustomEvent("kb:undo-active-tool"));
   };
 
   return (
@@ -61,17 +90,15 @@ export default function ActiveToolModal({
           <span className="text--bold">
             Klicka i kartan för att sätta ut linjepunkter.{" "}
             {!isMobile
-              ? 'Högerklicka för att ångra senaste punkten. Dubbelklicka eller klicka på "Bekräfta" för att fastställa linjen (gummisnodden tas inte med)'
-              : 'Tryck på "Bekräfta" för att fastställa linjen.'}
-            .
+              ? 'Högerklicka eller klicka på "Ångra" för att ångra senaste punkten. Dubbelklicka eller klicka på "Bekräfta" för att fastställa linjen (gummisnodden tas inte med).'
+              : 'Klicka på "Ångra" för att ångra senaste punkten. Klicka på "Bekräfta" för att fastställa linjen.'}
           </span>
         ) : activeTool === "draw-area" ? (
           <span className="text--bold">
             Klicka i kartan för att sätta ut areapunkter.{" "}
             {!isMobile
-              ? 'Högerklicka för att ångra senaste punkten. Dubbelklicka, klicka på "Bekräfta", eller klicka på den första punkten en gång till för att fastställa arean (gummisnodden tas inte med)'
-              : 'Tryck på "Bekräfta "för att fastställa arean'}
-            .
+              ? 'Högerklicka eller klicka på "Ångra" för att ångra senaste punkten. Dubbelklicka, klicka på "Bekräfta", eller klicka på den första punkten en gång till för att fastställa arean (gummisnodden tas inte med).'
+              : 'Klicka på "Ångra" för att ångra senaste punkten. Klicka på "Bekräfta" för att fastställa arean.'}
           </span>
         ) : activeTool === "place-text" ? (
           <span className="text--bold">
@@ -103,6 +130,26 @@ export default function ActiveToolModal({
           gap: 10,
         }}
       >
+        {/* Undo button (only for lines/areas) */}
+        {showUndo && (
+          <button
+            onClick={handleUndo}
+            disabled={!canUndo}
+            style={{
+              padding: "0.6em 2.5em",
+              borderRadius: "100vmax",
+              border: "1px solid var(--kommunfarg)",
+              background: "var(--c-background-white)",
+              color: canUndo ? "var(--kommunfarg)" : "rgba(0,0,0,0.4)",
+              cursor: canUndo ? "pointer" : "not-allowed",
+              fontWeight: 600,
+              opacity: canUndo ? 1 : 0.5,
+            }}
+          >
+            Ångra senaste punkt
+          </button>
+        )}
+
         <button
           onClick={handleCancel}
           style={{
@@ -117,6 +164,7 @@ export default function ActiveToolModal({
         >
           Avbryt
         </button>
+
         <button
           onClick={handleConfirm}
           style={{

@@ -56,6 +56,21 @@ export default function DrawLines({
     return [];
   }, false);
 
+  // Helper: set cursor on Cesium canvas
+  function setCursor(canvas, value) {
+    if (canvas) canvas.style.cursor = value;
+  }
+
+  // Helper: broadcast "do we have any points yet?"
+  function notifyDrawingState() {
+    const hasPoints = (committedPositionsRef.current || []).length > 0;
+    window.dispatchEvent(
+      new CustomEvent("kb:drawing-state", {
+        detail: { tool: "draw-lines", hasPoints },
+      })
+    );
+  }
+
   function ensureCommittedLine(v) {
     if (!committedLineRef.current) {
       committedLineRef.current = v.entities.add({
@@ -166,8 +181,11 @@ export default function DrawLines({
       // nothing to finalize
       clearTemps(v);
       removeCommittedLine(v);
-      // exit tool
-      v.scene.canvas.style.cursor = "default";
+      committedPositionsRef.current = [];
+      pointEntsRef.current = [];
+      mouseCartesianRef.current = null;
+      notifyDrawingState();
+      setCursor(v.scene.canvas, "default");
       onCancel?.();
       return;
     }
@@ -211,17 +229,13 @@ export default function DrawLines({
     committedPositionsRef.current = [];
     pointEntsRef.current = [];
     mouseCartesianRef.current = null;
+    notifyDrawingState();
 
-    v.scene.canvas.style.cursor = "default";
+    setCursor(v.scene.canvas, "default");
     onCancel?.();
   }
 
-  // Tiny helper so we don't forget to reset cursor
-  function setCursor(canvas, value) {
-    if (canvas) canvas.style.cursor = value;
-  }
-
-  // Ensure crosshair while the tool is active, and default otherwise
+  // Cursor sync when tool becomes active/inactive
   useEffect(() => {
     if (!viewer) return;
     const canvas = viewer.scene?.canvas;
@@ -230,7 +244,6 @@ export default function DrawLines({
     setCursor(canvas, active ? "crosshair" : "default");
 
     return () => {
-      // On unmount / viewer change, always fall back to default
       setCursor(canvas, "default");
     };
   }, [viewer, active]);
@@ -245,11 +258,50 @@ export default function DrawLines({
     const handler = new ScreenSpaceEventHandler(canvas);
     handlerRef.current = handler;
 
-    // external finish signal (from ActiveToolModal)
+    // External finish signal (from ActiveToolModal)
     const onFinish = () => {
       finishLine();
     };
+
+    // External UNDO signal (from ActiveToolModal)
+    const undoLastPoint = () => {
+      const pts = committedPositionsRef.current;
+      if (!pts.length) {
+        clearTemps(v);
+        removeCommittedLine(v);
+        for (const p of pointEntsRef.current) v.entities.remove(p);
+        pointEntsRef.current = [];
+        committedPositionsRef.current = [];
+        notifyDrawingState();
+        setCursor(canvas, "default");
+        onCancel?.();
+        return;
+      }
+
+      // Remove last committed vertex
+      pts.pop();
+      committedPositionsRef.current = pts;
+
+      // Remove last junction point entity
+      const lastPoint = pointEntsRef.current.pop();
+      if (lastPoint) v.entities.remove(lastPoint);
+
+      notifyDrawingState();
+
+      // If no points left, behave like cancel
+      if (pts.length === 0) {
+        clearTemps(v);
+        removeCommittedLine(v);
+        setCursor(canvas, "default");
+        onCancel?.();
+      }
+    };
+
     window.addEventListener("kb:finish-active-tool", onFinish);
+    window.addEventListener("kb:undo-active-tool", undoLastPoint);
+
+    // Start with "no points"
+    notifyDrawingState();
 
     // Disable Cesium default double-click zoom
     v.screenSpaceEventHandler?.removeInputAction?.(
@@ -268,6 +320,8 @@ export default function DrawLines({
       ensureCommittedLine(v);
       addCommittedPointEntity(v, p);
       ensureTempSegment(v);
+
+      notifyDrawingState();
     }, ScreenSpaceEventType.LEFT_CLICK);
 
     // LEFT_DOUBLE_CLICK: finish the line
@@ -281,6 +335,7 @@ export default function DrawLines({
           committedPositionsRef.current = pts;
           const lastPoint = pointEntsRef.current.pop();
           if (lastPoint) v.entities.remove(lastPoint);
+          notifyDrawingState();
         }
       }
       finishLine();
@@ -288,29 +343,7 @@ export default function DrawLines({
 
     // RIGHT_CLICK: undo last point (or cancel if none)
     handler.setInputAction(() => {
-      const pts = committedPositionsRef.current;
-      if (!pts.length) {
-        clearTemps(v);
-        removeCommittedLine(v);
-        for (const p of pointEntsRef.current) v.entities.remove(p);
-        pointEntsRef.current = [];
-        committedPositionsRef.current = [];
-        setCursor(canvas, "default");
-        onCancel?.();
-        return;
-      }
-      pts.pop();
-      committedPositionsRef.current = pts;
-
-      const lastPoint = pointEntsRef.current.pop();
-      if (lastPoint) v.entities.remove(lastPoint);
-
-      if (pts.length === 0) {
-        clearTemps(v);
-        removeCommittedLine(v);
-        setCursor(canvas, "default");
-        onCancel?.();
-      }
+      undoLastPoint();
     }, ScreenSpaceEventType.RIGHT_CLICK);
 
     // MOUSE_MOVE: update rubber & label
@@ -338,6 +371,7 @@ export default function DrawLines({
         for (const p of pointEntsRef.current) v.entities.remove(p);
         pointEntsRef.current = [];
         committedPositionsRef.current = [];
+        notifyDrawingState();
         setCursor(canvas, "default");
         onCancel?.();
       }
@@ -347,18 +381,20 @@ export default function DrawLines({
     return () => {
       try {
         window.removeEventListener("kb:finish-active-tool", onFinish);
+        window.removeEventListener("kb:undo-active-tool", undoLastPoint);
         window.removeEventListener("keydown", onKey);
         clearTemps(v);
         removeCommittedLine(v);
         for (const p of pointEntsRef.current) v.entities.remove(p);
         pointEntsRef.current = [];
       } finally {
+        committedPositionsRef.current = [];
+        mouseCartesianRef.current = null;
+        notifyDrawingState();
         setCursor(canvas, "default");
         handlerRef.current?.destroy?.();
         handlerRef.current = null;
       }
-      committedPositionsRef.current = [];
-      mouseCartesianRef.current = null;
     };
   }, [viewer, active, onCancel, setEntitiesRef, entitiesUpdateUI]);
 

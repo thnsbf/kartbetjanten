@@ -22,7 +22,6 @@ import {
   cesiumFillFromDraft,
   ensureAreaDraftShape,
 } from "./areaDraft";
-import { lift } from "../../../modules/utils";
 
 function firstPointHitTest(scene, firstCartesian, mousePosPx, radiusPx = 14) {
   if (!scene || !firstCartesian || !mousePosPx)
@@ -241,6 +240,7 @@ export default function DrawArea({
       firstHintLabelRef.current.show = true;
     }
   }
+
   function removeFirstHintLabel(v) {
     if (firstHintLabelRef.current) {
       v.entities.remove(firstHintLabelRef.current);
@@ -261,6 +261,16 @@ export default function DrawArea({
     canvas.style.cursor = "crosshair";
   }
 
+  // Broadcast "do we have any points yet?" to the modal
+  function notifyDrawingState() {
+    const hasPoints = (positionsRef.current || []).length > 0;
+    window.dispatchEvent(
+      new CustomEvent("kb:drawing-state", {
+        detail: { tool: "draw-area", hasPoints },
+      })
+    );
+  }
+
   function finishArea() {
     const v = viewer;
     if (!v) return;
@@ -269,6 +279,8 @@ export default function DrawArea({
       // not enough points → treat like cancel
       clearTemps(v);
       cleanupPointsIfCancelled(v);
+      positionsRef.current = [];
+      notifyDrawingState();
       v.scene.canvas.style.cursor = "default";
       onCancel?.();
       return;
@@ -338,6 +350,7 @@ export default function DrawArea({
     firstPointEntityRef.current = null;
     mouseCartesianRef.current = null;
     removeFirstHintLabel(v);
+    notifyDrawingState();
 
     v.scene.canvas.style.cursor = "default";
     onCancel?.();
@@ -353,11 +366,45 @@ export default function DrawArea({
     const handler = new ScreenSpaceEventHandler(canvas);
     handlerRef.current = handler;
 
-    // external finish signal (from ActiveToolModal)
+    // External finish signal (from ActiveToolModal)
     const onFinish = () => {
       finishArea();
     };
+
+    // Shared undo function
+    const undoLastPoint = () => {
+      const pts = positionsRef.current;
+      if (!pts.length) {
+        clearTemps(v);
+        cleanupPointsIfCancelled(v);
+        canvas.style.cursor = "default";
+        positionsRef.current = [];
+        notifyDrawingState();
+        onCancel?.();
+        return;
+      }
+
+      pts.pop();
+      positionsRef.current = pts;
+      const lastEnt = pointEntsRef.current.pop();
+      if (lastEnt) v.entities.remove(lastEnt);
+
+      if (firstPointEntityRef.current && pts.length <= 1) {
+        resetFirstMarkerSize();
+      }
+
+      refreshRubber(v);
+      removeFirstHintLabel(v);
+      updateCursor(v);
+
+      notifyDrawingState();
+    };
+
     window.addEventListener("kb:finish-active-tool", onFinish);
+    window.addEventListener("kb:undo-active-tool", undoLastPoint);
+
+    // Start with "no points"
+    notifyDrawingState();
 
     v.screenSpaceEventHandler?.removeInputAction?.(
       ScreenSpaceEventType.LEFT_DOUBLE_CLICK
@@ -395,6 +442,7 @@ export default function DrawArea({
       refreshRubber(v);
       removeFirstHintLabel(v);
       updateCursor(v);
+      notifyDrawingState();
     }, ScreenSpaceEventType.LEFT_CLICK);
 
     handler.setInputAction(() => {
@@ -409,33 +457,14 @@ export default function DrawArea({
         positionsRef.current = pts;
         const lastPointEnt = pointEntsRef.current.pop();
         if (lastPointEnt && viewer) viewer.entities.remove(lastPointEnt);
+        notifyDrawingState();
       }
 
       finishArea();
     }, ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
 
     handler.setInputAction(() => {
-      const pts = positionsRef.current;
-      if (!pts.length) {
-        clearTemps(v);
-        cleanupPointsIfCancelled(v);
-        canvas.style.cursor = "default";
-        onCancel?.();
-        return;
-      }
-
-      pts.pop();
-      positionsRef.current = pts;
-      const lastEnt = pointEntsRef.current.pop();
-      if (lastEnt) v.entities.remove(lastEnt);
-
-      if (firstPointEntityRef.current && pts.length <= 1) {
-        resetFirstMarkerSize();
-      }
-
-      refreshRubber(v);
-      removeFirstHintLabel(v);
-      updateCursor(v);
+      undoLastPoint();
     }, ScreenSpaceEventType.RIGHT_CLICK);
 
     handler.setInputAction((movement) => {
@@ -487,6 +516,8 @@ export default function DrawArea({
         clearTemps(v);
         cleanupPointsIfCancelled(v);
         canvas.style.cursor = "default";
+        positionsRef.current = [];
+        notifyDrawingState();
         onCancel?.();
       }
     };
@@ -495,6 +526,8 @@ export default function DrawArea({
     return () => {
       try {
         window.removeEventListener("kb:finish-active-tool", onFinish);
+        window.removeEventListener("kb:undo-active-tool", undoLastPoint);
+        window.removeEventListener("keydown", onKey);
         clearTemps(v);
         cleanupPointsIfCancelled(v);
         resetFirstMarkerSize();
@@ -503,6 +536,8 @@ export default function DrawArea({
         handlerRef.current?.destroy?.();
         handlerRef.current = null;
         hoverOverFirstRef.current = false;
+        positionsRef.current = [];
+        notifyDrawingState();
       } finally {
       }
     };
