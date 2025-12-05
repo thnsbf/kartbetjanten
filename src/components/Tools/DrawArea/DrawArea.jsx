@@ -49,6 +49,8 @@ export default function DrawArea({
   onCancel,
   setEntitiesRef,
   entitiesUpdateUI,
+  entitiesRef,
+  continueDrawState,
 }) {
   const handlerRef = useRef(null);
 
@@ -63,6 +65,16 @@ export default function DrawArea({
   const firstPointEntityRef = useRef(null);
   const hoverOverFirstRef = useRef(false);
   const firstHintLabelRef = useRef(null);
+
+  const editingEntRef = useRef(null);
+
+  const isContinuingArea =
+    !!continueDrawState && continueDrawState.kind === "area";
+
+  function restoreEditingEntityVisibility() {
+    const ent = editingEntRef.current;
+    if (ent) ent.show = true;
+  }
 
   const tempLinePositions = new CallbackProperty(() => {
     const pts = positionsRef.current || [];
@@ -275,17 +287,135 @@ export default function DrawArea({
     const v = viewer;
     if (!v) return;
     const pts = positionsRef.current;
+
     if (!Array.isArray(pts) || pts.length < 3) {
-      // not enough points → treat like cancel
+      // Not enough points → treat as cancel
       clearTemps(v);
       cleanupPointsIfCancelled(v);
       positionsRef.current = [];
       notifyDrawingState();
       v.scene.canvas.style.cursor = "default";
+
+      // If we were editing an existing area, show it again
+      restoreEditingEntityVisibility();
+
       onCancel?.();
       return;
     }
 
+    const continuing =
+      isContinuingArea && continueDrawState && entitiesRef?.current;
+
+    if (continuing) {
+      const { uuid } = continueDrawState;
+      const ent = editingEntRef.current || entitiesRef.current.get(uuid);
+
+      if (ent && ent.polygon) {
+        const newPositions = pts.slice();
+
+        // Update polygon geometry
+        ent.polygon.hierarchy = new PolygonHierarchy(newPositions);
+        ent.__positions = newPositions;
+        ent.__edit = ent.__edit || {};
+        ent.__edit.originalPositions = newPositions.slice();
+
+        // Attach newly created junction points
+        const ch = ent.__children || {};
+        const existingPoints = Array.isArray(ch.points) ? ch.points : [];
+        for (const p of pointEntsRef.current) {
+          if (!p) continue;
+          p.__parent = ent;
+          existingPoints.push(p);
+        }
+        ch.points = existingPoints;
+
+        // Remove any existing labels (we'll rebuild)
+        if (Array.isArray(ch.edgeLabels)) {
+          for (const lbl of ch.edgeLabels) {
+            try {
+              if (lbl && v.entities.contains(lbl)) v.entities.remove(lbl);
+            } catch {}
+          }
+          ch.edgeLabels = [];
+        }
+        if (ch.label) {
+          try {
+            if (v.entities.contains(ch.label)) v.entities.remove(ch.label);
+          } catch {}
+          ch.label = null;
+        }
+
+        // Rebuild labels based on ent.__draft
+        ent.__children = ch;
+        const draft = ent.__draft || draftRef.current;
+
+        const wantPointsVisible = !!draft.showPoints;
+        if (Array.isArray(ch.points)) {
+          for (const p of ch.points) {
+            if (p) p.show = wantPointsVisible;
+          }
+        }
+
+        try {
+          if (draft.showAreaLabel) {
+            const center = polygonCentroid(
+              newPositions,
+              v.scene.globe.ellipsoid
+            );
+            const area = polygonAreaMeters2(
+              newPositions,
+              v.scene.globe.ellipsoid
+            );
+            const centerLabel = v.entities.add({
+              position: center,
+              label: {
+                text: formatSquareMeters(area),
+                font: "14px Barlow",
+                fillColor: Color.WHITE,
+                outlineColor: Color.BLACK,
+                outlineWidth: 3,
+                showBackground: true,
+                backgroundColor: Color.fromAlpha(Color.BLACK, 0.6),
+                pixelOffset: new Cartesian2(0, -12),
+                disableDepthTestDistance: Number.POSITIVE_INFINITY,
+              },
+              show: true,
+            });
+            centerLabel.__parent = ent;
+            ch.label = centerLabel;
+          }
+        } catch {}
+
+        try {
+          if (draft.showEdgeValues) {
+            rebuildAreaEdgeLabels(ent, v);
+          }
+        } catch {}
+
+        ent.isActive = true;
+        ent.lastUpdated = new Date().toISOString();
+        ent.show = true;
+        editingEntRef.current = null;
+
+        entitiesUpdateUI?.();
+        v.scene.requestRender?.();
+
+        // Cleanup tool state
+        clearTemps(v);
+        positionsRef.current = [];
+        pointEntsRef.current = [];
+        mouseCartesianRef.current = null;
+        firstPointEntityRef.current = null;
+        hoverOverFirstRef.current = false;
+        removeFirstHintLabel(v);
+        notifyDrawingState();
+        v.scene.canvas.style.cursor = "default";
+        onCancel?.(); // exit tool; ActiveToolModal will handle UI reset
+        return;
+      }
+    }
+
+    // ---------------- CREATE NEW AREA PATH (unchanged) ----------------
     clearTemps(v);
     resetFirstMarkerSize();
 
@@ -303,7 +433,7 @@ export default function DrawArea({
       },
       show: true,
     });
-
+    ent.__uuid = uuid;
     ent.type = "Area";
     ent.isActive = true;
     ent.lastUpdated = new Date().toISOString();
@@ -351,7 +481,6 @@ export default function DrawArea({
     mouseCartesianRef.current = null;
     removeFirstHintLabel(v);
     notifyDrawingState();
-
     v.scene.canvas.style.cursor = "default";
     onCancel?.();
   }
@@ -403,7 +532,84 @@ export default function DrawArea({
     window.addEventListener("kb:finish-active-tool", onFinish);
     window.addEventListener("kb:undo-active-tool", undoLastPoint);
 
-    // Start with "no points"
+    // ---------------- INIT STATE FOR THIS SESSION ----------------
+    positionsRef.current = [];
+    pointEntsRef.current = [];
+    mouseCartesianRef.current = null;
+    firstPointEntityRef.current = null;
+    hoverOverFirstRef.current = false;
+    firstHintLabelRef.current = null;
+    editingEntRef.current = null;
+
+    // CONTINUE DRAW: seed positions from existing entity + hide it
+    if (isContinuingArea && continueDrawState?.uuid && entitiesRef?.current) {
+      const { uuid, originalPositions } = continueDrawState;
+
+      if (Array.isArray(originalPositions) && originalPositions.length > 0) {
+        positionsRef.current = originalPositions.slice();
+      }
+
+      const ent = entitiesRef.current.get(uuid);
+      if (ent) {
+        editingEntRef.current = ent;
+
+        // Hide original polygon while we are in drawing mode
+        ent.show = false;
+
+        // Use the entity's current draft (for colors, outline, etc.)
+        if (ent.__draft) {
+          draftRef.current = ensureAreaDraftShape(ent.__draft);
+        } else {
+          draftRef.current = ensureAreaDraftShape({ ...defaultAreaDraft });
+        }
+
+        // Remove old junction points + labels from the entity
+        const ch = ent.__children || {};
+        if (Array.isArray(ch.points)) {
+          for (const p of ch.points) {
+            try {
+              if (p && viewer.entities.contains(p)) viewer.entities.remove(p);
+            } catch {}
+          }
+          ch.points = [];
+        }
+        if (Array.isArray(ch.edgeLabels)) {
+          for (const l of ch.edgeLabels) {
+            try {
+              if (l && viewer.entities.contains(l)) viewer.entities.remove(l);
+            } catch {}
+          }
+          ch.edgeLabels = [];
+        }
+        if (ch.label) {
+          try {
+            if (viewer.entities.contains(ch.label)) {
+              viewer.entities.remove(ch.label);
+            }
+          } catch {}
+          ch.label = null;
+        }
+        ent.__children = ch;
+      }
+
+      // Create our own point entities based on the existing vertices
+      if (positionsRef.current.length > 0) {
+        const safeDraft = draftRef.current;
+        const g = pointGraphicsFromDraft(safeDraft);
+        positionsRef.current.forEach((pos, idx) => {
+          const pt = viewer.entities.add({
+            position: pos,
+            point: g,
+            show: true,
+          });
+          pt.__parent = editingEntRef.current || null;
+          pointEntsRef.current.push(pt);
+          if (idx === 0) firstPointEntityRef.current = pt;
+        });
+      }
+    }
+
+    // Now broadcast if we "already have points" (enables Ångra in ActiveToolModal)
     notifyDrawingState();
 
     v.screenSpaceEventHandler?.removeInputAction?.(
@@ -541,7 +747,16 @@ export default function DrawArea({
       } finally {
       }
     };
-  }, [viewer, active, onCancel, setEntitiesRef, entitiesUpdateUI]);
+  }, [
+    viewer,
+    active,
+    onCancel,
+    setEntitiesRef,
+    entitiesUpdateUI,
+    isContinuingArea,
+    continueDrawState,
+    entitiesRef,
+  ]);
 
   return null;
 }

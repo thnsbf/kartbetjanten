@@ -27,6 +27,8 @@ export default function DrawLines({
   onCancel, // () => setActiveTool("no-tool")
   setEntitiesRef, // (uuid, ent) => void
   entitiesUpdateUI, // () => void
+  entitiesRef,
+  continueDrawState,
 }) {
   const handlerRef = useRef(null);
 
@@ -35,15 +37,20 @@ export default function DrawLines({
 
   const committedPositionsRef = useRef([]); // committed Cartesian3[]
   const pointEntsRef = useRef([]); // Cesium entities for junction points
-
   const mouseCartesianRef = useRef(null); // current mouse world pos (rubber)
 
   // Temps
   const tempSegmentRef = useRef(null); // current rubber-band segment entity
   const tempLabelRef = useRef(null); // current rubber-band label
 
-  // Optional: committed polyline preview while drawing
+  // Preview polyline while drawing
   const committedLineRef = useRef(null);
+
+  // When continuing, keep track of the original entity so we can hide/show it
+  const editingEntRef = useRef(null);
+
+  const isContinuingLine =
+    !!continueDrawState && continueDrawState.kind === "line";
 
   // Rubber-band positions between last committed point and mouse
   const rubberPositions = new CallbackProperty(() => {
@@ -173,6 +180,11 @@ export default function DrawLines({
     pointEntsRef.current.push(p);
   }
 
+  function restoreEditingEntityVisibility() {
+    const ent = editingEntRef.current;
+    if (ent) ent.show = true;
+  }
+
   function finishLine() {
     const v = viewer;
     if (!v) return;
@@ -181,20 +193,79 @@ export default function DrawLines({
       // nothing to finalize
       clearTemps(v);
       removeCommittedLine(v);
+      restoreEditingEntityVisibility();
       committedPositionsRef.current = [];
       pointEntsRef.current = [];
       mouseCartesianRef.current = null;
+      editingEntRef.current = null;
       notifyDrawingState();
       setCursor(v.scene.canvas, "default");
       onCancel?.();
       return;
     }
 
+    const continuing =
+      isContinuingLine && continueDrawState && entitiesRef?.current;
+
+    if (continuing) {
+      const { uuid } = continueDrawState;
+      const ent = editingEntRef.current || entitiesRef.current.get(uuid);
+
+      if (!ent || !ent.polyline) {
+        // fallback to "new line" behavior
+      } else {
+        const merged = committedPositionsRef.current.slice(); // full edited line
+
+        // Update polyline geometry
+        ent.polyline.positions = merged;
+        ent.__positions = merged;
+        ent.__edit = ent.__edit || {};
+        ent.__edit.originalPositions = merged.slice();
+
+        // Attach newly created junction points to this entity
+        const ch = (ent.__children ||= {});
+        const existingPoints = Array.isArray(ch.points) ? ch.points : [];
+        for (const p of pointEntsRef.current) {
+          if (!p) continue;
+          p.__parent = ent;
+          existingPoints.push(p);
+        }
+        ch.points = existingPoints;
+        ent.__children = ch;
+
+        // Rebuild labels based on the new geometry
+        rebuildCommittedLabels(ent, v);
+        upsertTotalLengthLabel(ent, v);
+
+        ent.isActive = true;
+        ent.lastUpdated = new Date().toISOString();
+
+        // Show the entity again (we hid it when continuing)
+        ent.show = true;
+        editingEntRef.current = null;
+
+        entitiesUpdateUI?.();
+        v.scene.requestRender?.();
+
+        // Cleanup tool state
+        clearTemps(v);
+        removeCommittedLine(v);
+        committedPositionsRef.current = [];
+        pointEntsRef.current = [];
+        mouseCartesianRef.current = null;
+        notifyDrawingState();
+        setCursor(v.scene.canvas, "default");
+        onCancel?.(); // exit tool; ActiveToolModal will still handle Confirm/Cancel
+        return;
+      }
+    }
+
+    // ---------------- CREATE NEW LINE PATH ----------------
+
     // Clear temps
     clearTemps(v);
     removeCommittedLine(v);
 
-    // Final line entity
     const uuid = uuidv4();
     const ent = v.entities.add({
       id: uuid,
@@ -210,6 +281,7 @@ export default function DrawLines({
     ent.isActive = true;
     ent.lastUpdated = new Date().toISOString();
     ent.__draft = { ...draftRef.current };
+    ent.__positions = positions.slice();
     ent.__children = {
       points: pointEntsRef.current.slice(),
       labels: [],
@@ -229,6 +301,7 @@ export default function DrawLines({
     committedPositionsRef.current = [];
     pointEntsRef.current = [];
     mouseCartesianRef.current = null;
+    editingEntRef.current = null;
     notifyDrawingState();
 
     setCursor(v.scene.canvas, "default");
@@ -269,9 +342,11 @@ export default function DrawLines({
       if (!pts.length) {
         clearTemps(v);
         removeCommittedLine(v);
+        restoreEditingEntityVisibility();
         for (const p of pointEntsRef.current) v.entities.remove(p);
         pointEntsRef.current = [];
         committedPositionsRef.current = [];
+        editingEntRef.current = null;
         notifyDrawingState();
         setCursor(canvas, "default");
         onCancel?.();
@@ -282,7 +357,7 @@ export default function DrawLines({
       pts.pop();
       committedPositionsRef.current = pts;
 
-      // Remove last junction point entity
+      // Remove last junction point entity *we* created
       const lastPoint = pointEntsRef.current.pop();
       if (lastPoint) v.entities.remove(lastPoint);
 
@@ -292,6 +367,8 @@ export default function DrawLines({
       if (pts.length === 0) {
         clearTemps(v);
         removeCommittedLine(v);
+        restoreEditingEntityVisibility();
+        editingEntRef.current = null;
         setCursor(canvas, "default");
         onCancel?.();
       }
@@ -300,7 +377,65 @@ export default function DrawLines({
     window.addEventListener("kb:finish-active-tool", onFinish);
     window.addEventListener("kb:undo-active-tool", undoLastPoint);
 
-    // Start with "no points"
+    // ---------------- INIT STATE FOR THIS SESSION ----------------
+    committedPositionsRef.current = [];
+    pointEntsRef.current = [];
+    mouseCartesianRef.current = null;
+    committedLineRef.current = null;
+    editingEntRef.current = null;
+
+    // CONTINUE DRAW: seed positions, remove old children, hide original entity
+    if (isContinuingLine && continueDrawState?.uuid && entitiesRef?.current) {
+      const { uuid, originalPositions } = continueDrawState;
+      if (Array.isArray(originalPositions) && originalPositions.length > 0) {
+        committedPositionsRef.current = originalPositions.slice();
+      }
+
+      const ent = entitiesRef.current.get(uuid);
+      if (ent) {
+        editingEntRef.current = ent;
+
+        // Hide the original line while we show the preview only
+        ent.show = false;
+
+        // Remove old junction points + labels from this entity
+        const ch = ent.__children || {};
+        if (Array.isArray(ch.points)) {
+          for (const p of ch.points) {
+            try {
+              if (p && v.entities.contains(p)) v.entities.remove(p);
+            } catch {}
+          }
+          ch.points = [];
+        }
+        if (Array.isArray(ch.labels)) {
+          for (const l of ch.labels) {
+            try {
+              if (l && v.entities.contains(l)) v.entities.remove(l);
+            } catch {}
+          }
+          ch.labels = [];
+        }
+        if (ch.totalLabel) {
+          try {
+            if (v.entities.contains(ch.totalLabel)) {
+              v.entities.remove(ch.totalLabel);
+            }
+          } catch {}
+          ch.totalLabel = null;
+        }
+        ent.__children = ch;
+      }
+
+      // Create preview + our own junction points based on the current positions
+      if (committedPositionsRef.current.length > 0) {
+        ensureCommittedLine(v);
+        for (const pos of committedPositionsRef.current) {
+          addCommittedPointEntity(v, pos);
+        }
+      }
+    }
+
     notifyDrawingState();
 
     // Disable Cesium default double-click zoom
@@ -368,9 +503,11 @@ export default function DrawLines({
       if (ev.key === "Escape") {
         clearTemps(v);
         removeCommittedLine(v);
+        restoreEditingEntityVisibility();
         for (const p of pointEntsRef.current) v.entities.remove(p);
         pointEntsRef.current = [];
         committedPositionsRef.current = [];
+        editingEntRef.current = null;
         notifyDrawingState();
         setCursor(canvas, "default");
         onCancel?.();
@@ -385,18 +522,29 @@ export default function DrawLines({
         window.removeEventListener("keydown", onKey);
         clearTemps(v);
         removeCommittedLine(v);
+        restoreEditingEntityVisibility();
         for (const p of pointEntsRef.current) v.entities.remove(p);
         pointEntsRef.current = [];
       } finally {
         committedPositionsRef.current = [];
         mouseCartesianRef.current = null;
+        editingEntRef.current = null;
         notifyDrawingState();
         setCursor(canvas, "default");
         handlerRef.current?.destroy?.();
         handlerRef.current = null;
       }
     };
-  }, [viewer, active, onCancel, setEntitiesRef, entitiesUpdateUI]);
+  }, [
+    viewer,
+    active,
+    onCancel,
+    setEntitiesRef,
+    entitiesUpdateUI,
+    isContinuingLine,
+    continueDrawState,
+    entitiesRef,
+  ]);
 
   return null;
 }

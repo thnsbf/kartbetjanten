@@ -8,6 +8,7 @@ export default function AreaModal({
   setDraft,
   onConfirm,
   onClose,
+  onContinueDraw, // <-- NEW: optional callback to enter "continue drawing" mode
   isCreate = false,
 }) {
   if (!open) return null;
@@ -17,6 +18,10 @@ export default function AreaModal({
 
   const percent = (v) =>
     Math.max(0, Math.min(1, typeof v === "number" ? v : 0.25)) * 100;
+
+  const handleContinueDraw = () => {
+    onContinueDraw?.();
+  };
 
   return (
     <div
@@ -137,6 +142,25 @@ export default function AreaModal({
           gap: 10,
         }}
       >
+        {/* Only show "Continue drawing" when editing an existing area */}
+        {!isCreate && (
+          <button
+            type="button"
+            onClick={handleContinueDraw}
+            style={{
+              padding: "0.7em 2.5em",
+              borderRadius: "100vmax",
+              border: "2px solid var(--kommunfarg)",
+              background: "var(--c-background-white)",
+              color: "var(--kommunfarg)",
+              cursor: "pointer",
+              fontWeight: 600,
+            }}
+          >
+            Fortsätt rita
+          </button>
+        )}
+
         <button
           onClick={onClose}
           style={{

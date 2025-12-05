@@ -57,6 +57,7 @@ export default function Globe({
   onCancelPlaceText,
   onPickEdit, // NEW: callback to open the right edit modal from a click in the map
   revertMoveToolChanges,
+  continueDrawState,
 }) {
   const mountRef = useRef(null);
   const [viewer, setViewer] = useState(null);
@@ -184,6 +185,15 @@ export default function Globe({
     return pickedEnt;
   }
 
+  function getUuidFromEntity(ent) {
+    if (!ent) return null;
+    // Prefer an explicit UUID you control
+    if (typeof ent.__uuid === "string") return ent.__uuid;
+    if (typeof ent._id === "string") return ent._id;
+    if (typeof ent.id === "string") return ent.id;
+    return null;
+  }
+
   useEffect(() => {
     if (!viewer) return;
 
@@ -198,16 +208,13 @@ export default function Globe({
         if (!picked || !picked.id) return;
 
         const root = resolveRootEntity(picked.id);
+
         if (!root) return;
 
         // Only react to our app's root entities (Area, Linje, Punkt, Text)
-        const uuid =
-          root.id ??
-          root._id ??
-          root.__uuid ??
-          (typeof root.id === "string" ? root.id : null);
+        const uuid = getUuidFromEntity(root);
+        console.log(uuid);
         if (!uuid) return;
-
         // Ensure this is one of the entities we track in the list
         if (!entitiesRef?.current?.has(uuid)) return;
 
@@ -267,6 +274,8 @@ export default function Globe({
         onCancel={() => setActiveTool("no-tool")}
         setEntitiesRef={setEntitiesRef}
         entitiesUpdateUI={entitiesUpdateUI}
+        entitiesRef={entitiesRef}
+        continueDrawState={continueDrawState}
       />
 
       {/* AREA */}
@@ -274,9 +283,10 @@ export default function Globe({
         viewer={viewer}
         active={activeTool === "draw-area"}
         onCancel={() => setActiveTool("no-tool")}
-        onDone={() => setActiveTool("no-tool")}
         setEntitiesRef={setEntitiesRef}
         entitiesUpdateUI={entitiesUpdateUI}
+        entitiesRef={entitiesRef}
+        continueDrawState={continueDrawState}
       />
 
       {/* MOVE/DRAG */}

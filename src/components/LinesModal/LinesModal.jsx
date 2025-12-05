@@ -6,9 +6,14 @@ export default function LinesModal({
   setDraft,
   onConfirm,
   onClose,
+  onContinueDraw, // <-- NEW: optional callback to enter "continue drawing" mode
   isPlaceLine, // true => "Placera", false => "Redigera"
 }) {
   if (!open) return null;
+
+  const handleContinueDraw = () => {
+    onContinueDraw?.();
+  };
 
   return (
     <div
@@ -243,6 +248,25 @@ export default function LinesModal({
           gap: 10,
         }}
       >
+        {/* Only show "Continue drawing" for edit mode (existing line) */}
+        {!isPlaceLine && (
+          <button
+            type="button"
+            onClick={handleContinueDraw}
+            style={{
+              padding: "0.7em 2.5em",
+              borderRadius: "100vmax",
+              border: "2px solid var(--kommunfarg)",
+              background: "var(--c-background-white)",
+              color: "var(--kommunfarg)",
+              cursor: "pointer",
+              fontWeight: 600,
+            }}
+          >
+            Fortsätt rita
+          </button>
+        )}
+
         <button
           onClick={onClose}
           style={{

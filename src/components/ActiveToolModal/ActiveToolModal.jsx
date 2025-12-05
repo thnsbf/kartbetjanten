@@ -24,7 +24,7 @@ export default function ActiveToolModal({
       : activeTool === "place-dot"
       ? "Placera punkt"
       : activeTool === "place-text"
-      ? "Placsera text"
+      ? "Placera text"
       : activeTool === "move-object"
       ? "Flytta objekt"
       : "Verktyg";

@@ -589,6 +589,21 @@ export default function Mainpage({
     outlineWidth: 2,
   });
 
+  // --- Continue drawing session state ----------------------------------------
+  // { kind: "line" | "area", uuid: string, originalPositions: Cartesian3[] } | null
+  const [continueDrawState, setContinueDrawState] = useState(null);
+
+  // Clear any "continue draw" session when we leave drawing tools
+  useEffect(() => {
+    const isDrawingTool =
+      activeTool === "draw-lines" || activeTool === "draw-area";
+
+    if (!isDrawingTool && continueDrawState) {
+      setContinueDrawState(null);
+      setRightPane({ kind: "list" });
+    }
+  }, [activeTool, continueDrawState]);
+
   const openEditForUuid = useCallback(
     (uuid) => {
       const ent = entitiesRef.current.get(uuid);
@@ -660,6 +675,58 @@ export default function Mainpage({
     [entitiesUpdateUI]
   );
 
+  // --- Continue drawing helpers (triggered from modals) -----------------------
+  const startContinueDrawForLine = useCallback(() => {
+    const v = viewerRef.current;
+    if (!v || rightPane.kind !== "edit-line") return;
+
+    // 1) Commit any live junction-edit geometry and clean up handlers
+    //    (so a stale _state can’t overwrite our line later)
+    stopEdit();
+
+    const uuid = rightPane.uuid;
+    const ent = entitiesRef.current.get(uuid);
+    if (!ent || !ent.polyline) return;
+
+    // 2) Snapshot the CURRENT line geometry as the baseline for “continue draw”
+    const positions = snapshotPolylinePositions(ent, v);
+    if (!positions || !positions.length) return;
+
+    setContinueDrawState({
+      kind: "line",
+      uuid,
+      originalPositions: positions,
+    });
+
+    // 3) Switch into the drawing tool; DrawLines + ActiveToolModal take over
+    setActiveTool("draw-lines");
+  }, [rightPane, setActiveTool]);
+
+  const startContinueDrawForArea = useCallback(() => {
+    const v = viewerRef.current;
+    if (!v || rightPane.kind !== "edit-area") return;
+
+    // 1) Commit any live junction-edit geometry
+    stopEdit();
+
+    const uuid = rightPane.uuid;
+    const ent = entitiesRef.current.get(uuid);
+    if (!ent || !ent.polygon) return;
+
+    // 2) Snapshot the CURRENT polygon positions as baseline
+    const positions = snapshotPolygonPositions(ent, v);
+    if (!positions || !positions.length) return;
+
+    setContinueDrawState({
+      kind: "area",
+      uuid,
+      originalPositions: positions,
+    });
+
+    // 3) Switch to area drawing tool
+    setActiveTool("draw-area");
+  }, [rightPane, setActiveTool]);
+
   // Confirm handlers (edits)
   const confirmTextEdit = useCallback(() => {
     const uuid = rightPane.uuid;
@@ -679,15 +746,29 @@ export default function Mainpage({
     const v = viewerRef.current;
     if (!ent || !v) return setRightPane({ kind: "list" });
 
+    // 1) Snapshot CURRENT geometry (including any continue-draw changes)
+    let confirmedPositions = snapshotPolylinePositions(ent, v) || [];
+
+    // 2) Clean up edit session (junction drag, etc.)
     stopEdit();
 
+    // 3) If for some reason snapshot failed, fall back to whatever is on the entity now
+    if (!confirmedPositions.length) {
+      confirmedPositions = snapshotPolylinePositions(ent, v) || [];
+    }
+
+    // 4) FIRST: re-apply the confirmed geometry to the entity
+    if (confirmedPositions.length) {
+      applyPolylinePositions(ent, confirmedPositions);
+      ent.__positions = confirmedPositions.slice();
+
+      ent.__edit = ent.__edit || {};
+      ent.__edit.originalPositions = confirmedPositions.slice();
+    }
+
+    // 5) THEN: apply visual draft (color, width, labels, etc.)
     applyDraftToLineEntity(ent, lineDraft, v);
     setLineLabelsVisibility(ent, !!lineDraft.showValues, v);
-
-    const confirmedPositions = snapshotPolylinePositions(ent, v);
-    ent.__positions = confirmedPositions.slice();
-    ent.__edit = ent.__edit || {};
-    ent.__edit.originalPositions = confirmedPositions.slice();
 
     ent.lastUpdated = new Date().toISOString();
     ent.isActive = true;
@@ -695,6 +776,70 @@ export default function Mainpage({
     entitiesUpdateUI();
     setRightPane({ kind: "list" });
   }, [rightPane, lineDraft, entitiesUpdateUI]);
+
+  const cancelActiveToolWithRevert = useCallback(() => {
+    // Cancel → revert per-tool
+    if (activeTool === "move-object") {
+      revertMoveToolChanges();
+    }
+
+    const isContinueDrawing =
+      (activeTool === "draw-lines" || activeTool === "draw-area") &&
+      !!continueDrawState;
+
+    if (isContinueDrawing && continueDrawState) {
+      const v = viewerRef.current;
+      if (v) {
+        const { kind, uuid, originalPositions } = continueDrawState;
+        const ent = entitiesRef.current.get(uuid);
+
+        if (ent && Array.isArray(originalPositions)) {
+          if (kind === "line" && ent.polyline) {
+            // Revert geometry
+            applyPolylinePositions(ent, originalPositions);
+            rebuildLineJunctionPoints(ent, v, originalPositions);
+            try {
+              rebuildSegmentLabels(ent, v);
+              upsertTotalLengthLabel(ent, v);
+            } catch {}
+
+            // 🔧 NEW: also reset the edit baseline
+            ent.__edit = ent.__edit || {};
+            ent.__edit.originalPositions = originalPositions.slice();
+          } else if (kind === "area" && ent.polygon) {
+            // Revert geometry
+            applyPolygonPositions(ent, originalPositions);
+            rebuildAreaJunctionPoints(
+              ent,
+              v,
+              originalPositions,
+              ent.__draft?.showPoints
+            );
+            try {
+              rebuildAreaEdgeLabels(ent, v);
+            } catch {}
+            try {
+              rebuildAreaLabel(ent, v);
+            } catch {}
+
+            ent.show = true;
+            // 🔧 NEW: also reset the edit baseline
+            ent.__edit = ent.__edit || {};
+            ent.__edit.originalPositions = originalPositions.slice();
+          }
+
+          ent.lastUpdated = new Date().toISOString();
+          entitiesUpdateUI?.();
+          v.scene.requestRender?.();
+        }
+      }
+
+      setContinueDrawState(null);
+      setRightPane({ kind: "list" }); // cancel also returns to list
+    }
+
+    setActiveTool("no-tool");
+  }, [activeTool, continueDrawState, entitiesUpdateUI]);
 
   const confirmAreaEdit = useCallback(() => {
     const uuid = rightPane.uuid;
@@ -887,25 +1032,36 @@ export default function Mainpage({
   function renderRightPane() {
     if (activeTool !== "no-tool" && !placeTextState.open) {
       const isMoveTool = activeTool === "move-object";
+      const isContinueDrawing =
+        (activeTool === "draw-lines" || activeTool === "draw-area") &&
+        !!continueDrawState;
 
       return (
         <ActiveToolModal
           open
           activeTool={activeTool}
           onConfirmExit={() => {
-            // Confirm → keep changes; for move tool, discard snapshot
+            const isMoveTool = activeTool === "move-object";
+            const isContinueDrawing =
+              (activeTool === "draw-lines" || activeTool === "draw-area") &&
+              !!continueDrawState;
+
+            // Confirm → keep changes
             if (isMoveTool) {
+              // Move tool: discard snapshot
               moveSnapshotRef.current = null;
             }
-            setActiveTool("no-tool");
-          }}
-          onCancelExit={() => {
-            // Cancel → if move tool, revert all moved entities
-            if (isMoveTool) {
-              revertMoveToolChanges();
+
+            if (isContinueDrawing) {
+              // Drawing tools have already finalized geometry in DrawLines/DrawArea.
+              // Clear continue-draw session and close any edit pane → go back to list.
+              setContinueDrawState(null);
+              setRightPane({ kind: "list" });
             }
+
             setActiveTool("no-tool");
           }}
+          onCancelExit={cancelActiveToolWithRevert}
           isMobile={isMobile}
         />
       );
@@ -944,7 +1100,8 @@ export default function Mainpage({
             setDraft={setLineDraft}
             onConfirm={confirmLineEdit}
             onClose={closeRightPane}
-            isCreate={false}
+            isPlaceLine={false}
+            onContinueDraw={startContinueDrawForLine}
           />
         );
       case "edit-area":
@@ -956,6 +1113,7 @@ export default function Mainpage({
             onConfirm={confirmAreaEdit}
             onClose={closeRightPane}
             isCreate={false}
+            onContinueDraw={startContinueDrawForArea}
           />
         );
       case "edit-marker":
@@ -1033,6 +1191,8 @@ export default function Mainpage({
           onCancelPlaceText={cancelPlaceText}
           onPickEdit={openEditForUuid}
           revertMoveToolChanges={revertMoveToolChanges}
+          continueDrawState={continueDrawState}
+          cancelWithRevert={cancelActiveToolWithRevert}
         />
       </main>
     </>
