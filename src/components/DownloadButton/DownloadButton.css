@@ -30,6 +30,7 @@
   text-align: center;
   width: 100%;
   cursor: pointer;
+  color: var(--c-text-black);
 }
 
 .btn__dropdown-list__li-item {
@@ -44,7 +45,6 @@
 }
 .btn__dropdown-list__hr {
   margin: 0;
-
   border: 1px solid var(--c-btn-border--primary);
 }
 
@@ -52,7 +52,6 @@
   .btn__dropdown-list {
     position: absolute;
     left: 0;
-
     bottom: -112px;
   }
 }
