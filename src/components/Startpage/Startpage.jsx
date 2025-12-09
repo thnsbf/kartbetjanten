@@ -29,7 +29,7 @@ export default function Startpage({ setPickedAddress, isMobile }) {
           </p>
           <section className="main-start__footer">
             <p>
-              Kartbetjänten version 3.0 ©
+              <span className="text--bold">Kartbetjänten version 3.0 ©</span>
               <a href="https://www.trollhattan.se">Trollhättans stad</a> <br />
               Avvikelser i lägesredovisningen för fastighetsgränser kan
               förekomma. Juridiskt bindande gränsdokumentation finns hos{" "}

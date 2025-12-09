@@ -253,7 +253,7 @@ select {
   margin-bottom: 12px;
   font-size: 0.875rem;
   color: var(--c-text-black);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .modal-row {
@@ -314,6 +314,7 @@ select {
     color: var(--c-text-black);
     border-radius: 10px;
     padding: 24px;
+    font-weight: 500;
   }
   .modal__btn-container {
     margin-block-start: 40px;

@@ -1,7 +1,9 @@
 :root {
-  --kommunfont: "Barlow", "sans-serif";
-  box-sizing: border-box;
+  --kommunfont: "Barlow", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
   font-family: var(--kommunfont);
+  box-sizing: border-box;
+
   line-height: 1.5;
   font-weight: 400;
 

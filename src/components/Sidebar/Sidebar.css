@@ -36,6 +36,7 @@
   align-items: center;
   color: var(--kommunfarg);
   font-size: 0.75rem;
+  font-weight: 600;
   padding-inline: 4px;
   min-width: 100%;
 }
