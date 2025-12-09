@@ -74,7 +74,7 @@ export default function Topbar({
               <li title="Zooma ut" className="topbar-tool">
                 <i>
                   <img
-                    src="/icon-zoom-out--darkpurple.svg"
+                    src="icon-zoom-out--darkpurple.svg"
                     alt="Icon for zooming out"
                     onClick={() => handleZoomClick(false)}
                   />
@@ -83,7 +83,7 @@ export default function Topbar({
               <li title="Zooma in" className="topbar-tool">
                 <i>
                   <img
-                    src="/icon-zoom-in--darkpurple.svg"
+                    src="icon-zoom-in--darkpurple.svg"
                     alt="Icon for zooming in"
                     onClick={() => handleZoomClick(true)}
                   />
@@ -94,7 +94,7 @@ export default function Topbar({
                   <i>
                     <img
                       style={{ maxHeight: 36 }}
-                      src="/icon-map-position--darkpurple.svg"
+                      src="icon-map-position--darkpurple.svg"
                       alt="Icon showing my position on the map"
                       onClick={handleShowSearchbarClick}
                     />

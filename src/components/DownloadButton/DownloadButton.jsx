@@ -55,7 +55,7 @@ export default function DownloadButton({
       <i className="btn-icon">
         <img
           className="download-icon"
-          src="/icon-download--black.svg"
+          src="icon-download--black.svg"
           alt="Download-icon"
         />
       </i>

@@ -360,7 +360,7 @@ export default function MyObjects({
                 <i>
                   <img
                     className="object-li-item__img"
-                    src="/icon-edit--purple.svg"
+                    src="icon-edit--purple.svg"
                     alt="Ändra"
                   />
                 </i>
@@ -373,7 +373,7 @@ export default function MyObjects({
                 <i>
                   <img
                     className="object-li-item__img"
-                    src="/icon-trash--purple.svg"
+                    src="icon-trash--purple.svg"
                     alt="Ta bort"
                   />
                 </i>
@@ -388,7 +388,7 @@ export default function MyObjects({
               <i>
                 <img
                   className="object-li-item__img"
-                  src="/icon-restore--purple.svg"
+                  src="icon-restore--purple.svg"
                   alt="Återställ"
                 />
               </i>

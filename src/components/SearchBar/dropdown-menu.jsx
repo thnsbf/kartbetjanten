@@ -1,7 +1,7 @@
 import "./SearchBar.css";
 import { readJson } from "../../modules/utils";
 
-const ADRESSER = await readJson("/json/ADRESSER_251127.json");
+const ADRESSER = await readJson("json/ADRESSER_251127.json");
 console.log(ADRESSER.features[0]);
 
 export default function DropdownMenu({
@@ -9,13 +9,13 @@ export default function DropdownMenu({
   setPickedAddress,
   setSearchTerm,
 }) {
+  const normalizedSearch = searchTerm.toLowerCase().trim();
+
   const searchResults = ADRESSER.features.filter((address) => {
     const addr = address.properties.ADRESS.toLowerCase();
     const fast = address.properties.FASTIGHET.toLowerCase();
-    return (
-      addr.toLowerCase().includes(searchTerm) ||
-      fast.toLowerCase().includes(searchTerm)
-    );
+
+    return addr.includes(normalizedSearch) || fast.includes(normalizedSearch);
   });
 
   const liItems = searchResults.map((address, index) => {

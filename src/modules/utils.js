@@ -8,10 +8,18 @@ export async function arbitraryPause(ms = 5000) {
   });
 }
 
-export async function readJson(pathFromRoot) {
-  // pathFromRoot like '/json/adresser.json'
-  const res = await fetch(pathFromRoot);
-  if (!res.ok) throw new Error(`HTTP ${res.status} for ${pathFromRoot}`);
+export async function readJson(relPath) {
+  // normalize leading/trailing slashes
+  const base = import.meta.env.BASE_URL.replace(/\/+$/, ""); // remove trailing slash
+  const path = relPath.replace(/^\/+/, ""); // remove leading slash
+
+  // join them -> works in dev and build
+  const url = `${base}/${path}`;
+
+  const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error(`HTTP ${res.status} for ${url}`);
+  }
   return res.json();
 }
 
