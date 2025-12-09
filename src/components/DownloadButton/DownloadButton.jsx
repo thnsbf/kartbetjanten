@@ -1,7 +1,5 @@
-// src/components/DownloadButton/DownloadButton.jsx
-import "./DownloadButton.css";
 import { useState, useRef, useEffect } from "react";
-
+import "./DownloadButton.css";
 export default function DownloadButton({
   isMobile,
   onClickPdf,
@@ -9,7 +7,7 @@ export default function DownloadButton({
   onClick,
 }) {
   const [open, setOpen] = useState(false);
-  const btnRef = useRef(null);
+  const wrapperRef = useRef(null);
 
   function toggleOpen(e) {
     e.stopPropagation();
@@ -22,8 +20,8 @@ export default function DownloadButton({
 
   useEffect(() => {
     function onDocClick(e) {
-      if (!btnRef.current) return;
-      if (!btnRef.current.contains(e.target)) setOpen(false);
+      if (!wrapperRef.current) return;
+      if (!wrapperRef.current.contains(e.target)) setOpen(false);
     }
     document.addEventListener("click", onDocClick);
     return () => document.removeEventListener("click", onDocClick);
@@ -32,7 +30,7 @@ export default function DownloadButton({
   const handlePdf = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    (onClickPdf || onClick)?.(); // fallback to onClick for backwards compat
+    (onClickPdf || onClick)?.();
     close();
   };
 
@@ -44,45 +42,47 @@ export default function DownloadButton({
   };
 
   return (
-    <button
-      ref={btnRef}
-      className="button button--primary btn-save-my-map"
-      id="btn-save-my-map"
-      onClick={toggleOpen}
-      title="Ladda ner"
-      type="button"
-    >
-      <i className="btn-icon">
-        <img
-          className="download-icon"
-          src="icon-download--black.svg"
-          alt="Download-icon"
-        />
-      </i>
-      {isMobile ? "Ladda ner" : "Ladda ner karta"}
+    <div ref={wrapperRef} className="btn-save-my-map-wrapper">
+      <button
+        className="button button--primary btn-save-my-map"
+        id="btn-save-my-map"
+        onClick={toggleOpen}
+        title="Ladda ner"
+        type="button"
+      >
+        <i className="btn-icon">
+          <img
+            className="download-icon"
+            src="icon-download--black.svg"
+            alt="Download-icon"
+          />
+        </i>
+        {isMobile ? "Ladda ner" : "Ladda ner karta"}
+      </button>
+
       {open && (
         <ul className="btn__dropdown-list" onClick={(e) => e.stopPropagation()}>
           <li className="btn__dropdown-list__li-item">
-            <a
-              href="#"
-              title="Ladda ner din karta som en PDF"
+            <button
+              type="button"
+              className="btn__dropdown-list__button"
               onClick={handlePdf}
             >
               Karta som PDF
-            </a>
+            </button>
           </li>
           <hr className="btn__dropdown-list__hr" />
           <li className="btn__dropdown-list__li-item">
-            <a
-              href="#"
-              title="Ladda ner Mina objekt som en GeoJSON-fil"
+            <button
+              type="button"
+              className="btn__dropdown-list__button"
               onClick={handleJson}
             >
               Geometrier som JSON
-            </a>
+            </button>
           </li>
         </ul>
       )}
-    </button>
+    </div>
   );
 }
