@@ -1,11 +1,17 @@
 import "./Startpage.css";
 import Topbar from "../Topbar/Topbar";
 import SearchBar from "../SearchBar/SearchBar";
+import { isUnsupportedIosBrowser } from "../../modules/download-helpers";
+import PopUpMessage from "../PopUpMessage/PopUpMessage";
+
+const isUnsupportedBrowser = isUnsupportedIosBrowser();
+
 export default function Startpage({ setPickedAddress, isMobile }) {
   return (
     <>
       <Topbar isStartpage={true} isMobile={isMobile} />
       <main className="main--start">
+        {isUnsupportedBrowser && <PopUpMessage message="ios-browser" />}
         <div className="main-start__content">
           <h1 className="heading">Välkommen till Kartbetjänten</h1>
           <p className="text">

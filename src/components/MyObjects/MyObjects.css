@@ -145,6 +145,7 @@
   border-radius: 100vmax;
   justify-self: center;
   cursor: pointer;
+  font-size: 0.825rem;
 }
 
 .my-objects__btn-clear:disabled {

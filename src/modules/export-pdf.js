@@ -1,5 +1,21 @@
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
+import { downloadBlobCrossBrowser } from "./download-helpers";
+
+// src/utils/downloadHelpers.js
+
+export function isIosChrome() {
+  if (typeof navigator === "undefined") return false;
+  const ua = navigator.userAgent || "";
+  const isIOS = /iP(hone|od|ad)/.test(ua);
+  return isIOS && /CriOS/.test(ua);
+}
+
+/**
+ * Cross-browser download helper for Blobs.
+ * - Normal browsers: uses <a download> with blob URL.
+ * - iOS Chrome: uses FileReader + window.location.href to open the file inline.
+ */
 
 /**
  * Draw a DOM node to an Image (via html2canvas), then blit onto `ctx`
@@ -133,7 +149,8 @@ export async function exportMainViewportToPdf(
   const dx = (pageW - drawW) / 2;
   const dy = marginMm + headerBlockMm; // map starts below header
 
-  const dataUrl = outCanvas.toDataURL("image/png");
+  const jpegQuality = 0.92; // 0..1 (try 0.85–0.95)
+  const dataUrl = outCanvas.toDataURL("image/jpeg", jpegQuality);
 
   // Optional header text (title/address) – PDF only
   if (headerText) {
@@ -145,6 +162,7 @@ export async function exportMainViewportToPdf(
     doc.text(headerText, pageW / 2, textY, { align: "center" });
   }
 
-  doc.addImage(dataUrl, "PNG", dx, dy, drawW, drawH);
-  doc.save(filename);
+  doc.addImage(dataUrl, "JPEG", dx, dy, drawW, drawH);
+  const blob = doc.output("blob");
+  downloadBlobCrossBrowser(blob, filename);
 }

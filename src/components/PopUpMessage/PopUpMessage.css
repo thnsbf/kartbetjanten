@@ -1,0 +1,11 @@
+.popup-msg-wrapper {
+  background: var(--c-popup-lighter);
+  border: 2px solid var(--c-popup-darker);
+  margin-top: 20px;
+  padding: 8px;
+}
+
+.popup-msg__text {
+  color: var(--c-text-black);
+  margin: 0;
+}

@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import "./DownloadButton.css";
+import { isUnsupportedIosBrowser } from "../../modules/download-helpers";
+
 export default function DownloadButton({
   isMobile,
   onClickPdf,
@@ -8,6 +10,8 @@ export default function DownloadButton({
 }) {
   const [open, setOpen] = useState(false);
   const wrapperRef = useRef(null);
+
+  const unsupportedIosBrowser = isUnsupportedIosBrowser();
 
   function toggleOpen(e) {
     e.stopPropagation();
@@ -27,9 +31,23 @@ export default function DownloadButton({
     return () => document.removeEventListener("click", onDocClick);
   }, []);
 
+  const showIosWarning = (kind) => {
+    alert(
+      `Nedladdning av ${kind} fungerar tyvärr inte i den här webbläsaren på iPhone.\n\n` +
+        `Öppna sidan i Safari om du vill ladda ner filen.`
+    );
+  };
+
   const handlePdf = (e) => {
     e.preventDefault();
     e.stopPropagation();
+
+    if (unsupportedIosBrowser) {
+      showIosWarning("PDF");
+      close();
+      return;
+    }
+
     (onClickPdf || onClick)?.();
     close();
   };
@@ -37,6 +55,13 @@ export default function DownloadButton({
   const handleJson = (e) => {
     e.preventDefault();
     e.stopPropagation();
+
+    if (unsupportedIosBrowser) {
+      showIosWarning("JSON");
+      close();
+      return;
+    }
+
     onClickJson?.();
     close();
   };

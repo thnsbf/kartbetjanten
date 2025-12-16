@@ -56,6 +56,9 @@
 
   --c-info: var(--yellow-300);
 
+  --c-popup-darker: var(--red-500);
+  --c-popup-lighter: var(--red-300);
+
   --black-700: rgba(41, 41, 41, 1);
   --white-100: rgba(255, 255, 255, 1);
   --grey-300: rgba(240, 240, 240, 1);

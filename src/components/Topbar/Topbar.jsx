@@ -50,7 +50,7 @@ export default function Topbar({
                 ? "icon-hamburger--darkpurple.svg"
                 : "thn_logo_liggande_lila_rgb.svg"
             }
-            alt="Trollhättans Stads logo"
+            alt="Trollhättans stads logo"
             style={{ maxWidth: "184px" }}
           />
         </div>
