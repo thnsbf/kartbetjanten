@@ -68,11 +68,9 @@ export default function Mainpage({
 
   const [activeTool, setActiveTool] = useState("no-tool");
 
-  // >>> Core fix: uiTick forces SidebarRight (and MyObjects) to re-render on any change
   const [uiTick, setUiTick] = useState(0);
   const entitiesUpdateUI = useCallback(() => setUiTick((t) => t + 1), []);
 
-  // Register entities created by tools
   const setEntitiesRef = useCallback(
     (uuid, entity) => {
       entitiesRef.current.set(uuid, entity);
@@ -89,7 +87,6 @@ export default function Mainpage({
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // --- Snapshot all entity positions when MoveTool is activated ---
   useEffect(() => {
     const v = viewerRef.current;
     if (!v) return;
@@ -121,7 +118,6 @@ export default function Mainpage({
     }
   }, [activeTool]);
 
-  // Fly to new picked address on change
   useEffect(() => {
     const v = viewerRef.current;
     if (!v || !pickedAddress?.geometry?.coordinates) return;
@@ -152,11 +148,11 @@ export default function Mainpage({
         case "Linje": {
           ent.show = v;
           toggleArray(ch.points, v);
+
+          // ✅ independent segment vs total
           toggleArray(ch.labels, v && !!draft.showValues);
-          toggleOne(
-            ch.totalLabel,
-            v && (draft.showTotal ?? draft.showValues ?? true)
-          );
+          toggleOne(ch.totalLabel, v && (draft.showTotalLabel ?? true));
+
           break;
         }
         case "Area": {
@@ -191,7 +187,6 @@ export default function Mainpage({
     [entitiesUpdateUI]
   );
 
-  // Hard-delete all inactive
   const removeAllInactiveEntitiesRef = useCallback(() => {
     const v = viewerRef.current;
     if (!v) return;
@@ -266,7 +261,6 @@ export default function Mainpage({
   function readPosition(ent, time) {
     const p = ent?.position;
     return p?.getValue ? p.getValue(time) : p;
-    // returns Cartesian3 or undefined
   }
 
   const handleDownloadGeoJSON = useCallback(() => {
@@ -279,10 +273,8 @@ export default function Mainpage({
     const features = [];
 
     for (const [uuid, ent] of entitiesRef.current.entries()) {
-      // Only export active/visible items
       if (!ent?.isActive || ent.show === false) continue;
 
-      // Normalize a type for properties
       const typeGuess =
         ent.type ??
         (ent.polyline
@@ -293,7 +285,6 @@ export default function Mainpage({
           ? "Text"
           : "Punkt");
 
-      // Punkt or Text → Point
       if (
         (ent.point || ent.billboard || ent.label) &&
         !ent.polyline &&
@@ -316,9 +307,7 @@ export default function Mainpage({
           geometry: { type: "Point", coordinates: [lon, lat] },
           properties: props,
         });
-      }
-      // Linje → LineString
-      else if (ent.polyline) {
+      } else if (ent.polyline) {
         const arr = readPolylinePositions(ent, time);
         if (!arr?.length) continue;
         const coords = arr.map((c) => cartesianToLonLat(c, ellipsoid));
@@ -330,13 +319,10 @@ export default function Mainpage({
             type: typeGuess,
           },
         });
-      }
-      // Area → Polygon
-      else if (ent.polygon) {
+      } else if (ent.polygon) {
         const arr = readPolygonPositions(ent, time);
         if (!arr?.length) continue;
         let coords = arr.map((c) => cartesianToLonLat(c, ellipsoid));
-        // Ensure ring closure
         if (coords.length > 2) {
           const first = coords[0];
           const last = coords[coords.length - 1];
@@ -357,7 +343,6 @@ export default function Mainpage({
 
     const fc = { type: "FeatureCollection", features };
 
-    // 🔴 This is the only part that changes:
     const blob = new Blob([JSON.stringify(fc, null, 2)], {
       type: "application/geo+json",
     });
@@ -377,7 +362,6 @@ export default function Mainpage({
     if (!ent || !viewer || !Array.isArray(positions)) return;
 
     const ch = (ent.__children ||= {});
-    // Remove old point entities (from the edited session)
     if (Array.isArray(ch.points)) {
       for (const p of ch.points) {
         try {
@@ -387,7 +371,6 @@ export default function Mainpage({
     }
     ch.points = [];
 
-    // Recreate from the reverted positions
     const g = pointGraphicsFromDraft(ent.__draft || {});
     const showPts = !!ent.__draft?.showPoints;
 
@@ -409,7 +392,6 @@ export default function Mainpage({
 
     const ch = (ent.__children ||= {});
 
-    // Remove old point entities
     if (Array.isArray(ch.points)) {
       for (const p of ch.points) {
         try {
@@ -419,7 +401,6 @@ export default function Mainpage({
     }
     ch.points = [];
 
-    // Styling from draft (fallbacks)
     const ps = ent.__draft?.pointSize ?? 8;
     const pc = ent.__draft?.pointColor ?? "#0066ff";
 
@@ -448,7 +429,6 @@ export default function Mainpage({
     ent.__children = ch;
   }
 
-  // --- Snapshot helpers (static arrays from Cesium properties) ---
   function snapshotPolygonPositions(ent, viewer) {
     const t = viewer?.clock?.currentTime;
     const h = ent?.polygon?.hierarchy;
@@ -514,7 +494,6 @@ export default function Mainpage({
     ent.polyline.positions = positions.slice();
   }
 
-  // --- Revert helper for MoveTool (restore from snapshot) ---
   const revertMoveToolChanges = useCallback(() => {
     const v = viewerRef.current;
     const snap = moveSnapshotRef.current;
@@ -557,10 +536,8 @@ export default function Mainpage({
     v.scene.requestRender();
   }, [entitiesUpdateUI]);
 
-  // ---------------- Right Pane routing (edits in SidebarRight) ----------------
   const [rightPane, setRightPane] = useState({ kind: "list" });
 
-  // Draft state per kind
   const [textDraft, setTextDraft] = useState({
     text: "",
     color: "#ffffff",
@@ -568,14 +545,19 @@ export default function Mainpage({
     fontSize: 20,
     backgroundEnabled: true,
   });
+
+  // ✅ include showTotalLabel + showPoints in draft state
   const [lineDraft, setLineDraft] = useState({
     lineColor: "#ff3b30",
     lineWidth: 3,
     lineType: "solid",
     pointColor: "#0066ff",
     pointSize: 8,
-    showValues: true,
+    showValues: false,
+    showTotalLabel: false,
+    showPoints: true,
   });
+
   const [areaDraft, setAreaDraft] = useState(null);
   const [markerDraft, setMarkerDraft] = useState({
     pixelSize: 10,
@@ -584,11 +566,8 @@ export default function Mainpage({
     outlineWidth: 2,
   });
 
-  // --- Continue drawing session state ----------------------------------------
-  // { kind: "line" | "area", uuid: string, originalPositions: Cartesian3[] } | null
   const [continueDrawState, setContinueDrawState] = useState(null);
 
-  // Clear any "continue draw" session when we leave drawing tools
   useEffect(() => {
     const isDrawingTool =
       activeTool === "draw-lines" || activeTool === "draw-area";
@@ -670,20 +649,16 @@ export default function Mainpage({
     [entitiesUpdateUI]
   );
 
-  // --- Continue drawing helpers (triggered from modals) -----------------------
   const startContinueDrawForLine = useCallback(() => {
     const v = viewerRef.current;
     if (!v || rightPane.kind !== "edit-line") return;
 
-    // 1) Commit any live junction-edit geometry and clean up handlers
-    //    (so a stale _state can’t overwrite our line later)
     stopEdit();
 
     const uuid = rightPane.uuid;
     const ent = entitiesRef.current.get(uuid);
     if (!ent || !ent.polyline) return;
 
-    // 2) Snapshot the CURRENT line geometry as the baseline for “continue draw”
     const positions = snapshotPolylinePositions(ent, v);
     if (!positions || !positions.length) return;
 
@@ -693,7 +668,6 @@ export default function Mainpage({
       originalPositions: positions,
     });
 
-    // 3) Switch into the drawing tool; DrawLines + ActiveToolModal take over
     setActiveTool("draw-lines");
   }, [rightPane, setActiveTool]);
 
@@ -701,14 +675,12 @@ export default function Mainpage({
     const v = viewerRef.current;
     if (!v || rightPane.kind !== "edit-area") return;
 
-    // 1) Commit any live junction-edit geometry
     stopEdit();
 
     const uuid = rightPane.uuid;
     const ent = entitiesRef.current.get(uuid);
     if (!ent || !ent.polygon) return;
 
-    // 2) Snapshot the CURRENT polygon positions as baseline
     const positions = snapshotPolygonPositions(ent, v);
     if (!positions || !positions.length) return;
 
@@ -718,11 +690,9 @@ export default function Mainpage({
       originalPositions: positions,
     });
 
-    // 3) Switch to area drawing tool
     setActiveTool("draw-area");
   }, [rightPane, setActiveTool]);
 
-  // Confirm handlers (edits)
   const confirmTextEdit = useCallback(() => {
     const uuid = rightPane.uuid;
     const ent = entitiesRef.current.get(uuid);
@@ -741,18 +711,14 @@ export default function Mainpage({
     const v = viewerRef.current;
     if (!ent || !v) return setRightPane({ kind: "list" });
 
-    // 1) Snapshot CURRENT geometry (including any continue-draw changes)
     let confirmedPositions = snapshotPolylinePositions(ent, v) || [];
 
-    // 2) Clean up edit session (junction drag, etc.)
     stopEdit();
 
-    // 3) If for some reason snapshot failed, fall back to whatever is on the entity now
     if (!confirmedPositions.length) {
       confirmedPositions = snapshotPolylinePositions(ent, v) || [];
     }
 
-    // 4) FIRST: re-apply the confirmed geometry to the entity
     if (confirmedPositions.length) {
       applyPolylinePositions(ent, confirmedPositions);
       ent.__positions = confirmedPositions.slice();
@@ -761,9 +727,8 @@ export default function Mainpage({
       ent.__edit.originalPositions = confirmedPositions.slice();
     }
 
-    // 5) THEN: apply visual draft (color, width, labels, etc.)
+    // ✅ apply draft (segment + total are independent now)
     applyDraftToLineEntity(ent, lineDraft, v);
-    setLineLabelsVisibility(ent, !!lineDraft.showValues, v);
 
     ent.lastUpdated = new Date().toISOString();
     ent.isActive = true;
@@ -773,7 +738,6 @@ export default function Mainpage({
   }, [rightPane, lineDraft, entitiesUpdateUI]);
 
   const cancelActiveToolWithRevert = useCallback(() => {
-    // Cancel → revert per-tool
     if (activeTool === "move-object") {
       revertMoveToolChanges();
     }
@@ -790,7 +754,6 @@ export default function Mainpage({
 
         if (ent && Array.isArray(originalPositions)) {
           if (kind === "line" && ent.polyline) {
-            // Revert geometry
             applyPolylinePositions(ent, originalPositions);
             rebuildLineJunctionPoints(ent, v, originalPositions);
             try {
@@ -798,11 +761,9 @@ export default function Mainpage({
               upsertTotalLengthLabel(ent, v);
             } catch {}
 
-            // 🔧 NEW: also reset the edit baseline
             ent.__edit = ent.__edit || {};
             ent.__edit.originalPositions = originalPositions.slice();
           } else if (kind === "area" && ent.polygon) {
-            // Revert geometry
             applyPolygonPositions(ent, originalPositions);
             rebuildAreaJunctionPoints(
               ent,
@@ -818,7 +779,6 @@ export default function Mainpage({
             } catch {}
 
             ent.show = true;
-            // 🔧 NEW: also reset the edit baseline
             ent.__edit = ent.__edit || {};
             ent.__edit.originalPositions = originalPositions.slice();
           }
@@ -830,7 +790,7 @@ export default function Mainpage({
       }
 
       setContinueDrawState(null);
-      setRightPane({ kind: "list" }); // cancel also returns to list
+      setRightPane({ kind: "list" });
     }
 
     setActiveTool("no-tool");
@@ -888,7 +848,14 @@ export default function Mainpage({
         if (rightPane.kind === "edit-line" && ent.polyline) {
           applyPolylinePositions(ent, ent.__edit.originalPositions);
           rebuildLineJunctionPoints(ent, v, ent.__edit.originalPositions);
+
+          // ✅ now this only affects segment labels (not total)
           setLineLabelsVisibility(ent, !!ent.__draft?.showValues, v);
+
+          // ensure total label reflects draft (position/text updated, visibility respected)
+          try {
+            upsertTotalLengthLabel(ent, v);
+          } catch {}
         } else if (rightPane.kind === "edit-area" && ent.polygon) {
           applyPolygonPositions(ent, ent.__edit.originalPositions);
           if (ent.__children?.points?.length) {
@@ -914,7 +881,6 @@ export default function Mainpage({
     setRightPane({ kind: "list" });
   }, [rightPane]);
 
-  // ---------------- PLACE TEXT flow (AddText → SidebarRight modal) ------------
   const [placeTextState, setPlaceTextState] = useState({
     open: false,
     position: null,
@@ -1023,7 +989,6 @@ export default function Mainpage({
     setActiveTool("no-tool");
   }, []);
 
-  // ---------------- SidebarRight content (NO useMemo: depend on uiTick) -------
   function renderRightPane() {
     if (activeTool !== "no-tool" && !placeTextState.open) {
       const isMoveTool = activeTool === "move-object";
@@ -1041,15 +1006,11 @@ export default function Mainpage({
               (activeTool === "draw-lines" || activeTool === "draw-area") &&
               !!continueDrawState;
 
-            // Confirm → keep changes
             if (isMoveTool) {
-              // Move tool: discard snapshot
               moveSnapshotRef.current = null;
             }
 
             if (isContinueDrawing) {
-              // Drawing tools have already finalized geometry in DrawLines/DrawArea.
-              // Clear continue-draw session and close any edit pane → go back to list.
               setContinueDrawState(null);
               setRightPane({ kind: "list" });
             }

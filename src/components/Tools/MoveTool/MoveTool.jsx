@@ -366,7 +366,6 @@ export default function MoveTool({
 
     handler.setInputAction(() => {
       if (!draggingRef.current) {
-        onCancel?.();
         return;
       }
 

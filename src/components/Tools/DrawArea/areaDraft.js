@@ -19,9 +19,9 @@ export const defaultAreaDraft = {
   fillOpacity: 0.25, // NEW: opacity 0..1
   outlineColor: "#ff3b30",
   outlineWidth: 2,
-  showAreaLabel: true,
+  showAreaLabel: false,
   showPoints: false,
-  showEdgeValues: true,
+  showEdgeValues: false,
 };
 
 // ---------- small utils ----------

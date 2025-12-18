@@ -1,0 +1,16 @@
+.tooltip-li-item {
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  gap: 4px;
+}
+
+.tooltip-li-item__text {
+  margin: 0;
+}
+
+.tooltip-icon {
+  transform: rotate(270deg);
+  width: 12px;
+  height: auto;
+  margin-block-start: 5px;
+}

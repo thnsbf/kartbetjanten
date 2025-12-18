@@ -24,9 +24,9 @@ import {
 export default function DrawLines({
   viewer,
   active,
-  onCancel, // () => setActiveTool("no-tool")
-  setEntitiesRef, // (uuid, ent) => void
-  entitiesUpdateUI, // () => void
+  onCancel,
+  setEntitiesRef,
+  entitiesUpdateUI,
   entitiesRef,
   continueDrawState,
 }) {
@@ -63,12 +63,10 @@ export default function DrawLines({
     return [];
   }, false);
 
-  // Helper: set cursor on Cesium canvas
   function setCursor(canvas, value) {
     if (canvas) canvas.style.cursor = value;
   }
 
-  // Helper: broadcast "do we have any points yet?"
   function notifyDrawingState() {
     const hasPoints = (committedPositionsRef.current || []).length > 0;
     window.dispatchEvent(
@@ -190,7 +188,6 @@ export default function DrawLines({
     if (!v) return;
     const positions = committedPositionsRef.current;
     if (!Array.isArray(positions) || positions.length < 2) {
-      // nothing to finalize
       clearTemps(v);
       removeCommittedLine(v);
       restoreEditingEntityVisibility();
@@ -211,18 +208,14 @@ export default function DrawLines({
       const { uuid } = continueDrawState;
       const ent = editingEntRef.current || entitiesRef.current.get(uuid);
 
-      if (!ent || !ent.polyline) {
-        // fallback to "new line" behavior
-      } else {
-        const merged = committedPositionsRef.current.slice(); // full edited line
+      if (ent && ent.polyline) {
+        const merged = committedPositionsRef.current.slice();
 
-        // Update polyline geometry
         ent.polyline.positions = merged;
         ent.__positions = merged;
         ent.__edit = ent.__edit || {};
         ent.__edit.originalPositions = merged.slice();
 
-        // Attach newly created junction points to this entity
         const ch = (ent.__children ||= {});
         const existingPoints = Array.isArray(ch.points) ? ch.points : [];
         for (const p of pointEntsRef.current) {
@@ -233,21 +226,18 @@ export default function DrawLines({
         ch.points = existingPoints;
         ent.__children = ch;
 
-        // Rebuild labels based on the new geometry
         rebuildCommittedLabels(ent, v);
         upsertTotalLengthLabel(ent, v);
 
         ent.isActive = true;
         ent.lastUpdated = new Date().toISOString();
 
-        // Show the entity again (we hid it when continuing)
         ent.show = true;
         editingEntRef.current = null;
 
         entitiesUpdateUI?.();
         v.scene.requestRender?.();
 
-        // Cleanup tool state
         clearTemps(v);
         removeCommittedLine(v);
         committedPositionsRef.current = [];
@@ -255,14 +245,13 @@ export default function DrawLines({
         mouseCartesianRef.current = null;
         notifyDrawingState();
         setCursor(v.scene.canvas, "default");
-        onCancel?.(); // exit tool; ActiveToolModal will still handle Confirm/Cancel
+        onCancel?.();
         return;
       }
+      // fallback continues into "new line" creation
     }
 
     // ---------------- CREATE NEW LINE PATH ----------------
-
-    // Clear temps
     clearTemps(v);
     removeCommittedLine(v);
 
@@ -289,15 +278,17 @@ export default function DrawLines({
       temp: null,
     };
 
+    // ✅ independent toggles
     if (draftRef.current.showValues) {
       rebuildCommittedLabels(ent, v);
+    }
+    if (draftRef.current.showTotalLabel) {
       upsertTotalLengthLabel(ent, v);
     }
 
     setEntitiesRef?.(uuid, ent);
     entitiesUpdateUI?.();
 
-    // reset temp arrays (the created point entities now belong to ent)
     committedPositionsRef.current = [];
     pointEntsRef.current = [];
     mouseCartesianRef.current = null;
@@ -308,7 +299,6 @@ export default function DrawLines({
     onCancel?.();
   }
 
-  // Cursor sync when tool becomes active/inactive
   useEffect(() => {
     if (!viewer) return;
     const canvas = viewer.scene?.canvas;
@@ -331,12 +321,8 @@ export default function DrawLines({
     const handler = new ScreenSpaceEventHandler(canvas);
     handlerRef.current = handler;
 
-    // External finish signal (from ActiveToolModal)
-    const onFinish = () => {
-      finishLine();
-    };
+    const onFinish = () => finishLine();
 
-    // External UNDO signal (from ActiveToolModal)
     const undoLastPoint = () => {
       const pts = committedPositionsRef.current;
       if (!pts.length) {
@@ -353,17 +339,14 @@ export default function DrawLines({
         return;
       }
 
-      // Remove last committed vertex
       pts.pop();
       committedPositionsRef.current = pts;
 
-      // Remove last junction point entity *we* created
       const lastPoint = pointEntsRef.current.pop();
       if (lastPoint) v.entities.remove(lastPoint);
 
       notifyDrawingState();
 
-      // If no points left, behave like cancel
       if (pts.length === 0) {
         clearTemps(v);
         removeCommittedLine(v);
@@ -377,14 +360,12 @@ export default function DrawLines({
     window.addEventListener("kb:finish-active-tool", onFinish);
     window.addEventListener("kb:undo-active-tool", undoLastPoint);
 
-    // ---------------- INIT STATE FOR THIS SESSION ----------------
     committedPositionsRef.current = [];
     pointEntsRef.current = [];
     mouseCartesianRef.current = null;
     committedLineRef.current = null;
     editingEntRef.current = null;
 
-    // CONTINUE DRAW: seed positions, remove old children, hide original entity
     if (isContinuingLine && continueDrawState?.uuid && entitiesRef?.current) {
       const { uuid, originalPositions } = continueDrawState;
       if (Array.isArray(originalPositions) && originalPositions.length > 0) {
@@ -394,11 +375,8 @@ export default function DrawLines({
       const ent = entitiesRef.current.get(uuid);
       if (ent) {
         editingEntRef.current = ent;
-
-        // Hide the original line while we show the preview only
         ent.show = false;
 
-        // Remove old junction points + labels from this entity
         const ch = ent.__children || {};
         if (Array.isArray(ch.points)) {
           for (const p of ch.points) {
@@ -427,7 +405,6 @@ export default function DrawLines({
         ent.__children = ch;
       }
 
-      // Create preview + our own junction points based on the current positions
       if (committedPositionsRef.current.length > 0) {
         ensureCommittedLine(v);
         for (const pos of committedPositionsRef.current) {
@@ -438,12 +415,10 @@ export default function DrawLines({
 
     notifyDrawingState();
 
-    // Disable Cesium default double-click zoom
     v.screenSpaceEventHandler?.removeInputAction?.(
       ScreenSpaceEventType.LEFT_DOUBLE_CLICK
     );
 
-    // LEFT_CLICK: commit a point
     handler.setInputAction((e) => {
       const p = v.camera.pickEllipsoid(e.position, v.scene.globe.ellipsoid);
       if (!p) return;
@@ -459,7 +434,6 @@ export default function DrawLines({
       notifyDrawingState();
     }, ScreenSpaceEventType.LEFT_CLICK);
 
-    // LEFT_DOUBLE_CLICK: finish the line
     handler.setInputAction(() => {
       const pts = committedPositionsRef.current;
       if (pts.length >= 2) {
@@ -476,12 +450,10 @@ export default function DrawLines({
       finishLine();
     }, ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
 
-    // RIGHT_CLICK: undo last point (or cancel if none)
     handler.setInputAction(() => {
       undoLastPoint();
     }, ScreenSpaceEventType.RIGHT_CLICK);
 
-    // MOUSE_MOVE: update rubber & label
     handler.setInputAction((movement) => {
       const m = v.camera.pickEllipsoid(
         movement.endPosition,
@@ -498,7 +470,6 @@ export default function DrawLines({
       }
     }, ScreenSpaceEventType.MOUSE_MOVE);
 
-    // ESC: cancel
     const onKey = (ev) => {
       if (ev.key === "Escape") {
         clearTemps(v);

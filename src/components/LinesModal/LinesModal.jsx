@@ -6,7 +6,7 @@ export default function LinesModal({
   setDraft,
   onConfirm,
   onClose,
-  onContinueDraw, // <-- NEW: optional callback to enter "continue drawing" mode
+  onContinueDraw, // optional callback to enter "continue drawing" mode
   isPlaceLine, // true => "Placera", false => "Redigera"
 }) {
   if (!open) return null;
@@ -134,11 +134,11 @@ export default function LinesModal({
         </label>
       </div>
 
-      {/* Row 2: Point color, Point size, Show values */}
+      {/* Row 2: Point color, Point size, Show segment values, Show total */}
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "60px 60px 1fr",
+          gridTemplateColumns: "60px 60px",
           gap: 12,
           alignItems: "center",
           marginBottom: 16,
@@ -207,6 +207,47 @@ export default function LinesModal({
             }}
           />
         </label>
+      </div>
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: 12,
+          alignItems: "center",
+          marginBottom: 16,
+        }}
+      >
+        <label
+          className="label-text"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 6,
+            alignItems: "center",
+            justifyContent: "flex-start",
+            maxWidth: 120,
+          }}
+          title="Visa längdtext på varje segment"
+        >
+          <span style={{ fontSize: 12, opacity: 0.8, whiteSpace: "nowrap" }}>
+            Visa längd per segment
+          </span>
+          <input
+            type="checkbox"
+            checked={!!draft.showValues}
+            onChange={(e) =>
+              setDraft((d) => ({ ...d, showValues: e.target.checked }))
+            }
+            style={{
+              width: 18,
+              height: 18,
+              marginBlock: "6px",
+              accentColor: "var(--kommunfarg)",
+              cursor: "pointer",
+            }}
+          />
+        </label>
 
         <label
           className="label-text"
@@ -216,16 +257,16 @@ export default function LinesModal({
             gap: 6,
             alignItems: "center",
             justifyContent: "flex-start",
-            maxWidth: 100,
+            maxWidth: 120,
           }}
-          title="Visa längdtext på varje segment"
+          title="Visa total längd för hela linjen"
         >
-          <span style={{ fontSize: 12, opacity: 0.8 }}>Visa längdtext</span>
+          <span style={{ fontSize: 12, opacity: 0.8 }}>Visa total längd</span>
           <input
             type="checkbox"
-            checked={!!draft.showValues}
+            checked={draft.showTotalLabel ?? true}
             onChange={(e) =>
-              setDraft((d) => ({ ...d, showValues: e.target.checked }))
+              setDraft((d) => ({ ...d, showTotalLabel: e.target.checked }))
             }
             style={{
               width: 18,
@@ -248,7 +289,6 @@ export default function LinesModal({
           gap: 10,
         }}
       >
-        {/* Only show "Continue drawing" for edit mode (existing line) */}
         {!isPlaceLine && (
           <button
             type="button"

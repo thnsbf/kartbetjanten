@@ -6,7 +6,6 @@ import {
   Cartesian3,
   Cartesian2,
   PolylineDashMaterialProperty,
-  PolylineOutlineMaterialProperty,
   HeightReference,
 } from "cesium";
 
@@ -18,8 +17,8 @@ export const defaultLineDraft = {
   lineType: "solid", // 'solid' | 'dotted'
   pointColor: "#0066ff",
   pointSize: 8,
-  showValues: true, // per-segment labels
-  showTotalLabel: true, // total length label at end
+  showValues: false, // per-segment labels
+  showTotalLabel: false, // total length label at end
   showPoints: true,
 };
 
@@ -30,13 +29,11 @@ export function toCesiumColor(css) {
 export function materialFromDraft(draft) {
   const color = toCesiumColor(draft.lineColor);
   if (draft.lineType === "dotted") {
-    // Use dashed material (no outline)
     return new PolylineDashMaterialProperty({
       color,
       dashPattern: parseInt("1111000011110000", 2),
     });
   }
-  // Solid (no outline)
   return color;
 }
 
@@ -72,13 +69,11 @@ export function segmentInfo(p0, p1, ellipsoid) {
   return { meters, mid };
 }
 
-function totalLengthMeters(positions, ellipsoid) {
-  let sum = 0;
-  for (let i = 0; i < positions.length - 1; i++) {
-    const { meters } = segmentInfo(positions[i], positions[i + 1], ellipsoid);
-    sum += meters;
-  }
-  return sum;
+function segmentMeters(p0, p1, ellipsoid) {
+  const c0 = Cartographic.fromCartesian(p0, ellipsoid);
+  const c1 = Cartographic.fromCartesian(p1, ellipsoid);
+  const g = new EllipsoidGeodesic(c0, c1);
+  return g.surfaceDistance;
 }
 
 // -------------------- Public rebuilders used by drawing + edit --------------------
@@ -88,7 +83,6 @@ export function rebuildSegmentLabels(ent, viewer) {
   if (!v || !ent) return;
 
   const ch = (ent.__children ||= {});
-  // remove old
   if (Array.isArray(ch.labels)) {
     for (const l of ch.labels) v.entities.remove(l);
   }
@@ -136,11 +130,11 @@ export function rebuildSegmentLabels(ent, viewer) {
 
 export { rebuildSegmentLabels as rebuildCommittedLabels };
 
-// Re-create (or update) the "total length" label near the last point.
-// It respects ent.__draft?.showValues: if false, the label is hidden.
+// ✅ total label respects showTotalLabel (independent of showValues)
 export function upsertTotalLengthLabel(ent, viewer) {
-  if (!viewer || !viewer.scene) return;
-  const showValues = !!ent.__draft?.showValues;
+  if (!viewer || !viewer.scene || !ent?.polyline) return;
+
+  const showTotal = ent.__draft?.showTotalLabel ?? true;
 
   const time = viewer.clock.currentTime;
   const posProp = ent.polyline?.positions;
@@ -151,14 +145,12 @@ export function upsertTotalLengthLabel(ent, viewer) {
     : [];
 
   if (!Array.isArray(positions) || positions.length < 2) {
-    // Nothing to show; hide/remove if it exists
     if (ent.__children?.totalLabel) {
       ent.__children.totalLabel.show = false;
     }
     return;
   }
 
-  // Sum geodesic lengths
   const ellipsoid = viewer.scene.globe.ellipsoid;
   let totalMeters = 0;
   for (let i = 1; i < positions.length; i++) {
@@ -184,44 +176,30 @@ export function upsertTotalLengthLabel(ent, viewer) {
         pixelOffset: new Cartesian2(0, -18),
         disableDepthTestDistance: Number.POSITIVE_INFINITY,
       },
-      show: showValues, // tie initial visibility to showValues
+      show: !!showTotal,
     });
     ch.totalLabel.__parent = ent;
   } else {
     ch.totalLabel.position = last;
     ch.totalLabel.label.text = text;
-    ch.totalLabel.show = showValues;
+    ch.totalLabel.show = !!showTotal;
   }
 
   ent.__children = ch;
 }
 
-// helper used above (keep near your other helpers)
-function segmentMeters(p0, p1, ellipsoid) {
-  const c0 = Cartographic.fromCartesian(p0, ellipsoid);
-  const c1 = Cartographic.fromCartesian(p1, ellipsoid);
-  const g = new EllipsoidGeodesic(c0, c1);
-  return g.surfaceDistance;
-}
-
-// Toggle ALL labels (per-segment AND total) together based on `visible`.
-// If turning ON and labels don't exist yet, they are rebuilt/upserted.
+// ✅ ONLY toggles segment labels (showValues). Does NOT touch total.
 export function setLineLabelsVisibility(ent, visible, viewer) {
   const ch = (ent.__children ||= {});
   ent.__draft = { ...(ent.__draft || {}), showValues: !!visible };
 
   if (!visible) {
-    // hide existing labels if present
     if (Array.isArray(ch.labels)) for (const l of ch.labels) l.show = false;
-    if (ch.totalLabel) ch.totalLabel.show = false;
     return;
   }
 
-  // ensure they exist & are visible
-  rebuildSegmentLabels(ent, viewer); // will set labels and mark visible
-  upsertTotalLengthLabel(ent, viewer);
+  rebuildSegmentLabels(ent, viewer);
   if (Array.isArray(ch.labels)) for (const l of ch.labels) l.show = true;
-  if (ch.totalLabel) ch.totalLabel.show = true;
 }
 
 // -------------------- Creation-time helpers --------------------
@@ -242,6 +220,7 @@ export function draftFromLineEntity(ent) {
 
 export function applyDraftToLineEntity(ent, draft, viewer) {
   ent.__draft = { ...draft };
+
   // main line
   ent.polyline.material = materialFromDraft(draft);
   ent.polyline.width = draft.lineWidth;
@@ -259,7 +238,7 @@ export function applyDraftToLineEntity(ent, draft, viewer) {
     p.show = !!draft.showPoints;
   }
 
-  // labels: per-segment + total
+  // segment labels
   if (!draft.showValues) {
     if (ent.__children?.labels) {
       for (const l of ent.__children.labels) viewer?.entities.remove(l);
@@ -267,48 +246,86 @@ export function applyDraftToLineEntity(ent, draft, viewer) {
     }
   } else {
     rebuildSegmentLabels(ent, viewer);
+    if (Array.isArray(ent.__children?.labels)) {
+      for (const l of ent.__children.labels) l.show = true;
+    }
   }
+
+  // total label
   if (!draft.showTotalLabel) {
     if (ent.__children?.totalLabel) {
       viewer?.entities.remove(ent.__children.totalLabel);
       ent.__children.totalLabel = null;
     }
   } else {
-    upsertTotalLengthLabel(ent, viewer, true);
+    upsertTotalLengthLabel(ent, viewer);
+    if (ent.__children?.totalLabel) ent.__children.totalLabel.show = true;
   }
+
   ent.lastUpdated = new Date().toISOString();
-  setLineLabelsVisibility(ent, !!draft.showValues, viewer);
 }
 
 // -------------------- Restore helpers used when toggling show --------------------
 
 /**
  * Get static positions array for a finished line.
- * We prefer ent.__positions saved at creation; otherwise read from polyline.
+ * Prefer live polyline positions; fall back to ent.__positions snapshot.
  */
 function getLinePositions(ent, viewer) {
   const posProp = ent.polyline?.positions;
 
-  // 1. Prefer the *live* polyline positions (important during drag-edit)
   if (posProp) {
     try {
       const val = posProp.getValue
         ? posProp.getValue(viewer?.clock?.currentTime)
         : posProp;
-      if (Array.isArray(val) && val.length) {
-        return val;
-      }
-    } catch {
-      // ignore and fall back below
-    }
+      if (Array.isArray(val) && val.length) return val;
+    } catch {}
   }
 
-  // 2. Fall back to last confirmed snapshot if needed (for rehydration)
   if (Array.isArray(ent.__positions) && ent.__positions.length) {
     return ent.__positions;
   }
 
   return null;
+}
+
+/**
+ * Rebuild junction point entities from the line's positions.
+ * (This replaces the nonexistent rebuildOrCreateJunctionPoints you don’t have.)
+ */
+function rebuildJunctionPointsFromPositions(ent, viewer) {
+  if (!ent || !viewer) return;
+
+  const positions = getLinePositions(ent, viewer);
+  if (!Array.isArray(positions) || positions.length === 0) return;
+
+  const ch = (ent.__children ||= {});
+
+  // Remove old points if any
+  if (Array.isArray(ch.points)) {
+    for (const p of ch.points) {
+      try {
+        if (p) viewer.entities.remove(p);
+      } catch {}
+    }
+  }
+  ch.points = [];
+
+  const g = pointGraphicsFromDraft(ent.__draft || defaultLineDraft);
+  const showPts = !!(ent.__draft?.showPoints ?? true);
+
+  for (const pos of positions) {
+    const pointEnt = viewer.entities.add({
+      position: pos,
+      point: g,
+      show: showPts,
+    });
+    pointEnt.__parent = ent;
+    ch.points.push(pointEnt);
+  }
+
+  ent.__children = ch;
 }
 
 /**
@@ -318,24 +335,25 @@ function getLinePositions(ent, viewer) {
  */
 export function rehydrateLineChildrenIfMissing(ent, viewer) {
   const ch = (ent.__children ||= {});
-  const wantLabels = !!ent.__draft?.showValues;
+  const wantSeg = !!ent.__draft?.showValues;
+  const wantTotal = ent.__draft?.showTotalLabel ?? true;
 
   // Points
   if (!Array.isArray(ch.points) || ch.points.length === 0) {
-    rebuildOrCreateJunctionPoints(ent, viewer); // your existing point re-creator
+    rebuildJunctionPointsFromPositions(ent, viewer);
   }
 
   // Segment labels
-  if (wantLabels && (!Array.isArray(ch.labels) || ch.labels.length === 0)) {
+  if (wantSeg && (!Array.isArray(ch.labels) || ch.labels.length === 0)) {
     rebuildSegmentLabels(ent, viewer);
   }
 
-  // Total label
+  // Total label (will show/hide based on showTotalLabel)
   upsertTotalLengthLabel(ent, viewer);
 
   // Apply visibility
-  if (Array.isArray(ch.labels)) for (const l of ch.labels) l.show = wantLabels;
-  if (ch.totalLabel) ch.totalLabel.show = wantLabels;
+  if (Array.isArray(ch.labels)) for (const l of ch.labels) l.show = wantSeg;
+  if (ch.totalLabel) ch.totalLabel.show = !!wantTotal;
 
   ent.__children = ch;
 }
@@ -352,16 +370,15 @@ export function setLineVisibility(ent, show, viewer) {
   const ch = (ent.__children ||= {});
 
   if (show) {
-    // Ensure children exist and reflect draft
     rehydrateLineChildrenIfMissing(ent, viewer);
 
     if (Array.isArray(ch.points))
       for (const p of ch.points) p.show = !!ent.__draft?.showPoints;
     if (Array.isArray(ch.labels))
       for (const l of ch.labels) l.show = !!ent.__draft?.showValues;
-    if (ch.totalLabel) ch.totalLabel.show = !!ent.__draft?.showTotalLabel;
+    if (ch.totalLabel)
+      ch.totalLabel.show = !!(ent.__draft?.showTotalLabel ?? true);
   } else {
-    // Just hide – do not remove, so we can re-show later
     if (Array.isArray(ch.points)) for (const p of ch.points) p.show = false;
     if (Array.isArray(ch.labels)) for (const l of ch.labels) l.show = false;
     if (ch.totalLabel) ch.totalLabel.show = false;
