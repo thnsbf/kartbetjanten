@@ -124,16 +124,10 @@ select {
   gap: 2px;
 }
 
-.button:hover {
-}
-
 .button--primary {
   background: var(--c-btn-background--primary);
   border-color: var(--c-btn-border--primary);
   color: var(--c-btn-border--primary);
-}
-
-.button--primary:hover {
 }
 
 .button:active {
@@ -219,8 +213,6 @@ select {
   display: inline-block;
   visibility: visible;
   background-color: var(--white-100);
-  /*   border: 2px solid var(--kommunfarg);
- */
   background-repeat: no-repeat;
   background-position: center;
 }
@@ -239,8 +231,6 @@ select {
   min-width: 50px;
 }
 .modal__btn-container {
-  /* position: absolute;
-  bottom: 16px; */
   padding-block: 8px;
 }
 .modal-input__color {

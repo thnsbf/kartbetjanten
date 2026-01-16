@@ -1,7 +1,7 @@
 import "./SearchBar.css";
 import { readJson } from "../../modules/utils";
 
-const ADRESSER = await readJson("json/ADRESSER_251127.json");
+const ADRESSER = await readJson("json/adresser.json");
 console.log(ADRESSER.features[0]);
 
 export default function DropdownMenu({

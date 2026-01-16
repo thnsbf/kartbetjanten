@@ -1,16 +1,48 @@
-# React + Vite
+# Kartbetjänten
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Ändra baskarta: Viewer.jsx 88
+Adresser: GeoJSON (JSON)-fil läggs under public/json med namnet "adresser.json".
 
-Currently, two official plugins are available:
+Format GeoJSON för adresser
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Varje adress ska vara en egen Feature med geometrityp "point", och behöver innehålla unika värden för
 
-## React Compiler
+- Koordinater (coordinates)
+- Adress (ADRESS)
+- Fastighet (FASTIGHET)
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+Exempel:
 
-## Expanding the ESLint configuration
+```{
+	"type" : "FeatureCollection",
+	"name" : "NewFeatureType",
+	"features" : [
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 12.2832492552, 58.2899583603 ]
+			},
+			"properties" : {
+				"ADRESS" : "ALBERTSVÄGEN 1",
+				"FASTIGHET" : "STENNÄSET 1"
+			}
+		},
+		{
+			"type" : "Feature",
+			"geometry" : {
+				"type" : "Point",
+				"coordinates" : [ 12.2820746085, 58.289603655 ]
+			},
+			"properties" : {
+				"ADRESS" : "ALBERTSVÄGEN 2A",
+				"FASTIGHET" : "GRANLIDEN 1"
+			}
+		},
+    ... FLER ADRESSER...
+  ]
+}
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+För att köra i dev-miljö: npm run dev
+För att bygga: npm run build

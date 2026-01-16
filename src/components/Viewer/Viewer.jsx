@@ -1,6 +1,5 @@
 import {
   Viewer,
-  Ion,
   EllipsoidTerrainProvider,
   Rectangle,
   Camera,
@@ -8,12 +7,10 @@ import {
   ScreenSpaceEventType,
   Color,
   ScreenSpaceEventHandler,
-  UrlTemplateImageryProvider,
 } from "cesium";
 import { useEffect, useRef, useState } from "react";
 import "cesium/Build/Cesium/Widgets/widgets.css";
 
-import MouseMoveCoordinates from "../MouseMoveCoordinates/MouseMoveCoordinates";
 import ScaleBar from "../ScaleBar/ScaleBar";
 import { zoomToNextScaleStep } from "../../modules/zoom-to-scale";
 import { zoomTo } from "../../modules/utils";
@@ -41,9 +38,6 @@ const extent = Rectangle.fromDegrees(
 );
 Camera.DEFAULT_VIEW_RECTANGLE = extent;
 Camera.DEFAULT_VIEW_FACTOR = 0;
-
-Ion.defaultAccessToken =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI1NTdkOTBlZi1hODJlLTQ5ODktOTdhZC01NDMxNDU0ZTg1MTMiLCJpZCI6MTE0MzEyLCJpYXQiOjE2NjgwMDE4OTl9.XnYVR35D4XVls91_O2vo72ovO4yOEuk71I2l2Jv-zQs";
 
 export default function Globe({
   pickedAddress,
@@ -160,8 +154,6 @@ export default function Globe({
       v.destroy();
     };
   }, [onReady]);
-
-  // --- NEW: Click-to-edit when no tool is active --------------------------------
 
   // Resolve a clicked child (point/label/etc.) back to its "root" entity
   function resolveRootEntity(pickedEnt) {
