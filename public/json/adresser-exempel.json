@@ -1,0 +1,28 @@
+{
+  "type": "FeatureCollection",
+  "name": "NewFeatureType",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [13.2833, 52.2894]
+      },
+      "properties": {
+        "ADRESS": "EXEMPELVÄGEN 1",
+        "FASTIGHET": "EXEMPLET 1"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [13.2933, 52.2794]
+      },
+      "properties": {
+        "ADRESS": "EXEMPELVÄGEN 2",
+        "FASTIGHET": "EXEMPLET 1"
+      }
+    }
+  ]
+}
