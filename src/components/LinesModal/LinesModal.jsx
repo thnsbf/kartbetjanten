@@ -138,7 +138,7 @@ export default function LinesModal({
       <div
         style={{
           display: "grid",
-          gridTemplateColumns: "60px 60px",
+          gridTemplateColumns: "60px 60px 114px",
           gap: 12,
           alignItems: "center",
           marginBottom: 16,
@@ -204,6 +204,36 @@ export default function LinesModal({
               background: "#fff",
               color: "var(--c-text-black)",
               outlineColor: "var(--blue-700)",
+            }}
+          />
+        </label>
+        <label
+          className="label-text"
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 6,
+            alignItems: "center",
+            justifyContent: "flex-start",
+            maxWidth: 140,
+          }}
+          title="Visa/dölj knutpunkter när linjen är bekräftad"
+        >
+          <span style={{ fontSize: 12, opacity: 0.8, whiteSpace: "nowrap" }}>
+            Visa punkter
+          </span>
+          <input
+            type="checkbox"
+            checked={!!draft.showPoints}
+            onChange={(e) =>
+              setDraft((d) => ({ ...d, showPoints: e.target.checked }))
+            }
+            style={{
+              width: 18,
+              height: 18,
+              marginBlock: "6px",
+              accentColor: "var(--kommunfarg)",
+              cursor: "pointer",
             }}
           />
         </label>

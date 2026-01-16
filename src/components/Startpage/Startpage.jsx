@@ -15,10 +15,6 @@ export default function Startpage({ setPickedAddress, isMobile }) {
         <div className="main-start__content">
           <h1 className="heading">Välkommen till Kartbetjänten</h1>
           <p className="text">
-            Här skapar du en karta till ditt ärende. Kartan uppfyller kraven för
-            enklare tillståndsärenden inom bygg- och miljöområdena.
-            <br />
-            <br />
             Börja med att söka på den adress eller fastighet som ärendet gäller
             i sökrutan här nedan. Om ärendet inte gäller en specifik adress kan
             du välja valfri adress som ingår i fastigheten.
@@ -27,11 +23,18 @@ export default function Startpage({ setPickedAddress, isMobile }) {
           <p className="text">
             <span className="text--bold">OBS!</span> Om du tänker bygga nytt
             eller bygga nära fastighetsgräns krävs en Nybyggnadskarta som
-            beställs hos Kontaktcenter (
-            <a href="kontaktcenter@trollhattan.se">
-              kontaktcenter@trollhattan.se
-            </a>
-            , <a href="tel:0520495000">0520-495000</a>)
+            beställs via vår{" "}
+            <a target="_blank" href="https://minasidor.trollhattan.se/790">
+              e-tjänst
+            </a>{" "}
+            (öppnas i nytt fönster).
+          </p>
+          <p className="text">
+            Skicka gärna utvecklingsförslag och kommentarer till oss via vår{" "}
+            <a target="_blank" href="https://minasidor.trollhattan.se/791">
+              e-tjänst
+            </a>{" "}
+            (öppnas i nytt fönster).
           </p>
           <section className="main-start__footer">
             <p>

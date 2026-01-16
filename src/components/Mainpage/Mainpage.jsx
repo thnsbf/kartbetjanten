@@ -147,7 +147,7 @@ export default function Mainpage({
       switch (ent.type) {
         case "Linje": {
           ent.show = v;
-          toggleArray(ch.points, v);
+          toggleArray(ch.points, v && !!draft.showPoints);
 
           // ✅ independent segment vs total
           toggleArray(ch.labels, v && !!draft.showValues);

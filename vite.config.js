@@ -6,6 +6,6 @@ export default defineConfig({
   plugins: [react(), cesium()],
   base: "./", // important if you serve from a folder or not the domain root
   build: {
-    outDir: "kartbetjanten-test", // or another folder name if you prefer
+    outDir: "kartbetjanten", // or another folder name if you prefer
   },
 });
