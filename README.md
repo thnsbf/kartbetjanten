@@ -5,12 +5,14 @@ Detta är en ren frontend-lösning och kräver ingen server eller backend för a
 är en GeoJSON-fil som innhåller de adresser och fastigheter som ingår i kommunen, samt en WMS-url för er egen kommunkarta. 
 Längre ner i denna texten beskrivs GeoJSON-formatet med exempel.
 
-#Ändra baskarta: Viewer.jsx 88
-#Adresser: GeoJSON (JSON)-fil läggs under public/json med namnet "adresser.json".
+##### Ändra baskarta: Viewer.jsx 88 (src/components/Viewer/Viewer.jsx)
+##### Adresser: GeoJSON (JSON)-fil läggs under public/json med namnet "adresser.json".
 
-#Format GeoJSON för adresser
+---
 
-Varje adress ska vara en egen Feature med geometrityp "point", och behöver innehålla unika värden för
+### Format GeoJSON för adresser
+
+Varje adress ska vara en egen Feature av geometrityp "point", och behöver innehålla unika värden för
 
 - Koordinater (coordinates)
 - Adress (ADRESS)
@@ -18,7 +20,7 @@ Varje adress ska vara en egen Feature med geometrityp "point", och behöver inne
 
 Exempel:
 
-```{
+```geojson{
 	"type" : "FeatureCollection",
 	"name" : "NewFeatureType",
 	"features" : [
@@ -49,5 +51,6 @@ Exempel:
 }
 ```
 
-För att köra i dev-miljö: npm run dev
-För att bygga: npm run build
+- För att köra i dev-miljö: npm run dev
+  
+- För att bygga: npm run build
