@@ -25,4 +25,4 @@ dist-ssr
 
 kartbetjanten
 public/json/adresser.json
-adresser.json
+adresser.json*
