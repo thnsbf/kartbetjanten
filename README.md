@@ -1,9 +1,14 @@
 # Kartbetjänten
 
-Ändra baskarta: Viewer.jsx 88
-Adresser: GeoJSON (JSON)-fil läggs under public/json med namnet "adresser.json".
+I detta repot finner du källkoden till Trollhättans Stads egenbyggda internettjänst Kartbetjänten.
+Detta är en ren frontend-lösning och kräver ingen server eller backend för att fungera. Det enda som behövs
+är en GeoJSON-fil som innhåller de adresser och fastigheter som ingår i kommunen, samt en WMS-url för er egen kommunkarta. 
+Längre ner i denna texten beskrivs GeoJSON-formatet med exempel.
 
-Format GeoJSON för adresser
+#Ändra baskarta: Viewer.jsx 88
+#Adresser: GeoJSON (JSON)-fil läggs under public/json med namnet "adresser.json".
+
+#Format GeoJSON för adresser
 
 Varje adress ska vara en egen Feature med geometrityp "point", och behöver innehålla unika värden för
 
