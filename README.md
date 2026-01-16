@@ -10,9 +10,23 @@ Längre ner i denna texten beskrivs GeoJSON-formatet med exempel.
 
 ---
 
+### Kom igång
+
+Öppna huvudmappen i terminalen och kör
+
+```npm install```
+```npm run dev```
+
+För att bygga kör
+
+```npm run build```
+
+OBS! Kom ihåg att en adresser.json-fil och en egen wms-karta behövs innan verktyget går att använda!
+
 ### Format GeoJSON för adresser
 
-Varje adress ska vara en egen Feature av geometrityp "point", och behöver innehålla unika värden för
+
+Varje adress behöver vara en egen Feature av geometrityp "point", och behöver innehålla unika värden för
 
 - Koordinater (coordinates)
 - Adress (ADRESS)
@@ -51,6 +65,40 @@ Exempel:
 }
 ```
 
-- För att köra i dev-miljö: npm run dev
-  
-- För att bygga: npm run build
+### Styling
+
+Under src/index.css definieras färg, storlekar, och samt text-font.
+
+
+### Bibliotek
+
+Vite
+React.js
+CesiumJS
+UUID
+JSPDF
+
+
+---
+
+## Gränssnittet
+
+Kartbetjänten är ett verktyg som möjliggör skapandet av egna ärendekartor för invånare i kommunen. 
+Appen innehåller verktyg för att
+
+* Placera punkt
+* Rita linje
+* Rita area
+* Placera text
+* Flytta objekt
+
+Alla objekt som ritas ut på kartan syns även i en separat lista kallad "Mina objekt". 
+Därifrån har användaren möjlighet att både redigera samt ta bort objekt.
+Objekt kan också öppnas i redigeringsläge genom att klicka på objektet i kartan.
+
+Borttagna objekt syns i en egen lista där de kan återställas, eller tas bort definitivt (effektivt "töm papperskorgen").
+
+När användaren är nöjd med sin karta kan den skrivas ut genom att klicka på "Ladda ner". Kartan kan sparas både i PDF-format
+och som en GeoJSON innehållandes de geometrier som användaren ritat i data-format.
+
+
